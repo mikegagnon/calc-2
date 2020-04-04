@@ -200,12 +200,21 @@ class CalcGame {
         this.server.requestUndo(function(message) {
             if (!("state" in message)) {
                 console.warn("No states in server");
-            } else if (message.undo || message.redo) {
-                THIS.replaceState(message.state);
-            } else if (message.index >= THIS.server.clientSideCurrentIndex) {
-                THIS.replaceState(message.state);                        
             } else {
-                console.warn("Received stale message");
+                THIS.replaceState(message.state);                        
+            }
+            THIS.app.undoAvailable = message.undoAvailable;
+            THIS.app.redoAvailable = message.redoAvailable;
+        });
+    }
+
+    clickRedo() {
+        const THIS = this;
+        this.server.requestRedo(function(message) {
+            if (!("state" in message)) {
+                console.warn("No states in server");
+            } else {
+                THIS.replaceState(message.state);                        
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
@@ -244,7 +253,6 @@ class CalcGame {
             data: {
                 undoAvailable: false,
                 redoAvailable: false,
-
             },
             computed: {
                 territories: function() {
@@ -260,6 +268,9 @@ class CalcGame {
             },
             clickUndo: function() {
                 THIS.clickUndo();
+            },
+            clickRedo: function() {
+                THIS.clickRedo();
             },
             clickTerritory: function(territory) {
                 if (this.territoryClickable(territory)) {
