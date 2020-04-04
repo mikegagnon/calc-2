@@ -108,157 +108,7 @@ class LocalCalcServer {
     // TODO: undo and redo
 }
 
-function testLocalServer() {
-    function assert(val) {
-        if (val === true) {
-            // do nothing
-        } else if (val === false) {
-            throw "Failed test";
-        } else {
-            throw "Bad val";
-        }
-    }
 
-    let server;
-
-    // Test 1
-    server = new LocalCalcServer();
-    server.requestUndo(function(message) {
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 2);
-    });
-
-    server.requestRedo(function(message) {
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 2);
-    });
-
-    server.requestState(function(message) {
-        //console.log(message);
-        //alert(Object.keys(message).length);
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 2);
-    });
-
-    // states = [a]
-    server.pushState("a");
-
-    server.requestUndo(function(message) {
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 2);
-    });
-
-    server.requestRedo(function(message) {
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 2);
-    });
-
-    server.requestState(function(message) {
-        assert(message.state === "a");
-        assert(message.index === 0);
-        assert(message.undo === false);
-        assert(message.redo === false);
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.pushState("b");
-
-    server.requestUndo(function(message) {
-        assert(message.state === "a");
-        assert(message.index === 0);
-        assert(message.undo === true);
-        assert(message.redo === false);
-        assert(message.undoAvailable === false);
-        assert(message.redoAvailable === true);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.requestRedo(function(message) {
-        assert(message.state === "b");
-        assert(message.index === 1);
-        assert(message.undo === false);
-        assert(message.redo === true);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.requestState(function(message) {
-        assert(message.state === "b");
-        assert(message.index === 1);
-        assert(message.undo === false);
-        assert(message.redo === true);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.pushState("c");
-    server.pushState("d");
-
-    server.requestUndo(function(message) {
-        assert(message.state === "c");
-        assert(message.index === 2);
-        assert(message.undo === true);
-        assert(message.redo === false);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === true);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.requestRedo(function(message) {
-        assert(message.state === "d");
-        assert(message.index === 3);
-        assert(message.undo === false);
-        assert(message.redo === true);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.requestState(function(message) {
-        assert(message.state === "d");
-        assert(message.index === 3);
-        assert(message.undo === false);
-        assert(message.redo === true);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === false);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.requestUndo(function(message) {
-        assert(message.state === "c");
-        assert(message.index === 2);
-        assert(message.undo === true);
-        assert(message.redo === false);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === true);
-        assert(Object.keys(message).length === 6);
-    });
-
-    server.requestState(function(message) {
-        assert(message.state === "c");
-        assert(message.index === 2);
-        assert(message.undo === true);
-        assert(message.redo === false);
-        assert(message.undoAvailable === true);
-        assert(message.redoAvailable === true);
-        assert(Object.keys(message).length === 6);
-    });
-
-
-}
-
-if (TESTING) {
-    testLocalServer();
-}
 
 class CalcGame {
 
@@ -411,3 +261,156 @@ class CalcGame {
 const server = new LocalCalcServer();
 const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, true, DEFAULT_CONFIG);
 const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, false, DEFAULT_CONFIG);
+
+
+function testLocalServer() {
+    function assert(val) {
+        if (val === true) {
+            // do nothing
+        } else if (val === false) {
+            throw "Failed test";
+        } else {
+            throw "Bad val";
+        }
+    }
+
+    let server;
+
+    // Test 1
+    server = new LocalCalcServer();
+    server.requestUndo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestState(function(message) {
+        //console.log(message);
+        //alert(Object.keys(message).length);
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    // states = [a]
+    server.pushState("a");
+
+    server.requestUndo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "a");
+        assert(message.index === 0);
+        assert(message.undo === false);
+        assert(message.redo === false);
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.pushState("b");
+
+    server.requestUndo(function(message) {
+        assert(message.state === "a");
+        assert(message.index === 0);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.state === "b");
+        assert(message.index === 1);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "b");
+        assert(message.index === 1);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.pushState("c");
+    server.pushState("d");
+
+    server.requestUndo(function(message) {
+        assert(message.state === "c");
+        assert(message.index === 2);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.state === "d");
+        assert(message.index === 3);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "d");
+        assert(message.index === 3);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestUndo(function(message) {
+        assert(message.state === "c");
+        assert(message.index === 2);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "c");
+        assert(message.index === 2);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+
+}
+
+if (TESTING) {
+    testLocalServer();
+}
