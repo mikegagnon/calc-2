@@ -83,6 +83,7 @@ class LocalCalcServer {
                 undoAvailable: this.undoAvailable,
                 redoAvailable: this.redoAvailable,
             };
+            callback(message);
         }
         this.clientSideCurrentIndex = this.serverSideIndex;
     }
@@ -95,6 +96,8 @@ class LocalCalcServer {
             });
         } else {
             this.serverSideIndex++;
+            this.undoAvailable = true;
+            this.redoAvailable = this.serverSideIndex < this.states.length - 1;
             this.lastRequestWasUndo = false;
             this.lastRequestWasRedo = true;
             const message = {
@@ -102,7 +105,10 @@ class LocalCalcServer {
                 index: this.serverSideIndex,
                 undo: this.lastRequestWasUndo,
                 redo: this.lastRequestWasRedo,
+                undoAvailable: this.undoAvailable,
+                redoAvailable: this.redoAvailable,
             };
+            callback(message);
         }
         this.clientSideCurrentIndex = this.serverSideIndex;
 
