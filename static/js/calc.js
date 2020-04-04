@@ -9,61 +9,78 @@ const CONTINENT_BONUS = {
     "Asia": 7
 };
 
-function getRandomizedTerritories() {
-    const territories = getStandardTerritories();
-    for (let i = 0; i < territories.length; i++) {
-        const territory = territories[i];
-        territory.numPieces = Math.floor(Math.random() * 4);
-        if (territory.numPieces == 0) {
-            territory.color = "white";
-        } else {
-            territory.color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        }
+class CalcGame {
+
+    constructor(divId) {
+        this.store = this.initStore();
+        this.app = this.initApp(divId);
     }
 
-    return territories;
+    initStore() {
+        const store = new Vuex.Store({
+          state: {
+            totalTvCount: 10, // The TV inventory
+            territories: this.getRandomizedTerritories(),
+          },
+          
+          getters: {
+            // Here we will create a getter
+          },
+          
+          mutations: {
+            // Here we will create Jenny
+          },
+          
+          actions: {
+            // Here we will create Larry
+          }
+        });
+        return store;
+    }
+
+    initApp(divId) {
+        const THIS = this;
+        const app = new Vue({
+            el: divId,
+            data: {
+                //territories: getRandomizedTerritories(),
+            },
+            computed: {
+                territories: function() {
+                    return THIS.store.state.territories;
+                }
+            },
+            methods: {
+            territoryClickable: function(territory) {
+                return territory.numPieces === 0;
+            },
+            territoryText: function(territory) {
+                if (territory.numPieces === 0) {
+                    return "";
+                } else {
+                    return territory.numPieces;
+                }
+            }
+            },
+            delimiters: ["[[","]]"],
+        });
+        return app;
+    }
+
+    getRandomizedTerritories() {
+        const territories = getStandardTerritories();
+        for (let i = 0; i < territories.length; i++) {
+            const territory = territories[i];
+            territory.numPieces = Math.floor(Math.random() * 4);
+            if (territory.numPieces == 0) {
+                territory.color = "white";
+            } else {
+                territory.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+            }
+        }
+
+        return territories;
+    }
 }
 
-const STORE = new Vuex.Store({
-  state: {
-    totalTvCount: 10, // The TV inventory
-    territories: getRandomizedTerritories(),
-  },
-  
-  getters: {
-    // Here we will create a getter
-  },
-  
-  mutations: {
-    // Here we will create Jenny
-  },
-  
-  actions: {
-    // Here we will create Larry
-  }
-});
-
-const APP = new Vue({
-    el: "#calc1",
-    data: {
-        //territories: getRandomizedTerritories(),
-    },
-    computed: {
-        territories: function() {
-            return STORE.state.territories;
-        }
-    },
-    methods: {
-    territoryClickable: function(territory) {
-        return territory.numPieces === 0;
-    },
-    territoryText: function(territory) {
-        if (territory.numPieces === 0) {
-            return "";
-        } else {
-            return territory.numPieces;
-        }
-    }
-    },
-    delimiters: ["[[","]]"],
-});
+const CALC1 = new CalcGame("#calc1");
