@@ -13,6 +13,8 @@ const DEFAULT_CONFIG = {
     "requestStateInterval": 1000
 };
 
+/* LocalCalcServer ************************************************************/
+
 class LocalCalcServer {
     constructor() {
         this.states = [];
@@ -121,11 +123,9 @@ class LocalCalcServer {
         this.clientSideCurrentIndex = this.serverSideIndex;
 
     }
-
-    // TODO: undo and redo
 }
 
-
+/* CalcGame *******************************************************************/
 
 class CalcGame {
 
@@ -312,10 +312,11 @@ class CalcGame {
     }
 }
 
+/* Tests **********************************************************************/
+
 const server = new LocalCalcServer();
 const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, true, DEFAULT_CONFIG);
 const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, false, DEFAULT_CONFIG);
-
 
 function testLocalServer() {
     function assert(val) {
