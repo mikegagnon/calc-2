@@ -233,6 +233,26 @@ function testLocalServer() {
         assert(Object.keys(message).length === 6);
     });
 
+    server.requestUndo(function(message) {
+        assert(message.state === "c");
+        assert(message.index === 2);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "c");
+        assert(message.index === 2);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
 
 }
 
