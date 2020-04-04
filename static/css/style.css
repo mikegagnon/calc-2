@@ -24,6 +24,15 @@
     box-shadow: 3px 3px 3px rgba(0,0,0,50%);
 }
 
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    box-shadow: 0px 0px 15px 0px red;
+}
+
+
 .blue {
     background-color: blue;
 }

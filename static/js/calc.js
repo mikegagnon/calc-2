@@ -6,6 +6,16 @@ const APP = new Vue({
   computed: {
   },
   methods: {
+    territoryClickable: function(territory) {
+        return false;
+    },
+    territoryText: function(territory) {
+        if (territory.numPieces === 0) {
+            return "";
+        } else {
+            return territory.numPieces;
+        }
+    }
   },
   delimiters: ['[[',']]'],
 });

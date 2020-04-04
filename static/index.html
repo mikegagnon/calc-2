@@ -18,9 +18,9 @@
         v-for="territory in territories"
         v-bind:key="territory.index" 
         v-bind:style="{top:territory.top, left:territory.left}"
-        v-bind:class="[territory.color, {clickable: true}]"
+        v-bind:class="[territory.color, {clickable: territoryClickable(territory)}]"
         >
-          1
+          [[territoryText(territory)]]
       </div>
 
     </div>
