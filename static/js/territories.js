@@ -508,7 +508,7 @@ function getStandardTerritories() {
         const territory = territories[i];
         territory.index = i;
         territory.color = "white";
-        territory.numPieces = 0;
+        territory.numPieces = -1;
         territory.clickableByPlayerIndex = 0;
         territory.highlighted = "no-highlight";
         territory.explodeColor = false;

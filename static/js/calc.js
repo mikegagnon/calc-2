@@ -138,6 +138,9 @@ class CalcGame {
             territoryClickable: function(territory) {
                 return territory.numPieces === 0;
             },
+            territoryHidden: function(territory) {
+                return territory.numPieces < 0
+            },
             clickTerritory: function(territory) {
                 if (this.territoryClickable(territory)) {
                     THIS.store.commit('clickTerritory', territory.index);
