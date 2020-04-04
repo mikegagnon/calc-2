@@ -9,10 +9,27 @@ const CONTINENT_BONUS = {
     "Asia": 7
 };
 
+class LocalCalcServer {
+    constructor() {
+        this.states = [];
+    }
+
+    // When the server receives a new state
+    pushState(serializedState) {
+        this.states.push(serializedState);
+    }
+
+    // When the server receives a requeset for the latest state
+    receiveRequest() {
+        return this.states[this.states.length - 1];
+    }
+}
+
 class CalcGame {
 
-    constructor(templateDivId, divId) {
+    constructor(templateDivId, divId, server) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
+        this.server = server; // may be null, if in offline mode
         this.store = this.initStore();
         this.app = this.initApp(divId);
     }
@@ -21,8 +38,8 @@ class CalcGame {
         return JSON.stringify(this.store.state);
     }
 
-    replaceState(state) {
-        this.store.replaceState(JSON.parse(state));
+    replaceState(serializedState) {
+        this.store.replaceState(JSON.parse(serializedState));
     }
 
     initStore() {
