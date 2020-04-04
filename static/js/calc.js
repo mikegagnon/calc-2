@@ -84,6 +84,7 @@ class LocalCalcServer {
                 redoAvailable: this.redoAvailable,
             };
         }
+        this.clientSideCurrentIndex = this.serverSideIndex;
     }
 
     requestRedo(callback) {
@@ -103,6 +104,8 @@ class LocalCalcServer {
                 redo: this.lastRequestWasRedo,
             };
         }
+        this.clientSideCurrentIndex = this.serverSideIndex;
+
     }
 
     // TODO: undo and redo
@@ -173,7 +176,18 @@ class CalcGame {
     }
 
     clickUndo() {
-        alert(2);
+        const THIS = this;
+        this.server.requestUndo(function(message) {
+            if (!("state" in message)) {
+                console.warn("No states in server");
+            } else if (message.undo || message.redo) {
+                THIS.replaceState(message.state);
+            } else if (message.index >= THIS.server.clientSideCurrentIndex) {
+                THIS.replaceState(message.state);                        
+            } else {
+                console.warn("Received stale message");
+            }
+        });
     }
 
     initStore() {
