@@ -5,12 +5,26 @@
     <script src="js/es6-promise.js"></script>
     <script src="js/jquery-2.2.4.min.js"></script>
     <script src="js/jquery-2.2.4.min.js"></script>
-    <script src="js/calc.js"></script>
     <link href="css/style.css" rel='stylesheet'>
   </head>
   <body>
-    <div id="calc1">
+    <p>sdf</p>
+    <div id="calc1" class="calc-container">
       <img src="img/standard-board.png" class="standard-board-img">
+
+      <!--TODO: what is key all about -->
+
+      <div
+        class="territory"
+        v-for="territory in territories"
+        v-bind:key="territory.index" 
+        v-bind:style="{top:territory.top, left:territory.left}"
+        v-bind:class="[territory.color, {clickable: true}]"
+        >
+          1
+      </div>
+
     </div>
   </body>
+  <script src="js/calc.js"></script>
 </html>

@@ -1,9 +1,60 @@
 .standard-board-img {
-    /*float: right;*/
-    /*height:50%;
-    width:50%;*/
-    /*outline: 1px solid #aaa;*/
-    /*transform: scale(0.5);*/
     width: 504px;
     height: 315px;
+}
+
+.calc-container {
+    position: relative;
+    float: right;
+}
+
+.territory {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 30%;
+    margin: 0x;
+    padding: 5px;
+    font-size: 10pt;
+    color: black;
+    font-family: "Helvetica", sans-serif;
+    font-weight: bold;
+    min-width: 9px;
+    min-height: 9px;
+    line-height: 9px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 3px 3px 3px rgba(0,0,0,50%);
+}
+
+
+.blue {
+    background-color: blue;
+}
+
+.red {
+    background-color: #f44336;;
+}
+
+.grey {
+    background-color: grey;
+}
+
+.green {
+    background-color: green;
+}
+
+.orange {
+    background-color: #ff8c00;
+}
+
+.purple {
+    background-color: #9132a8;    
+}
+
+.black {
+    background-color: black;    
+}
+
+.white {
+    background-color: white;
 }
