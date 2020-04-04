@@ -129,14 +129,17 @@ class LocalCalcServer {
 
 class CalcGame {
 
-    constructor(templateDivId, divId, server, isHost, config) {
+    constructor(templateDivId, divId, server, username, isHost, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
+        
         this.isHost = isHost;
+        
         if (config) {
             this.config = config;
         } else {
             this.config = DEFAULT_CONFIG;
         }
+       
         if (server) {
             this.server = server;
             this.online = true;
@@ -144,16 +147,17 @@ class CalcGame {
             this.server = new LocalCalcServer();
             this.online = false;
         }
+        
         this.store = this.initStore();
         this.app = this.initApp(divId);
+
         if (this.isHost) {
             this.saveState();
         } else {
             this.issueRequest();
         }
 
-        // TODO: rm !this.online after testing
-        if (this.online || !this.online) {
+        if (this.online) {
             const THIS = this;
             setInterval(function(){
                 THIS.issueRequest();
@@ -304,6 +308,27 @@ class CalcGame {
 
     /* Game logic *************************************************************/
 
+    loadNewPlayer() {
+        if (app.players.map(p => p.name).includes(USERNAME)) {
+            app.thisPlayerIndex = app.players.filter(function(p){ return p.name === USERNAME})[0].index;
+            return;
+        }
+
+        let playerIndex;
+        let playerName;
+        do {
+            playerIndex = Math.floor(Math.random() * app.players.length);
+            playerName = app.players[playerIndex].name;
+        } while (playerName != "?");
+
+        app.thisPlayerIndex = playerIndex;
+        app.players[playerIndex].name = USERNAME;
+
+        if (CONFIG.soloPlay) {
+            app.thisPlayerIndex = getCurrentPlayer(app).index;
+        }
+    }
+
 
     getVacantTerritories() {
         const territories = getStandardTerritories();
@@ -338,8 +363,8 @@ class CalcGame {
 /* Tests **********************************************************************/
 
 const server = new LocalCalcServer();
-const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, true, DEFAULT_CONFIG);
-const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, false, DEFAULT_CONFIG);
+const CALC1 = new CalcGame("#gameTemplate", "#calc1", null, "Alice", true, DEFAULT_CONFIG);
+const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, "Bob", false, DEFAULT_CONFIG);
 
 function testLocalServer() {
     function assert(val) {
