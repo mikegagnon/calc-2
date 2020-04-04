@@ -24,14 +24,36 @@ function getRandomizedTerritories() {
     return territories;
 }
 
-const APP = new Vue({
-  el: "#calc1",
-  data: {
+const STORE = new Vuex.Store({
+  state: {
+    totalTvCount: 10, // The TV inventory
     territories: getRandomizedTerritories(),
   },
-  computed: {
+  
+  getters: {
+    // Here we will create a getter
   },
-  methods: {
+  
+  mutations: {
+    // Here we will create Jenny
+  },
+  
+  actions: {
+    // Here we will create Larry
+  }
+});
+
+const APP = new Vue({
+    el: "#calc1",
+    data: {
+        //territories: getRandomizedTerritories(),
+    },
+    computed: {
+        territories: function() {
+            return STORE.state.territories;
+        }
+    },
+    methods: {
     territoryClickable: function(territory) {
         return territory.numPieces === 0;
     },
@@ -42,6 +64,6 @@ const APP = new Vue({
             return territory.numPieces;
         }
     }
-  },
-  delimiters: ["[[","]]"],
+    },
+    delimiters: ["[[","]]"],
 });
