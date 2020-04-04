@@ -222,8 +222,8 @@ class CalcGame {
     }
 
     // Vuex is handy because I want to easily serialize ***almost*** all the state
-    // But it's nice to not serialize undoAvailable/redoAvailable and yet
-    // still inject into vue
+    // and have it reactive and: it's nice to not serialize undoAvailable / 
+    // redoAvailable and thisPlayer, and yet be able to inject that state into vue
     initStore() {
         const store = new Vuex.Store({
           state: {
