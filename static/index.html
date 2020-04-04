@@ -17,6 +17,7 @@
           v-bind:key="territory.index" 
           v-bind:style="{top:territory.top, left:territory.left}"
           v-bind:class="[territory.color, {clickable: territoryClickable(territory)}]"
+          v-on:click="clickTerritory(territory);"
           >
             [[territoryText(territory)]]
         </div>

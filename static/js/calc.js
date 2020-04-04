@@ -20,7 +20,6 @@ class CalcGame {
     initStore() {
         const store = new Vuex.Store({
           state: {
-            totalTvCount: 10, // The TV inventory
             territories: this.getRandomizedTerritories(),
           },
           
@@ -29,7 +28,11 @@ class CalcGame {
           },
           
           mutations: {
-            // Here we will create Jenny
+            clickTerritory(state, index) {
+                //console.log(index);
+                state.territories[index].numPieces += 1;
+                state.territories[index].color = "blue";
+            }
           },
           
           actions: {
@@ -54,6 +57,11 @@ class CalcGame {
             methods: {
             territoryClickable: function(territory) {
                 return territory.numPieces === 0;
+            },
+            clickTerritory: function(territory) {
+                if (this.territoryClickable(territory)) {
+                    THIS.store.commit('clickTerritory', territory.index);
+                }
             },
             territoryText: function(territory) {
                 if (territory.numPieces === 0) {
