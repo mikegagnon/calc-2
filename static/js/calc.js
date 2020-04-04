@@ -17,6 +17,14 @@ class CalcGame {
         this.app = this.initApp(divId);
     }
 
+    serialize() {
+        return JSON.stringify(this.store.state);
+    }
+
+    replaceState(state) {
+        this.store.replaceState(JSON.parse(state));
+    }
+
     initStore() {
         const store = new Vuex.Store({
           state: {
