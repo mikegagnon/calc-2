@@ -161,6 +161,8 @@ class CalcGame {
         }
     }
 
+    /* Server communication ***************************************************/
+    
     issueRequest() {
         const THIS = this;
         this.server.requestState(function(message) {
@@ -173,23 +175,6 @@ class CalcGame {
             } else {
                 console.warn("Received stale message");
             }
-            THIS.app.undoAvailable = message.undoAvailable;
-            THIS.app.redoAvailable = message.redoAvailable;
-        });
-    }
-
-    serialize() {
-        return JSON.stringify(this.store.state);
-    }
-
-    replaceState(serializedState) {
-        this.store.replaceState(JSON.parse(serializedState));
-    }
-
-    saveState() {
-        const state = this.serialize();
-        const THIS = this;
-        this.server.pushState(state, function(message) {
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
         });
@@ -221,6 +206,26 @@ class CalcGame {
         });
     }
 
+    serialize() {
+        return JSON.stringify(this.store.state);
+    }
+
+    replaceState(serializedState) {
+        this.store.replaceState(JSON.parse(serializedState));
+    }
+
+    saveState() {
+        const state = this.serialize();
+        const THIS = this;
+        this.server.pushState(state, function(message) {
+            THIS.app.undoAvailable = message.undoAvailable;
+            THIS.app.redoAvailable = message.redoAvailable;
+        });
+    }
+
+    /* Vuexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
+
+
     // Vuex is handy because I want to easily serialize ***almost*** all the state
     // and have it reactive and: it's nice to not serialize undoAvailable / 
     // redoAvailable and thisPlayer, and yet be able to inject that state into vue
@@ -249,6 +254,8 @@ class CalcGame {
         return store;
     }
 
+    /* Vue ********************************************************************/
+
     initApp(divId) {
         const THIS = this;
         const app = new Vue({
@@ -256,6 +263,7 @@ class CalcGame {
             data: {
                 undoAvailable: false,
                 redoAvailable: false,
+                thisPlayerIndex: -1
             },
             computed: {
                 territories: function() {
@@ -293,6 +301,9 @@ class CalcGame {
         });
         return app;
     }
+
+    /* Game logic *************************************************************/
+
 
     getVacantTerritories() {
         const territories = getStandardTerritories();
@@ -474,8 +485,6 @@ function testLocalServer() {
         assert(message.redoAvailable === true);
         assert(Object.keys(message).length === 6);
     });
-
-
 }
 
 if (TESTING) {
