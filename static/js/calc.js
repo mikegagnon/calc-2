@@ -27,14 +27,18 @@ class LocalCalcServer {
 
     // When the server receives a requeset for the latest state
     requestState(callback) {
-        const message = {
-            state: this.states[this.states.length - 1],
-            index: this.states.length - 1,
-            undo: false,
-            redo: false,
-        };
-        this.clientSideCurrentIndex = message.index;
-        callback(message);
+        if (this.states.length === 0){
+            callback({});
+        } else {
+            const message = {
+                state: this.states[this.states.length - 1],
+                index: this.states.length - 1,
+                undo: false,
+                redo: false,
+            };
+            this.clientSideCurrentIndex = message.index;
+            callback(message);
+        }
     }
 
     // TODO: undo and redo
@@ -62,6 +66,8 @@ class CalcGame {
         this.app = this.initApp(divId);
         if (this.isHost) {
             this.saveState();
+        } else {
+            this.issueRequest();
         }
 
         // TODO: rm !this.online after testing
@@ -76,7 +82,9 @@ class CalcGame {
     issueRequest() {
         const THIS = this;
         this.server.requestState(function(message) {
-            if (message.undo || message.redo) {
+            if (!("state" in message)) {
+                console.warn("No states in server");
+            } else if (message.undo || message.redo) {
                 THIS.replaceState(message.state);
             } else if (message.index >= THIS.server.clientSideCurrentIndex) {
                 THIS.replaceState(message.state);                        
@@ -139,7 +147,7 @@ class CalcGame {
                 return territory.numPieces === 0;
             },
             territoryHidden: function(territory) {
-                return territory.numPieces < 0
+                return territory.numPieces < 0;
             },
             clickTerritory: function(territory) {
                 if (this.territoryClickable(territory)) {
