@@ -227,7 +227,7 @@ class CalcGame {
     initStore() {
         const store = new Vuex.Store({
           state: {
-            territories: this.getRandomizedTerritories(),
+            territories: this.getVacantTerritories(),
           },
           
           getters: {
@@ -294,6 +294,18 @@ class CalcGame {
         return app;
     }
 
+    getVacantTerritories() {
+        const territories = getStandardTerritories();
+        if (this.isHost) {
+            for (let i = 0; i < territories.length; i++) {
+                const territory = territories[i];
+                territory.numPieces = 0;
+            }
+        }
+
+        return territories;
+    }
+
     getRandomizedTerritories() {
         const territories = getStandardTerritories();
         if (this.isHost) {
@@ -354,7 +366,7 @@ function testLocalServer() {
     });
 
     // states = [a]
-    server.pushState("a");
+    server.pushState("a", function(){});
 
     server.requestUndo(function(message) {
         assert(message.undoAvailable === false);
@@ -378,7 +390,7 @@ function testLocalServer() {
         assert(Object.keys(message).length === 6);
     });
 
-    server.pushState("b");
+    server.pushState("b", function(){});
 
     server.requestUndo(function(message) {
         assert(message.state === "a");
@@ -410,8 +422,8 @@ function testLocalServer() {
         assert(Object.keys(message).length === 6);
     });
 
-    server.pushState("c");
-    server.pushState("d");
+    server.pushState("c", function(){});
+    server.pushState("d", function(){});
 
     server.requestUndo(function(message) {
         assert(message.state === "c");
