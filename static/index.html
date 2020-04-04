@@ -8,22 +8,27 @@
     <link href="css/style.css" rel='stylesheet'>
   </head>
   <body>
-    <div id="calc1" class="calc-container">
-      <img src="img/standard-board.png" class="standard-board-img">
-
-      <!--TODO: what is key all about -->
-
-      <div
-        class="territory"
-        v-for="territory in territories"
-        v-bind:key="territory.index" 
-        v-bind:style="{top:territory.top, left:territory.left}"
-        v-bind:class="[territory.color, {clickable: territoryClickable(territory)}]"
-        >
-          [[territoryText(territory)]]
+    <div id="gameTemplate" class="hidden">
+      <div class="calc-container">
+        <img src="img/standard-board.png" class="standard-board-img">
+        <div
+          class="territory"
+          v-for="territory in territories"
+          v-bind:key="territory.index" 
+          v-bind:style="{top:territory.top, left:territory.left}"
+          v-bind:class="[territory.color, {clickable: territoryClickable(territory)}]"
+          >
+            [[territoryText(territory)]]
+        </div>
       </div>
-
     </div>
+
+    <div id="calc1">
+    </div>
+
+    <div id="calc2">
+    </div>
+
   </body>
   <script src="js/territories.js"></script>
   <script src="js/calc.js"></script>

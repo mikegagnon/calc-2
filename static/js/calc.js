@@ -11,7 +11,8 @@ const CONTINENT_BONUS = {
 
 class CalcGame {
 
-    constructor(divId) {
+    constructor(templateDivId, divId) {
+        $(templateDivId + " .calc-container").clone().appendTo(divId);
         this.store = this.initStore();
         this.app = this.initApp(divId);
     }
@@ -83,4 +84,5 @@ class CalcGame {
     }
 }
 
-const CALC1 = new CalcGame("#calc1");
+const CALC1 = new CalcGame("#gameTemplate", "#calc1");
+const CALC2 = new CalcGame("#gameTemplate", "#calc2");
