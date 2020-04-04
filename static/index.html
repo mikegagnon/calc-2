@@ -22,7 +22,7 @@
             [[territoryText(territory)]]
         </div>
 
-        <div><button v-on:click="clickUndo">Undo</button></div>
+        <div><button v-if="undoAvailable" v-on:click="clickUndo">Undo</button></div>
 
       </div>
     </div>

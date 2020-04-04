@@ -25,7 +25,7 @@ class LocalCalcServer {
     }
 
     // When the server receives a new state
-    pushState(serializedState) {
+    pushState(serializedState, callback) {
         this.lastRequestWasUndo = false;
         this.lastRequestWasRedo = false;
 
@@ -38,6 +38,14 @@ class LocalCalcServer {
         this.states = this.states.slice(0, this.serverSideIndex);
         this.states.push(serializedState);
         this.clientSideCurrentIndex = this.serverSideIndex;
+
+        this.undoAvailable = this.serverSideIndex > 0;
+        this.redoAvailable = this.serverSideIndex < this.states.length - 1;
+
+        callback({
+            undoAvailable: this.undoAvailable,
+            redoAvailable: this.redoAvailable,
+        });
     }
 
     // When the server receives a requeset for the latest state
@@ -165,6 +173,8 @@ class CalcGame {
             } else {
                 console.warn("Received stale message");
             }
+            THIS.app.undoAvailable = message.undoAvailable;
+            THIS.app.redoAvailable = message.redoAvailable;
         });
     }
 
@@ -178,7 +188,11 @@ class CalcGame {
 
     saveState() {
         const state = this.serialize();
-        this.server.pushState(state);
+        const THIS = this;
+        this.server.pushState(state, function(message) {
+            THIS.app.undoAvailable = message.undoAvailable;
+            THIS.app.redoAvailable = message.redoAvailable;
+        });
     }
 
     clickUndo() {
@@ -193,6 +207,8 @@ class CalcGame {
             } else {
                 console.warn("Received stale message");
             }
+            THIS.app.undoAvailable = message.undoAvailable;
+            THIS.app.redoAvailable = message.redoAvailable;
         });
     }
 
@@ -225,7 +241,11 @@ class CalcGame {
         const THIS = this;
         const app = new Vue({
             el: divId,
-            data: {},
+            data: {
+                undoAvailable: false,
+                redoAvailable: false,
+
+            },
             computed: {
                 territories: function() {
                     return THIS.store.state.territories;
