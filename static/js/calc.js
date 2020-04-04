@@ -1,4 +1,4 @@
-
+const TESTING = true;
 const DEFAULT_CONFIG = {
     colors: ["red", "blue", "green", "orange", "purple", "black"],
     continents: ["North America", "South America", "Africa", "Australia", "Europe", "Asia"],
@@ -16,34 +16,229 @@ const DEFAULT_CONFIG = {
 class LocalCalcServer {
     constructor() {
         this.states = [];
+        this.serverSideIndex = null;
         this.clientSideCurrentIndex = null;
+        this.lastRequestWasUndo = false;
+        this.lastRequestWasRedo = false;
+        this.undoAvailable = false;
+        this.redoAvailable = false;
     }
 
     // When the server receives a new state
     pushState(serializedState) {
+        this.lastRequestWasUndo = false;
+        this.lastRequestWasRedo = false;
+
+        if (this.serverSideIndex === null) {
+            this.serverSideIndex = 0;
+        } else {
+            this.serverSideIndex++;
+        }
+
+        this.states = this.states.slice(0, this.serverSideIndex);
         this.states.push(serializedState);
-        this.clientSideCurrentIndex = this.states.length - 1;
+        this.clientSideCurrentIndex = this.serverSideIndex;
     }
 
     // When the server receives a requeset for the latest state
     requestState(callback) {
-        if (this.states.length === 0){
-            callback({});
+        if (this.serverSideIndex === null) {
+            callback({
+                undoAvailable: this.undoAvailable,
+                redoAvailable: this.redoAvailable,
+            });
         } else {
+            this.undoAvailable = this.serverSideIndex > 0;
+            this.redoAvailable = this.serverSideIndex < this.states.length - 1;
             const message = {
-                state: this.states[this.states.length - 1],
-                index: this.states.length - 1,
-                undo: false,
-                redo: false,
+                state: this.states[this.serverSideIndex],
+                index: this.serverSideIndex,
+                undo: this.lastRequestWasUndo,
+                redo: this.lastRequestWasRedo,
+                undoAvailable: this.undoAvailable,
+                redoAvailable: this.redoAvailable,
             };
-            this.clientSideCurrentIndex = message.index;
+            this.clientSideCurrentIndex = this.serverSideIndex;
             callback(message);
+        }
+    }
+
+    requestUndo(callback) {
+        if (this.serverSideIndex === 0 || this.serverSideIndex === null) {
+            callback({
+                undoAvailable: this.undoAvailable,
+                redoAvailable: this.redoAvailable,
+            });
+        } else {
+            this.serverSideIndex--;
+            this.undoAvailable = this.serverSideIndex > 0;
+            this.redoAvailable = true;
+            this.lastRequestWasUndo = true;
+            this.lastRequestWasRedo = false;
+            const message = {
+                state: this.states[this.serverSideIndex],
+                index: this.serverSideIndex,
+                undo: this.lastRequestWasUndo,
+                redo: this.lastRequestWasRedo,
+                undoAvailable: this.undoAvailable,
+                redoAvailable: this.redoAvailable,
+            };
+        }
+    }
+
+    requestRedo(callback) {
+        if (this.serverSideIndex === this.states.length - 1 || this.serverSideIndex === null) {
+            callback({
+                undoAvailable: this.undoAvailable,
+                redoAvailable: this.redoAvailable,
+            });
+        } else {
+            this.serverSideIndex++;
+            this.lastRequestWasUndo = false;
+            this.lastRequestWasRedo = true;
+            const message = {
+                state: this.states[this.serverSideIndex],
+                index: this.serverSideIndex,
+                undo: this.lastRequestWasUndo,
+                redo: this.lastRequestWasRedo,
+            };
         }
     }
 
     // TODO: undo and redo
 }
 
+function testLocalServer() {
+    function assert(val) {
+        if (val === true) {
+            // do nothing
+        } else if (val === false) {
+            throw "Failed test";
+        } else {
+            throw "Bad val";
+        }
+    }
+
+    let server;
+
+    // Test 1
+    server = new LocalCalcServer();
+    server.requestUndo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestState(function(message) {
+        //console.log(message);
+        //alert(Object.keys(message).length);
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    // states = [a]
+    server.pushState("a");
+
+    server.requestUndo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 2);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "a");
+        assert(message.index === 0);
+        assert(message.undo === false);
+        assert(message.redo === false);
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.pushState("b");
+
+    server.requestUndo(function(message) {
+        assert(message.state === "a");
+        assert(message.index === 0);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === false);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.state === "b");
+        assert(message.index === 1);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "b");
+        assert(message.index === 1);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.pushState("c");
+    server.pushState("d");
+
+    server.requestUndo(function(message) {
+        assert(message.state === "c");
+        assert(message.index === 2);
+        assert(message.undo === true);
+        assert(message.redo === false);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === true);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestRedo(function(message) {
+        assert(message.state === "d");
+        assert(message.index === 3);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+    server.requestState(function(message) {
+        assert(message.state === "d");
+        assert(message.index === 3);
+        assert(message.undo === false);
+        assert(message.redo === true);
+        assert(message.undoAvailable === true);
+        assert(message.redoAvailable === false);
+        assert(Object.keys(message).length === 6);
+    });
+
+
+}
+
+if (TESTING) {
+    testLocalServer();
+}
 
 class CalcGame {
 
@@ -107,6 +302,10 @@ class CalcGame {
         this.server.pushState(state);
     }
 
+    clickUndo() {
+        alert(2);
+    }
+
     initStore() {
         const store = new Vuex.Store({
           state: {
@@ -148,6 +347,9 @@ class CalcGame {
             },
             territoryHidden: function(territory) {
                 return territory.numPieces < 0;
+            },
+            clickUndo: function() {
+                THIS.clickUndo();
             },
             clickTerritory: function(territory) {
                 if (this.territoryClickable(territory)) {
