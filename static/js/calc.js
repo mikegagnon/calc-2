@@ -43,8 +43,9 @@ class LocalCalcServer {
 
 class CalcGame {
 
-    constructor(templateDivId, divId, server, config) {
+    constructor(templateDivId, divId, server, isHost, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
+        this.isHost = isHost;
         if (config) {
             this.config = config;
         } else {
@@ -59,23 +60,30 @@ class CalcGame {
         }
         this.store = this.initStore();
         this.app = this.initApp(divId);
-        this.saveState();
+        if (this.isHost) {
+            this.saveState();
+        }
 
         // TODO: rm !this.online after testing
         if (this.online || !this.online) {
             const THIS = this;
             setInterval(function(){
-                THIS.server.requestState(function(message) {
-                    if (message.undo || message.redo) {
-                        THIS.replaceState(message.state);
-                    } else if (message.index >= THIS.server.clientSideCurrentIndex) {
-                        THIS.replaceState(message.state);                        
-                    } else {
-                        console.warn("Received stale message");
-                    }
-                });
+                THIS.issueRequest();
             }, this.config.requestStateInterval);
         }
+    }
+
+    issueRequest() {
+        const THIS = this;
+        this.server.requestState(function(message) {
+            if (message.undo || message.redo) {
+                THIS.replaceState(message.state);
+            } else if (message.index >= THIS.server.clientSideCurrentIndex) {
+                THIS.replaceState(message.state);                        
+            } else {
+                console.warn("Received stale message");
+            }
+        });
     }
 
     serialize() {
@@ -151,13 +159,15 @@ class CalcGame {
 
     getRandomizedTerritories() {
         const territories = getStandardTerritories();
-        for (let i = 0; i < territories.length; i++) {
-            const territory = territories[i];
-            territory.numPieces = Math.floor(Math.random() * 4);
-            if (territory.numPieces == 0) {
-                territory.color = "white";
-            } else {
-                territory.color = this.config.colors[Math.floor(Math.random() * this.config.colors.length)];
+        if (this.isHost) {
+            for (let i = 0; i < territories.length; i++) {
+                const territory = territories[i];
+                territory.numPieces = Math.floor(Math.random() * 4);
+                if (territory.numPieces == 0) {
+                    territory.color = "white";
+                } else {
+                    territory.color = this.config.colors[Math.floor(Math.random() * this.config.colors.length)];
+                }
             }
         }
 
@@ -166,5 +176,5 @@ class CalcGame {
 }
 
 const server = new LocalCalcServer();
-const CALC1 = new CalcGame("#gameTemplate", "#calc1", server);
-const CALC2 = new CalcGame("#gameTemplate", "#calc2", server);
+const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, true, DEFAULT_CONFIG);
+const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, false, DEFAULT_CONFIG);
