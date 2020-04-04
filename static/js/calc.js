@@ -1,4 +1,5 @@
 const TESTING = true;
+
 const DEFAULT_CONFIG = {
     colors: ["red", "blue", "green", "orange", "purple", "black"],
     continents: ["North America", "South America", "Africa", "Australia", "Europe", "Asia"],
@@ -10,7 +11,19 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    "requestStateInterval": 1000
+    requestStateInterval: 1000
+};
+
+const GAME_CONFIG_1 = {
+    isHost: true,
+    numPlayers: 4,
+    username: "Alice",
+};
+
+const GAME_CONFIG_2 = {
+    isHost: false,
+    numPlayers: 4,
+    username: "Bob",
 };
 
 /* LocalCalcServer ************************************************************/
@@ -129,16 +142,11 @@ class LocalCalcServer {
 
 class CalcGame {
 
-    constructor(templateDivId, divId, server, username, isHost, config) {
+    constructor(templateDivId, divId, server, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
         
-        this.isHost = isHost;
-        
-        if (config) {
-            this.config = config;
-        } else {
-            this.config = DEFAULT_CONFIG;
-        }
+        this.config = config;
+        this.isHost = config.isHost;
        
         if (server) {
             this.server = server;
@@ -236,6 +244,7 @@ class CalcGame {
     initStore() {
         const store = new Vuex.Store({
           state: {
+            players: [],
             territories: this.getVacantTerritories(),
           },
           
@@ -363,8 +372,8 @@ class CalcGame {
 /* Tests **********************************************************************/
 
 const server = new LocalCalcServer();
-const CALC1 = new CalcGame("#gameTemplate", "#calc1", null, "Alice", true, DEFAULT_CONFIG);
-const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, "Bob", false, DEFAULT_CONFIG);
+const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 
 function testLocalServer() {
     function assert(val) {
