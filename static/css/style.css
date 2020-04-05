@@ -3,9 +3,19 @@
     height: 315px;
 }
 
+body {
+    margin: 0px;
+}
+
 .calc-container {
     position: relative;
     font-family: "Helvetica", sans-serif;
+    font-weight: bold;
+    border: 1px solid #aaa;
+    margin-left: 10px;
+    margin-top: 10px;
+    font-size: 10pt;
+    width: 504px;
 }
 
 .territory {
@@ -14,7 +24,6 @@
     border-radius: 30%;
     margin: 0px;
     padding: 5px;
-    font-size: 10pt;
     color: white;
     min-width: 9px;
     min-height: 9px;
@@ -68,3 +77,34 @@
 .hidden {
     display: none;
 }
+
+.player-marker {
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 9pt;
+}
+
+.player-instructions {
+    border-top: 1px solid #aaa;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.instruction {
+    width: 100%;
+    font-size: 9pt;
+    font-weight: bold;
+    font-family: "Helvetica", sans-serif;
+    padding-left: 5px;
+}
+
+.help-link {
+    float: right;
+    margin-right: 5px;
+    font-family: "Helvetica", sans-serif;
+    font-weight: normal;
+    font-size: 9pt;
+}
+
+

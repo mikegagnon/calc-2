@@ -23,6 +23,26 @@
             [[territoryText(territory)]]
         </div>
 
+                <!-- INSTRUCTIONS ----------------------------------------------------->      
+        <div class="player-instructions">
+          <table>
+            <tr v-for="player in players">
+              <td>
+                <span class="arrow" v-bind:class="[{invisible: !player.active}]">⬤</span>
+              </td>
+              <td nowrap class="player-marker" v-bind:class="[player.color]">
+                &nbsp;&nbsp;&nbsp;&nbsp;[[ playerNameText(player) ]]&nbsp;&nbsp;&nbsp;&nbsp;
+              </td>
+              <td class="instruction">
+                [[ player.instruction ]]
+              </td>
+              <td valign="bottom">
+                <div v-if="player.index === players.length - 1" class="help-link"><a target="_blank" href="dice.html">Help</a></div>          
+              </td>
+            </tr>
+          </table>
+        </div>
+
         <div
           v-for="player in players"
           >

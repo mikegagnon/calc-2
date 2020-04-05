@@ -16,13 +16,13 @@ const DEFAULT_CONFIG = {
 
 const GAME_CONFIG_1 = {
     isHost: true,
-    numPlayers: 4,
+    numPlayers: 2,
     username: "Alice",
 };
 
 const GAME_CONFIG_2 = {
     isHost: false,
-    numPlayers: 4,
+    numPlayers: 2,
     username: "Bob",
 };
 
@@ -331,6 +331,9 @@ class CalcGame {
                 },
             },
             methods: {
+                playerNameText: function(player) {
+                    return player.name;
+                },
                 territoryClickable: function(territory) {
                     return territory.numPieces === 0;
                 },
@@ -365,12 +368,13 @@ class CalcGame {
     /* Game logic *************************************************************/
 
     loadNewPlayer() {
+        const THIS = this;
         if (this.store.state.players.map(p => p.name).includes(this.config.username)) {
             this.app.thisPlayerIndex = this
                 .store
                 .state
                 .players
-                .filter(function(p){ return p.name === this.config.username})[0].index;
+                .filter(function(p){ return p.name === THIS.config.username})[0].index;
             return false;
         }
 
@@ -412,7 +416,7 @@ class CalcGame {
                 name: playerNames[i],
                 color: colors[i],
                 active: false,
-                instruction: "",
+                instruction: "asdf",
             })
         }
 
