@@ -163,7 +163,7 @@ class CalcGame {
         
         this.app = this.initApp(divId);
 
-        /*this.loadNewPlayer(); */
+        this.loadNewPlayer();
 
         if (this.config.isHost) {
             //this.setClickable(this.store.getters.currentPlayer.index);
@@ -215,9 +215,9 @@ class CalcGame {
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
-            /*if (THIS.loadNewPlayer()) {
+            if (THIS.loadNewPlayer()) {
                 THIS.saveState();
-            }*/
+            }
         });
     }
 
@@ -248,7 +248,6 @@ class CalcGame {
     }
 
     serialize() {
-        //return JSON.stringify(this.store.state);
         const state = {
             players: this.app.players,
             territories: this.app.territories,
@@ -261,7 +260,6 @@ class CalcGame {
         const state = JSON.parse(serializedState);
         this.app.territories = state.territories;
         this.app.players = state.players;
-        //this.store.replaceState(JSON.parse(serializedState));
     }
 
     saveState() {
@@ -284,9 +282,13 @@ class CalcGame {
                 territories: this.getVacantTerritories(),
                 undoAvailable: false,
                 redoAvailable: false,
+                currentPlayerIndex: 0,
                 thisPlayerIndex: -1,
             },
             computed: {
+                currentPlayer: function() {
+                    return this.players[this.currentPlayerIndex];
+                }
             },
             methods: {
                 playerNameText: function(player) {
@@ -334,37 +336,40 @@ class CalcGame {
         }
     }*/
 
-    /*loadNewPlayer() {
+    loadNewPlayer() {
         const THIS = this;
-        if (this.store.state.players.map(p => p.name).includes(this.config.username)) {
+
+        // If the player is already in the system
+        if (this.app.players.map(p => p.name).includes(this.config.username)) {
             this.app.thisPlayerIndex = this
-                .store
-                .state
+                .app
                 .players
                 .filter(function(p){ return p.name === THIS.config.username})[0].index;
             return false;
         }
 
-        if (!this.store.state.players.map(p => p.name).includes("?")) {
+        if (!this.app.players.map(p => p.name).includes("?")) {
             throw "Cannot add player";
         }
 
         let playerIndex;
+        let player;
         let playerName;
         do {
-            playerIndex = Math.floor(this.random.random() * this.store.state.players.length);
-            playerName = this.store.state.players[playerIndex].name;
+            playerIndex = Math.floor(this.random.random() * this.app.players.length);
+            player = this.app.players[playerIndex];
+            playerName = player.name;
         } while (playerName != "?");
 
         this.app.thisPlayerIndex = playerIndex;
-        this.store.commit('setPlayerName', [playerIndex, this.config.username]);
+        player.name = this.config.username;
 
         if (!this.config.online) {
-            this.app.thisPlayerIndex = this.store.getters.currentPlayer.index;
+            this.app.thisPlayerIndex = this.app.currentPlayer.index;
         }
 
         return true;
-    }*/
+    }
 
     getInitPlayers() {
         let playerNames;
