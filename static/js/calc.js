@@ -51,10 +51,11 @@ class RemoteCalcServer {
     // When the server receives a new state
     pushState(state, callback) {
         const THIS = this;
+        console.log(state);
         $.ajax({
             type: "POST",
             url: this.postGameStateUrl,
-            data: state,
+            data: JSON.stringify(state),
             dataType: "application/json",
             contentType: "application/json",
             success: callback,

@@ -78,41 +78,50 @@ def create_submit():
     return redirect(url_for("play", code=code))
 
 def getUndoAvailable(game):
-    if game.stateIndex == None:
+    if game["stateIndex"] == None:
         return False
     else:
-        return game.stateIndex > 0;
+        return game["stateIndex"] > 0;
 
 def getRedoAvailable(game):
-    if game.stateIndex == None:
+    if game["stateIndex"] == None:
         return False
     else:
-        return game.stateIndex < len(game.states) - 1
+        return game["stateIndex"] < len(game["states"]) - 1
 
 @app.route("/post_state", methods=["POST"])
 def post_state():
     if "code" not in session:
         abort(403)
+    print(1)
     code = session["code"]
+    print(2)
     state = request.get_json()
+    print(3)
     game = GAMES[code]
-
+    print(1)
+    
     game["lastRequestWasUndo"] = False
+    print(1)
     game["lastRequestWasRedo"] = False
+    print(1)
     game["count"] += 1
 
     if game["stateIndex"] != None:
+        print(1)
         game["states"] = game["states"][0:(game["stateIndex"] + 1)]
         if len(games["states"]) != game["stateIndex"] + 1:
             raise ValueError("Should be impossible")
 
     game["states"].append(state)
-
+    print(1)
+    
     if len(game["states"]) == MAX_STATES_LENGTH + 1:
         game["states"] = game["states"][1:]
-
+    print(1)
     game["stateIndex"] = len(game["states"]) - 1
-
+    print(1)
+    
     return {
         "count": game["count"],
         "undoAvailable": getUndoAvailable(game),
@@ -121,6 +130,30 @@ def post_state():
 
 @app.route("/get_state", methods=["GET"])
 def get_state():
+    if "code" not in session:
+        abort(403)
+    code = session["code"]
+    game = GAMES[code]
+
+    if game["stateIndex"] == None:
+        return {
+            "count": game["count"],
+            "undoAvailable": getUndoAvailable(game),
+            "redoAvailable": getRedoAvailable(game)
+        }
+    else:
+        return {
+            "state": game["states"][game["stateIndex"]],
+            "count": game["count"],
+            "undo": game["lastRequestWasUndo"],
+            "redo": game["lastRequestWasRedo"],
+            "undoAvailable": getUndoAvailable(game),
+            "redoAvailable": getRedoAvailable(game)
+        }
+
+
+
+
     code = session["code"]
 
     if code not in GAME_STATE:
