@@ -287,7 +287,7 @@ class CalcGame {
             data: {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
-                currentPlayerIndex: 0,
+                //currentPlayerIndex: 0,
                 currentPhase: "undefined",
 
                 // Non serialized state
@@ -297,7 +297,15 @@ class CalcGame {
             },
             computed: {
                 currentPlayer: function() {
-                    return this.players[this.currentPlayerIndex];
+                    for (let i = 0; i < this.players.length; i++) {
+                        const player = this.players[i];
+                        if (player.active) {
+                            return player;
+                        }
+                    }
+
+                    throw "No active player in app:computed";
+                    //return this.players[this.currentPlayerIndex];
                 },
                 thisPlayer: function() {
                     return this.players[this.thisPlayerIndex];
@@ -340,6 +348,25 @@ class CalcGame {
             this.clickTerritoryPhaseSelectInitPositions(territory);
         } else {
             throw "Bad phase in clickTerritory";
+        }
+    }
+
+    /* Generic game logic *****************************************************/
+
+    incrementCurrentPlayer() {
+        const player = this.app.currentPlayer;
+        player.active = false;
+        
+        const newPlayerIndex = (player.index + 1) % this.app.players.length;
+        const nextPlayer = this.app.players[newPlayerIndex];
+        nextPlayer.active = true;
+
+        // TODO: computed
+        //this.app.currentPlayerIndex = newPlayerIndex;
+
+        // This is the hack
+        if (this.config.soloPlay) {
+            app.thisPlayerIndex = newPlayerIndex;
         }
     }
 
