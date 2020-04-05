@@ -157,16 +157,16 @@ class CalcGame {
             this.server = server;
             this.online = true;
         } else {
-            this.server = new LocalCalcServer();
+            this.server = new LocalCalcServer(); // Just used for undo/redo
             this.online = false;
         }
         
         this.app = this.initApp(divId);
 
-        this.loadNewPlayer();
+        /*this.loadNewPlayer(); */
 
         if (this.config.isHost) {
-            this.setClickable(this.store.getters.currentPlayer.index);
+            //this.setClickable(this.store.getters.currentPlayer.index);
             this.saveState();
         } else {
             this.issueRequest();
@@ -215,9 +215,9 @@ class CalcGame {
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
-            if (THIS.loadNewPlayer()) {
+            /*if (THIS.loadNewPlayer()) {
                 THIS.saveState();
-            }
+            }*/
         });
     }
 
@@ -248,11 +248,20 @@ class CalcGame {
     }
 
     serialize() {
-        return JSON.stringify(this.store.state);
+        //return JSON.stringify(this.store.state);
+        const state = {
+            players: this.app.players,
+            territories: this.app.territories,
+        }
+
+        return JSON.stringify(state);
     }
 
     replaceState(serializedState) {
-        this.store.replaceState(JSON.parse(serializedState));
+        const state = JSON.parse(serializedState);
+        this.app.territories = state.territories;
+        this.app.players = state.players;
+        //this.store.replaceState(JSON.parse(serializedState));
     }
 
     saveState() {
@@ -271,24 +280,20 @@ class CalcGame {
         const app = new Vue({
             el: divId,
             data: {
+                players: this.getInitPlayers(),
+                territories: this.getVacantTerritories(),
                 undoAvailable: false,
                 redoAvailable: false,
                 thisPlayerIndex: -1,
             },
             computed: {
-                territories: function() {
-                    return THIS.store.state.territories;
-                },
-                players: function() {
-                    return THIS.store.state.players;
-                },
             },
             methods: {
                 playerNameText: function(player) {
                     return player.name;
                 },
                 territoryClickable: function(territory) {
-                    return territory.numPieces === 0 && this.thisPlayerIndex === THIS.store.getters.currentPlayer.index;
+                    return territory.numPieces === 0;
                 },
                 territoryHidden: function(territory) {
                     return territory.numPieces < 0;
@@ -301,7 +306,8 @@ class CalcGame {
                 },
                 clickTerritory: function(territory) {
                     if (this.territoryClickable(territory)) {
-                        THIS.store.commit('clickTerritory', territory.index);
+                        territory.numPieces += 1;
+                        territory.color = "blue";
                         THIS.saveState();
                     }
                 },
@@ -320,15 +326,15 @@ class CalcGame {
 
     /* Game logic *************************************************************/
 
-    setClickable(playerIndex) {
+    /*setClickable(playerIndex) {
         const territories = this.store.state.territories;
         for (let i = 0; i < territories.length; i++) {
             //const territory = territories[i];
             this.store.commit('setTerritoryClickable', [i, playerIndex]);
         }
-    }
+    }*/
 
-    loadNewPlayer() {
+    /*loadNewPlayer() {
         const THIS = this;
         if (this.store.state.players.map(p => p.name).includes(this.config.username)) {
             this.app.thisPlayerIndex = this
@@ -358,7 +364,7 @@ class CalcGame {
         }
 
         return true;
-    }
+    }*/
 
     getInitPlayers() {
         let playerNames;
@@ -397,8 +403,6 @@ class CalcGame {
 
         players[0].active = true;
 
-        console.log(players);
-
         return players;
     }
 
@@ -411,25 +415,7 @@ class CalcGame {
                 territory.numPieces = 0;
             }
         }
-
-        return territories;
-    }
-
-    getRandomizedTerritories() {
-        const territories = getStandardTerritories();
-        if (this.config.isHost) {
-            for (let i = 0; i < territories.length; i++) {
-                const territory = territories[i];
-                territory.numPieces = Math.floor(Math.random() * 4);
-                if (territory.numPieces == 0) {
-                    territory.color = "white";
-                } else {
-                    territory.color = this.config.colors[Math.floor(Math.random() * this.config.colors.length)];
-                }
-            }
-        }
-
-        return territories;
+       return territories;
     }
 }
 
