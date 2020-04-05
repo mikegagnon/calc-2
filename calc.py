@@ -95,23 +95,29 @@ def post_state():
         abort(403)
     code = session["code"]
     state = request.get_json()
-
-
-
     game = GAMES[code]
 
     game["lastRequestWasUndo"] = False
     game["lastRequestWasRedo"] = False
     game["count"] += 1
 
-    # TODO: test
-    game["states"] = game["states"][0:(game["stateIndex"] + 1)]
-    game["States"].append()
-     #print(data)
-    code = data["code"]
-    GAME_STATE[code].append(state)
+    if game["stateIndex"] != None:
+        game["states"] = game["states"][0:(game["stateIndex"] + 1)]
+        if len(games["states"]) != game["stateIndex"] + 1:
+            raise ValueError("Should be impossible")
 
-    return {}
+    game["states"].append(state)
+
+    if len(game["states"]) == MAX_STATES_LENGTH + 1:
+        game["states"] = game["states"][1:]
+
+    game["stateIndex"] = len(game["states"]) - 1
+
+    return {
+        "count": game["count"],
+        "undoAvailable": getUndoAvailable(game),
+        "redoAvailable": getRedoAvailable(game)
+    }
 
 @app.route("/get_state", methods=["GET"])
 def get_state():
