@@ -99,6 +99,14 @@ def get_state():
         "index": index
     }
 
+@app.route("/get_undo", methods=["GET"])
+def get_undo():
+    abort(500)
+
+@app.route("/get_redo", methods=["GET"])
+def get_redo():
+    abort(500)
+
 @app.route("/play/<code>")
 def play(code):
     if "username" not in session:
@@ -113,19 +121,12 @@ def play(code):
         "numPlayers": GAMES[code]["numPlayers"],
         "username": session["username"],
         "init": GAMES[code]["init"],
+        "serverOnline": True,
+        "postGameStateUrl": url_for("post_state"),
+        "getStateUrl": url_for('get_state'),
+        "undoUrl": url_for('get_undo'),
+        "redoUrl": url_for('get_redo'),
         "code": code,
     }
-
-    #username = session["username"]
-
-    #gameState = GAME_STATE[code]
-
-    # TODO: make sure username is in gameState
-
-
-    # if len(gameState) > 0:
-    #     thisGameState = gameState[len(gameState) - 1]
-    #     print(thisGameState)
-    #     game["initGameState"] = thisGameState
 
     return render_template("game.html", gameConfig=gameConfig)
