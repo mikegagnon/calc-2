@@ -26,6 +26,12 @@ const GAME_CONFIG_2 = {
     username: "Bob",
 };
 
+GAME_CONFIG_ONLINE = {
+    isHost: true,
+    numPlayers: 2,
+    username: "Host"
+}
+
 /* Phases *********************************************************************/
 
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
@@ -364,8 +370,8 @@ class CalcGame {
         nextPlayer.active = true;
 
         // This is the hack
-        if (this.config.soloPlay) {
-            app.thisPlayerIndex = newPlayerIndex;
+        if (!this.online) {
+            this.app.thisPlayerIndex = newPlayerIndex;
         }
     }
 
@@ -539,8 +545,10 @@ class CalcGame {
 /* Tests **********************************************************************/
 
 const server = new LocalCalcServer();
-const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+const CALC_ONLINE = new CalcGame("#gameTemplate", "#calc-online", null, $.extend({}, GAME_CONFIG_ONLINE, DEFAULT_CONFIG));
+//const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+//const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+
 
 function testLocalServer() {
     function assert(val) {
