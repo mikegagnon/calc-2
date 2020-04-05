@@ -110,7 +110,7 @@ def post_state():
     if game["stateIndex"] != None:
         print(1)
         game["states"] = game["states"][0:(game["stateIndex"] + 1)]
-        if len(games["states"]) != game["stateIndex"] + 1:
+        if len(game["states"]) != game["stateIndex"] + 1:
             raise ValueError("Should be impossible")
 
     game["states"].append(state)
@@ -169,11 +169,58 @@ def get_state():
 
 @app.route("/get_undo", methods=["GET"])
 def get_undo():
-    abort(500)
+    if "code" not in session:
+        abort(403)
+    code = session["code"]
+    game = GAMES[code]
+
+    if game["stateIndex"] == 0 or game["stateIndex"] == None:
+        return {
+            "count": game["count"],
+            "undoAvailable": getUndoAvailable(game),
+            "redoAvailable": getRedoAvailable(game)
+        }
+    else:
+        game["count"] += 1
+        game["stateIndex"] -= 1
+        game["lastRequestWasUndo"] = True
+        game["lastRequestWasRedo"] = False
+        return {
+            "state": game["states"][game["stateIndex"]],
+            "count": game["count"],
+            "undo": game["lastRequestWasUndo"],
+            "redo": game["lastRequestWasRedo"],
+            "undoAvailable": getUndoAvailable(game),
+            "redoAvailable": getRedoAvailable(game)
+        }
 
 @app.route("/get_redo", methods=["GET"])
 def get_redo():
-    abort(500)
+    if "code" not in session:
+        abort(403)
+    code = session["code"]
+    game = GAMES[code]
+
+    if game["stateIndex"] == len(game["states"]) - 1 or game["stateIndex"] == None:
+        return {
+            "count": game["count"],
+            "undoAvailable": getUndoAvailable(game),
+            "redoAvailable": getRedoAvailable(game)
+        }
+    else:
+        game["count"] += 1
+        game["stateIndex"] += 1
+        game["lastRequestWasUndo"] = False
+        game["lastRequestWasRedo"] = True
+        return {
+            "state": game["states"][game["stateIndex"]],
+            "count": game["count"],
+            "undo": game["lastRequestWasUndo"],
+            "redo": game["lastRequestWasRedo"],
+            "undoAvailable": getUndoAvailable(game),
+            "redoAvailable": getRedoAvailable(game)
+        }
+
 
 @app.route("/play/<code>")
 def play(code):
