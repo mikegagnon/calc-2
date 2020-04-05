@@ -146,7 +146,6 @@ class CalcGame {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
         
         this.config = config;
-        this.isHost = config.isHost;
 
         if ("seed" in this.config) {
             this.random = new MersenneTwister(seed);
@@ -162,12 +161,11 @@ class CalcGame {
             this.online = false;
         }
         
-        this.store = this.initStore();
         this.app = this.initApp(divId);
 
         this.loadNewPlayer();
 
-        if (this.isHost) {
+        if (this.config.isHost) {
             this.setClickable(this.store.getters.currentPlayer.index);
             this.saveState();
         } else {
@@ -264,72 +262,6 @@ class CalcGame {
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
         });
-    }
-
-    /* Vuexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx*/
-
-
-    // Vuex is handy because I want to easily serialize ***almost*** all the state
-    // and have it reactive and: it's nice to not serialize undoAvailable / 
-    // redoAvailable and thisPlayer, and yet be able to inject that state into vue
-    initStore() {
-        const THIS = this;
-        const store = new Vuex.Store({
-          state: {
-            players: this.getInitPlayers(),
-            territories: this.getVacantTerritories(),
-          },
-          
-          getters: {
-            currentPlayer: function(state) {
-                for (let i = 0; i < state.players.length; i++) {
-                    const player = state.players[i];
-                    if (player.active) {
-                        return player;
-                    }
-                }
-
-                throw "Could not find current player";
-            }
-          },
-          
-          mutations: {
-            incrementPlayer(state) {
-                const player = state.players[store.getters.currentPlayer.index];
-                player.active = false;
-                
-                const newPlayerIndex = (player.index + 1) % state.players.length;
-                const nextPlayer = state.players[newPlayerIndex];
-                nextPlayer.active = true;
-
-                // This is the hack
-                if (!THIS.config.online) {
-                    THIS.app.thisPlayerIndex = newPlayerIndex;
-                }
-            },
-            clickTerritory(state, index) {
-                //console.log(index);
-                state.territories[index].numPieces += 1;
-                state.territories[index].color = "blue";
-                store.commit('incrementPlayer');
-            },
-            setPlayerName(state, args) {
-                const index = args[0];
-                const name = args[1]; // this is annoying having to put params in arrays
-                state.players[index].name = name;
-            },
-            setTerritoryClickable(state, args) {
-                const index = args[0];
-                const clickable = args[1];
-                state.territories[index].clickableByPlayerIndex = clickable;
-            }
-          },
-          
-          actions: {
-            // Here we will create Larry
-          }
-        });
-        return store;
     }
 
     /* Vue ********************************************************************/
@@ -473,7 +405,7 @@ class CalcGame {
 
     getVacantTerritories() {
         const territories = getStandardTerritories();
-        if (this.isHost) {
+        if (this.config.isHost) {
             for (let i = 0; i < territories.length; i++) {
                 const territory = territories[i];
                 territory.numPieces = 0;
@@ -485,7 +417,7 @@ class CalcGame {
 
     getRandomizedTerritories() {
         const territories = getStandardTerritories();
-        if (this.isHost) {
+        if (this.config.isHost) {
             for (let i = 0; i < territories.length; i++) {
                 const territory = territories[i];
                 territory.numPieces = Math.floor(Math.random() * 4);
