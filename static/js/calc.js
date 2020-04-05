@@ -287,7 +287,6 @@ class CalcGame {
             data: {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
-                //currentPlayerIndex: 0,
                 currentPhase: "undefined",
 
                 // Non serialized state
@@ -305,7 +304,6 @@ class CalcGame {
                     }
 
                     throw "No active player in app:computed";
-                    //return this.players[this.currentPlayerIndex];
                 },
                 thisPlayer: function() {
                     return this.players[this.thisPlayerIndex];
@@ -360,9 +358,6 @@ class CalcGame {
         const newPlayerIndex = (player.index + 1) % this.app.players.length;
         const nextPlayer = this.app.players[newPlayerIndex];
         nextPlayer.active = true;
-
-        // TODO: computed
-        //this.app.currentPlayerIndex = newPlayerIndex;
 
         // This is the hack
         if (this.config.soloPlay) {
@@ -436,6 +431,7 @@ class CalcGame {
         if (this.app.territoryClickable(territory)) {
             territory.numPieces += 1;
             territory.color = "blue";
+            this.incrementCurrentPlayer();
             this.saveState();
         }
     }
