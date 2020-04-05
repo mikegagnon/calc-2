@@ -168,6 +168,7 @@ class CalcGame {
         this.loadNewPlayer();
 
         if (this.isHost) {
+            this.setClickable(this.store.getters.currentPlayer.index);
             this.saveState();
         } else {
             this.issueRequest();
@@ -272,6 +273,7 @@ class CalcGame {
     // and have it reactive and: it's nice to not serialize undoAvailable / 
     // redoAvailable and thisPlayer, and yet be able to inject that state into vue
     initStore() {
+        const THIS = this;
         const store = new Vuex.Store({
           state: {
             players: this.getInitPlayers(),
@@ -279,7 +281,7 @@ class CalcGame {
           },
           
           getters: {
-            getCurrentPlayer: function(state) {
+            currentPlayer: function(state) {
                 for (let i = 0; i < state.players.length; i++) {
                     const player = state.players[i];
                     if (player.active) {
@@ -292,15 +294,34 @@ class CalcGame {
           },
           
           mutations: {
+            incrementPlayer(state) {
+                const player = state.players[store.getters.currentPlayer.index];
+                player.active = false;
+                
+                const newPlayerIndex = (player.index + 1) % state.players.length;
+                const nextPlayer = state.players[newPlayerIndex];
+                nextPlayer.active = true;
+
+                // This is the hack
+                if (!THIS.config.online) {
+                    THIS.app.thisPlayerIndex = newPlayerIndex;
+                }
+            },
             clickTerritory(state, index) {
                 //console.log(index);
                 state.territories[index].numPieces += 1;
                 state.territories[index].color = "blue";
+                store.commit('incrementPlayer');
             },
             setPlayerName(state, args) {
                 const index = args[0];
                 const name = args[1]; // this is annoying having to put params in arrays
                 state.players[index].name = name;
+            },
+            setTerritoryClickable(state, args) {
+                const index = args[0];
+                const clickable = args[1];
+                state.territories[index].clickableByPlayerIndex = clickable;
             }
           },
           
@@ -335,7 +356,7 @@ class CalcGame {
                     return player.name;
                 },
                 territoryClickable: function(territory) {
-                    return territory.numPieces === 0;
+                    return territory.numPieces === 0 && this.thisPlayerIndex === THIS.store.getters.currentPlayer.index;
                 },
                 territoryHidden: function(territory) {
                     return territory.numPieces < 0;
@@ -367,6 +388,14 @@ class CalcGame {
 
     /* Game logic *************************************************************/
 
+    setClickable(playerIndex) {
+        const territories = this.store.state.territories;
+        for (let i = 0; i < territories.length; i++) {
+            //const territory = territories[i];
+            this.store.commit('setTerritoryClickable', [i, playerIndex]);
+        }
+    }
+
     loadNewPlayer() {
         const THIS = this;
         if (this.store.state.players.map(p => p.name).includes(this.config.username)) {
@@ -393,7 +422,7 @@ class CalcGame {
         this.store.commit('setPlayerName', [playerIndex, this.config.username]);
 
         if (!this.config.online) {
-            this.app.thisPlayerIndex = this.store.getters.getCurrentPlayer.index;
+            this.app.thisPlayerIndex = this.store.getters.currentPlayer.index;
         }
 
         return true;
