@@ -26,6 +26,10 @@ const GAME_CONFIG_2 = {
     username: "Bob",
 };
 
+/* Phases *********************************************************************/
+
+const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
+
 /* LocalCalcServer ************************************************************/
 
 class LocalCalcServer {
@@ -144,8 +148,8 @@ class CalcGame {
 
     constructor(templateDivId, divId, server, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
-        
         this.config = config;
+        this.clickTerritoryFunction = undefined;
 
         if ("seed" in this.config) {
             this.random = new MersenneTwister(seed);
@@ -252,6 +256,7 @@ class CalcGame {
         const state = {
             players: this.app.players,
             territories: this.app.territories,
+            currentPhase: this.app.currentPhase,
         }
 
         return JSON.stringify(state);
@@ -261,6 +266,7 @@ class CalcGame {
         const state = JSON.parse(serializedState);
         this.app.territories = state.territories;
         this.app.players = state.players;
+        this.app.currentPhase = state.currentPhase;
     }
 
     saveState() {
@@ -311,11 +317,7 @@ class CalcGame {
                     THIS.clickRedo();
                 },
                 clickTerritory: function(territory) {
-                    if (this.territoryClickable(territory)) {
-                        territory.numPieces += 1;
-                        territory.color = "blue";
-                        THIS.saveState();
-                    }
+                    THIS.clickTerritory(territory);
                 },
                 territoryText: function(territory) {
                     if (territory.numPieces === 0) {
@@ -330,11 +332,19 @@ class CalcGame {
         return app;
     }
 
+    clickTerritory(territory) {
+        if (this.app.currentPhase === PHASE_SELECT_INIT_POSITIONS) {
+            this.clickTerritoryPhaseSelectInitPositions(territory);
+        } else {
+            throw "Bad phase in clickTerritory";
+        }
+    }
+
     /* beginPhaseSelectInitPositions ******************************************/
 
     beginPhaseSelectInitPositions() {
         const THIS = this;
-        this.app.currentPhase = "PhaseSelectInitPositions";
+        this.app.currentPhase = "PHASE_SELECT_INIT_POSITIONS";
         setClickable();
         //initArmiesAvailableForPlacement();
 
@@ -348,6 +358,8 @@ class CalcGame {
                 }
             }
         }
+
+
 
         /*function initArmiesAvailableForPlacement() {
             const app = this.app;
@@ -380,8 +392,22 @@ class CalcGame {
                 throw "Bad players.length";
             }
         }*/
-        
+    }
 
+    clickTerritoryPhaseSelectInitPositions(territory) {
+        // If a new phase has begun, then the new phase will have set the instructions
+        // therefore we don't want to set instructions here.
+        /*if (!this.pickTerritory(territory)) {
+            this.setInstructions();
+        }
+        this.explodeTerritory(territory);
+        this.pickleAndPost();*/
+        //const THIS = this;
+        if (this.app.territoryClickable(territory)) {
+            territory.numPieces += 1;
+            territory.color = "blue";
+            this.saveState();
+        }
     }
 
     /* Misc. game logic *******************************************************/
