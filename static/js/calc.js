@@ -164,6 +164,7 @@ class CalcGame {
         
         this.store = this.initStore();
         this.app = this.initApp(divId);
+
         this.loadNewPlayer();
 
         if (this.isHost) {
@@ -215,6 +216,9 @@ class CalcGame {
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
+            if (THIS.loadNewPlayer()) {
+                THIS.saveState();
+            }
         });
     }
 
@@ -293,7 +297,9 @@ class CalcGame {
                 state.territories[index].numPieces += 1;
                 state.territories[index].color = "blue";
             },
-            setPlayerName(state, index, name) {
+            setPlayerName(state, args) {
+                const index = args[0];
+                const name = args[1]; // this is annoying having to put params in arrays
                 state.players[index].name = name;
             }
           },
@@ -319,34 +325,37 @@ class CalcGame {
             computed: {
                 territories: function() {
                     return THIS.store.state.territories;
-                }
+                },
+                players: function() {
+                    return THIS.store.state.players;
+                },
             },
             methods: {
-            territoryClickable: function(territory) {
-                return territory.numPieces === 0;
-            },
-            territoryHidden: function(territory) {
-                return territory.numPieces < 0;
-            },
-            clickUndo: function() {
-                THIS.clickUndo();
-            },
-            clickRedo: function() {
-                THIS.clickRedo();
-            },
-            clickTerritory: function(territory) {
-                if (this.territoryClickable(territory)) {
-                    THIS.store.commit('clickTerritory', territory.index);
-                    THIS.saveState();
-                }
-            },
-            territoryText: function(territory) {
-                if (territory.numPieces === 0) {
-                    return "";
-                } else {
-                    return territory.numPieces;
-                }
-            }
+                territoryClickable: function(territory) {
+                    return territory.numPieces === 0;
+                },
+                territoryHidden: function(territory) {
+                    return territory.numPieces < 0;
+                },
+                clickUndo: function() {
+                    THIS.clickUndo();
+                },
+                clickRedo: function() {
+                    THIS.clickRedo();
+                },
+                clickTerritory: function(territory) {
+                    if (this.territoryClickable(territory)) {
+                        THIS.store.commit('clickTerritory', territory.index);
+                        THIS.saveState();
+                    }
+                },
+                territoryText: function(territory) {
+                    if (territory.numPieces === 0) {
+                        return "";
+                    } else {
+                        return territory.numPieces;
+                    }
+                },
             },
             delimiters: ["[[","]]"],
         });
@@ -362,7 +371,7 @@ class CalcGame {
                 .state
                 .players
                 .filter(function(p){ return p.name === this.config.username})[0].index;
-            return;
+            return false;
         }
 
         if (!this.store.state.players.map(p => p.name).includes("?")) {
@@ -377,11 +386,13 @@ class CalcGame {
         } while (playerName != "?");
 
         this.app.thisPlayerIndex = playerIndex;
-        this.store.commit('setPlayerName', playerIndex, this.config.username);
+        this.store.commit('setPlayerName', [playerIndex, this.config.username]);
 
         if (!this.config.online) {
             this.app.thisPlayerIndex = this.store.getters.getCurrentPlayer.index;
         }
+
+        return true;
     }
 
     getInitPlayers() {
@@ -420,6 +431,8 @@ class CalcGame {
 
 
         players[0].active = true;
+
+        console.log(players);
 
         return players;
     }

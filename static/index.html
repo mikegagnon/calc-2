@@ -23,6 +23,12 @@
             [[territoryText(territory)]]
         </div>
 
+        <div
+          v-for="player in players"
+          >
+            [[player.name]]
+        </div>
+
         <div v-if="undoAvailable || redoAvailable">
           <button v-if="undoAvailable" v-on:click="clickUndo">Undo</button>
           <button v-if="redoAvailable" v-on:click="clickRedo">Redo</button>
