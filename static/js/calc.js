@@ -39,16 +39,13 @@ GAME_CONFIG_ONLINE = {
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
 
 /* RemoteCalcServer ***********************************************************/
-/*
+
 class RemoteCalcServer {
     constructor(config) {
         this.postGameStateUrl = config.postGameStateUrl;
         this.getStateUrl = config.getStateUrl;
         this.undoUrl = config.undoUrl;
         this.redoUrl = config.redoUrl;
-        this.clientSideCurrentIndex = null;
-        //this.undoAvailable = false;
-        //this.redoAvailable = false;
     }
 
     // When the server receives a new state
@@ -60,10 +57,7 @@ class RemoteCalcServer {
             data: serializedState,
             dataType: "application/json",
             contentType: "application/json",
-            success: function(data){
-                THIS.clientSideCurrentIndex = data.index;
-                callback(data);
-            },
+            success: callback,
             error: function(data) {
                 alert("Error: there was an unkown error when attempting to connect to the server");
             },
@@ -76,10 +70,7 @@ class RemoteCalcServer {
         $.ajax({
             url: this.getStateUrl,
             data: null,
-            success: function(data) {
-                THIS.clientSideCurrentIndex = data.index;
-                callback(data);
-            },
+            success: callback,
             error: function(data) {
                 console.error(data);
             },
@@ -91,10 +82,7 @@ class RemoteCalcServer {
          $.ajax({
             url: this.undoUrl,
             data: null,
-            success: function(data) {
-                THIS.clientSideCurrentIndex = data.index;
-                callback(data);
-            },
+            success: callback,
             error: function(data) {
                 console.error(data);
             },
@@ -106,10 +94,7 @@ class RemoteCalcServer {
         $.ajax({
             url: this.redoUrl,
             data: null,
-            success: function(data) {
-                THIS.clientSideCurrentIndex = data.index; ddd
-                callback(data);
-            },
+            success: callback,
             error: function(data) {
                 console.error(data);
             },
@@ -117,7 +102,6 @@ class RemoteCalcServer {
         });
     }
 }
-*/
 
 /* LocalCalcServer ************************************************************/
 
@@ -309,6 +293,9 @@ class CalcGame {
             console.warn("Stale message");
             return;
         }
+
+        this.serverCount = message.count;
+
         if ("state" in message) {
             this.replaceState(message.state);                        
         } else {
@@ -636,9 +623,9 @@ class CalcGame {
 /* Tests **********************************************************************/
 
 const server = new LocalCalcServer();
-//const CALC_ONLINE = new CalcGame("#gameTemplate", "#calc-online", null, $.extend({}, GAME_CONFIG_ONLINE, DEFAULT_CONFIG));
-const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+const CALC_ONLINE = new CalcGame("#gameTemplate", "#calc-online", null, $.extend({}, GAME_CONFIG_ONLINE, DEFAULT_CONFIG));
+//const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+//const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 
 
 function testLocalServer() {
