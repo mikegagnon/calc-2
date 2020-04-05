@@ -139,7 +139,12 @@ class LocalCalcServer {
         this.lastRequestWasRedo = false;
         this.count++;
 
-        this.states = this.states.slice(0, this.stateIndex + 1);
+        if (this.stateIndex !== null) {
+            this.states = this.states.slice(0, this.stateIndex + 1);
+            if (this.states.length !== this.stateIndex + 1) {
+                throw "Error in pushState";
+            }
+        }
         this.states.push(state);
     
         if (this.states.length === this.maxStatesLength + 1) {
