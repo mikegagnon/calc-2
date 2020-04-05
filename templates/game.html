@@ -65,6 +65,6 @@
   <script type="text/javascript">
     var GAME_CONFIG_REMOTE = {{ gameConfig|tojson }};
     var REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG_REMOTE);
-    var REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
+    var REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", REMOTE_SERVER, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
   </script>
 </html>
