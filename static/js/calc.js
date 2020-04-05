@@ -147,6 +147,12 @@ class CalcGame {
         
         this.config = config;
         this.isHost = config.isHost;
+
+        if ("seed" in this.config) {
+            this.random = new MersenneTwister(seed);
+        } else {
+            this.random = new MersenneTwister();
+        }
        
         if (server) {
             this.server = server;
@@ -158,6 +164,7 @@ class CalcGame {
         
         this.store = this.initStore();
         this.app = this.initApp(divId);
+        this.loadNewPlayer();
 
         if (this.isHost) {
             this.saveState();
@@ -171,6 +178,25 @@ class CalcGame {
                 THIS.issueRequest();
             }, this.config.requestStateInterval);
         }
+    }
+
+    // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+    /**
+     * Shuffles array in place.
+     * @param {Array} a items An array containing the items.
+     */
+    shuffle(a) {
+        // clone  
+        const newA = [...a];
+
+        var j, x, i;
+        for (i = newA.length - 1; i > 0; i--) {
+            j = Math.floor(this.random.random() * (i + 1));
+            x = newA[i];
+            newA[i] = newA[j];
+            newA[j] = x;
+        }
+        return newA;
     }
 
     /* Server communication ***************************************************/
@@ -244,12 +270,21 @@ class CalcGame {
     initStore() {
         const store = new Vuex.Store({
           state: {
-            players: [],
+            players: this.getInitPlayers(),
             territories: this.getVacantTerritories(),
           },
           
           getters: {
-            // Here we will create a getter
+            getCurrentPlayer: function(state) {
+                for (let i = 0; i < state.players.length; i++) {
+                    const player = state.players[i];
+                    if (player.active) {
+                        return player;
+                    }
+                }
+
+                throw "Could not find current player";
+            }
           },
           
           mutations: {
@@ -257,6 +292,9 @@ class CalcGame {
                 //console.log(index);
                 state.territories[index].numPieces += 1;
                 state.territories[index].color = "blue";
+            },
+            setPlayerName(state, index, name) {
+                state.players[index].name = name;
             }
           },
           
@@ -276,7 +314,7 @@ class CalcGame {
             data: {
                 undoAvailable: false,
                 redoAvailable: false,
-                thisPlayerIndex: -1
+                thisPlayerIndex: -1,
             },
             computed: {
                 territories: function() {
@@ -318,24 +356,72 @@ class CalcGame {
     /* Game logic *************************************************************/
 
     loadNewPlayer() {
-        if (app.players.map(p => p.name).includes(USERNAME)) {
-            app.thisPlayerIndex = app.players.filter(function(p){ return p.name === USERNAME})[0].index;
+        if (this.store.state.players.map(p => p.name).includes(this.config.username)) {
+            this.app.thisPlayerIndex = this
+                .store
+                .state
+                .players
+                .filter(function(p){ return p.name === this.config.username})[0].index;
             return;
+        }
+
+        if (!this.store.state.players.map(p => p.name).includes("?")) {
+            throw "Cannot add player";
         }
 
         let playerIndex;
         let playerName;
         do {
-            playerIndex = Math.floor(Math.random() * app.players.length);
-            playerName = app.players[playerIndex].name;
+            playerIndex = Math.floor(this.random.random() * this.store.state.players.length);
+            playerName = this.store.state.players[playerIndex].name;
         } while (playerName != "?");
 
-        app.thisPlayerIndex = playerIndex;
-        app.players[playerIndex].name = USERNAME;
+        this.app.thisPlayerIndex = playerIndex;
+        this.store.commit('setPlayerName', playerIndex, this.config.username);
 
-        if (CONFIG.soloPlay) {
-            app.thisPlayerIndex = getCurrentPlayer(app).index;
+        if (!this.config.online) {
+            this.app.thisPlayerIndex = this.store.getters.getCurrentPlayer.index;
         }
+    }
+
+    getInitPlayers() {
+        let playerNames;
+
+        if (this.config.playerNames) {
+            playerNames = this.config.playerNames;
+        } else {
+            playerNames = ["?", "?", "?", "?", "?", "?"].slice(0, this.config.numPlayers);
+        }
+
+        const colors = this.shuffle(this.config.colors).slice(0, playerNames.length);
+        const players = [];
+        for (let i = 0; i < playerNames.length; i++) {
+            players.push({
+                index: i,
+                name: playerNames[i],
+                color: colors[i],
+                active: false,
+                instruction: "",
+            })
+        }
+
+        /*
+        const playersWithStartCards = Object.keys(CONFIG.startWithPrizeCards);
+        for (let i = 0; i < playersWithStartCards.length; i++) {
+            const playerIndex = playersWithStartCards[i];
+            const cards = CONFIG.startWithPrizeCards[playerIndex];
+            const player = players[playerIndex];
+            player.numHearts = cards.filter(c => c === "heart").length;
+            player.numClubs = cards.filter(c => c === "club").length;
+            player.numDiamonds = cards.filter(c => c === "diamond").length;
+            player.numTotalCards = player.numHearts + player.numClubs + player.numDiamonds;
+        }
+        */
+
+
+        players[0].active = true;
+
+        return players;
     }
 
 
