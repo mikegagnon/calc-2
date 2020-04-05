@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Create Game: Calculus</title>
+  </head>
+  <body>
+    <form action="{{ url_for('join_submit')}}" method="post">
+
+      <p>Your name</p>
+      <div><input name="name"></div>
+
+      <p>Game code</p>
+      <div><input name="code"></div>
+
+      <p>
+        <input type="submit" name="submit_button" value="Join game">
+      </p>
+
+    </form>
+
+  </body>
+</html>

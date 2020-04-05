@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Create Game: Calculus</title>
+  </head>
+  <body>
+    <form action="{{ url_for('create_submit')}}" method="post">
+      <p>Your name</p>
+      <div><input name="name"></div>
+
+      <p>Number of players</p>
+      <div><input name="numPlayers"></div>
+
+      <div style="margin-top: 20px">
+        <input type="radio" name="board-init" value="empty" checked>
+        <label for="empty">Empty board</label><br>
+        <input type="radio" name="board-init" value="territories">
+        <label for="territories">Territories randomly assigned</label><br>
+        <input type="radio" name="board-init" value="armies">
+        <label for="armies">Territories and armies randomly assigned</label><br>
+      </div>
+
+      <p>
+        <input type="submit" name="submit_button" value="Create game">
+      </p>
+    </form>
+
+  </body>
+</html>

@@ -1,15 +1,16 @@
 <html>
   <head>
-    <script src="js/random.js"></script>
-    <script src="js/vue.js"></script>
-    <script src="js/es6-promise.js"></script>
-    <script src="js/jquery-2.2.4.min.js"></script>
-    <link href="css/style.css" rel='stylesheet'>
+    <script src="{{ url_for('static', filename='js/random.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/vue.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/es6-promise.js')}}"></script>
+    <script src="{{ url_for('static', filename='js/jquery-2.2.4.min.js')}}"></script>
+    <link href="{{ url_for('static', filename='css/style.css')}}" rel='stylesheet'>
   </head>
   <body>
+
     <div id="gameTemplate" class="hidden">
       <div class="calc-container">
-        <img src="img/standard-board.png" class="standard-board-img">
+        <img src="{{ url_for('static', filename='img/standard-board.png')}}" class="standard-board-img">
         <div
           class="territory"
           v-for="territory in territories"
@@ -52,15 +53,16 @@
     <div id="calc-online" style="float:left;">
     </div>
 
-    <div id="calc1" style="float:left;">
+    <!--<div id="calc1" style="float:left;">
     </div>
 
     <div id="calc2" style="float:left;">
-    </div>
-
-
+    </div>-->
 
   </body>
-  <script src="js/territories.js"></script>
-  <script src="js/calc.js"></script>
+  <script type="text/javascript">
+    const GAME_CONFIG = {{ gameConfig|tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/territories.js')}}"></script>
+  <script src="{{ url_for('static', filename='js/calc.js')}}"></script>
 </html>
