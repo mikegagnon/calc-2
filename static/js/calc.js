@@ -298,14 +298,17 @@ class CalcGame {
             computed: {
                 currentPlayer: function() {
                     return this.players[this.currentPlayerIndex];
-                }
+                },
+                thisPlayer: function() {
+                    return this.players[this.thisPlayerIndex];
+                },
             },
             methods: {
                 playerNameText: function(player) {
                     return player.name;
                 },
                 territoryClickable: function(territory) {
-                    return this.thisPlayerIndex === this.currentPlayerIndex;
+                    return this.thisPlayerIndex === this.currentPlayer.index;
                 },
                 territoryHidden: function(territory) {
                     return territory.numPieces < 0;
