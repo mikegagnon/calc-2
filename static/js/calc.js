@@ -49,12 +49,12 @@ class RemoteCalcServer {
     }
 
     // When the server receives a new state
-    pushState(serializedState, callback) {
+    pushState(state, callback) {
         const THIS = this;
         $.ajax({
             type: "POST",
             url: this.postGameStateUrl,
-            data: serializedState,
+            data: state,
             dataType: "application/json",
             contentType: "application/json",
             success: callback,
@@ -132,13 +132,15 @@ class LocalCalcServer {
     }
 
     // When the server receives a new state
-    pushState(serializedState, callback) {
+    pushState(state, callback) {
+        state = JSON.parse(JSON.stringify(state));
+
         this.lastRequestWasUndo = false;
         this.lastRequestWasRedo = false;
         this.count++;
 
         this.states = this.states.slice(0, this.stateIndex + 1);
-        this.states.push(serializedState);
+        this.states.push(state);
     
         if (this.states.length === this.maxStatesLength + 1) {
             this.states.shift();
@@ -336,25 +338,24 @@ class CalcGame {
         });
     }
 
-    serialize() {
+    getState() {
         const state = {
             players: this.app.players,
             territories: this.app.territories,
             currentPhase: this.app.currentPhase,
         }
 
-        return JSON.stringify(state);
+        return state;
     }
 
-    replaceState(serializedState) {
-        const state = JSON.parse(serializedState);
+    replaceState(state) {
         this.app.territories = state.territories;
         this.app.players = state.players;
         this.app.currentPhase = state.currentPhase;
     }
 
     saveState() {
-        const state = this.serialize();
+        const state = this.getState();
         const THIS = this;
         this.server.pushState(state, function(message) {
             THIS.app.undoAvailable = message.undoAvailable;
@@ -630,9 +631,9 @@ if (GAME_CONFIG_REMOTE) {
     REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
 }*/
 
-//const localServer = new LocalCalcServer();
-//const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-//const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+const LOCAL_SERVER = new LocalCalcServer();
+const CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+const CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 
 
 function testLocalServer() {
