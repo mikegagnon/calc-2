@@ -6,8 +6,9 @@ from flask import *
 app = Flask(__name__, static_url_path="/static")
 app.secret_key = 'lkasjdfklasdfkljasdf'
 
+MAX_STATES_LENGTH = 3
 GAMES = {}
-GAME_STATE = {}
+#GAME_STATE = {}
 
 @app.route("/")
 def landing():
@@ -67,19 +68,47 @@ def create_submit():
         "numPlayers": numPlayers,
         "init": request.form["board-init"],
         "code": code,
+        "states": [],
+        "stateIndex": None,
+        "count": 0,
+        "lastRequestWasUndo": False,
+        "lastRequestWasRedo": False,
     }
-
-    GAME_STATE[code] = []
 
     return redirect(url_for("play", code=code))
 
+def getUndoAvailable(game):
+    if game.stateIndex == None:
+        return False
+    else:
+        return game.stateIndex > 0;
+
+def getRedoAvailable(game):
+    if game.stateIndex == None:
+        return False
+    else:
+        return game.stateIndex < len(game.states) - 1
 
 @app.route("/post_state", methods=["POST"])
 def post_state():
-     data = request.get_json()
+    if "code" not in session:
+        abort(403)
+    code = session["code"]
+    state = request.get_json()
+
+
+
+    game = GAMES[code]
+
+    game["lastRequestWasUndo"] = False
+    game["lastRequestWasRedo"] = False
+    game["count"]++
+
+    # TODO: test
+    game["states"] = game["states"][0:(game["stateIndex"] + 1)]
+    game["States"].append()
      #print(data)
      code = data["code"]
-     state = data["state"]
      GAME_STATE[code].append(state)
 
      return {}
