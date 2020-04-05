@@ -245,6 +245,7 @@ class CalcGame {
 
     constructor(templateDivId, divId, server, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
+        this.serverCount = 0;
         this.config = config;
         this.clickTerritoryFunction = undefined;
 
@@ -304,6 +305,10 @@ class CalcGame {
     /* Server communication ***************************************************/
     
     handleMessage(message) {
+        if (message.count <= this.serverCount) {
+            console.warn("Stale message");
+            return;
+        }
         if ("state" in message) {
             this.replaceState(message.state);                        
         } else {
@@ -631,9 +636,9 @@ class CalcGame {
 /* Tests **********************************************************************/
 
 const server = new LocalCalcServer();
-const CALC_ONLINE = new CalcGame("#gameTemplate", "#calc-online", null, $.extend({}, GAME_CONFIG_ONLINE, DEFAULT_CONFIG));
-//const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-//const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+//const CALC_ONLINE = new CalcGame("#gameTemplate", "#calc-online", null, $.extend({}, GAME_CONFIG_ONLINE, DEFAULT_CONFIG));
+const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 
 
 function testLocalServer() {
