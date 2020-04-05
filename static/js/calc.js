@@ -226,9 +226,13 @@ class CalcGame {
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
+            if (!THIS.online) {
+                THIS.app.thisPlayerIndex = THIS.app.currentPlayer.index;
+            }
             if (THIS.loadNewPlayer()) {
                 THIS.saveState();
             }
+            
         });
     }
 
@@ -242,7 +246,11 @@ class CalcGame {
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
+            if (!THIS.online) {
+                THIS.app.thisPlayerIndex = THIS.app.currentPlayer.index;
+            }
         });
+
     }
 
     clickRedo() {
@@ -255,6 +263,9 @@ class CalcGame {
             }
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
+            if (!THIS.online) {
+                THIS.app.thisPlayerIndex = THIS.app.currentPlayer.index;
+            }
         });
     }
 
