@@ -623,12 +623,12 @@ class CalcGame {
 /* Tests **********************************************************************/
 
 //const remoteServer = new RemoteCalcServer(GAME_CONFIG_REMOTE);
-let REMOTE_SERVER;
+/*let REMOTE_SERVER;
 let REMOTE_GAME;
 if (GAME_CONFIG_REMOTE) {
     REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG_REMOTE);
     REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
-}
+}*/
 
 //const localServer = new LocalCalcServer();
 //const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));

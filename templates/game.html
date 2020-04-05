@@ -60,9 +60,11 @@
     </div>-->
 
   </body>
-  <script type="text/javascript">
-    const GAME_CONFIG_REMOTE = {{ gameConfig|tojson }};
-  </script>
   <script src="{{ url_for('static', filename='js/territories.js')}}"></script>
   <script src="{{ url_for('static', filename='js/calc.js')}}"></script>
+  <script type="text/javascript">
+    var GAME_CONFIG_REMOTE = {{ gameConfig|tojson }};
+    var REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG_REMOTE);
+    var REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
+  </script>
 </html>
