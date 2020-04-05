@@ -1,3 +1,5 @@
+// TODO: only current player can undo/redo
+
 const TESTING = true;
 
 const DEFAULT_CONFIG = {
