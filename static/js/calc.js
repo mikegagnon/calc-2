@@ -28,11 +28,11 @@ const GAME_CONFIG_2 = {
     username: "Bob",
 };
 
-GAME_CONFIG_ONLINE = {
+/*GAME_CONFIG_ONLINE = {
     isHost: true,
     numPlayers: 2,
     username: "Host"
-}
+}*/
 
 /* Phases *********************************************************************/
 
@@ -622,8 +622,15 @@ class CalcGame {
 
 /* Tests **********************************************************************/
 
-const server = new LocalCalcServer();
-const CALC_ONLINE = new CalcGame("#gameTemplate", "#calc-online", null, $.extend({}, GAME_CONFIG_ONLINE, DEFAULT_CONFIG));
+//const remoteServer = new RemoteCalcServer(GAME_CONFIG_REMOTE);
+let REMOTE_SERVER;
+let REMOTE_GAME;
+if (GAME_CONFIG_REMOTE) {
+    REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG_REMOTE);
+    REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
+}
+
+//const localServer = new LocalCalcServer();
 //const CALC1 = new CalcGame("#gameTemplate", "#calc1", server, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
 //const CALC2 = new CalcGame("#gameTemplate", "#calc2", server, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 

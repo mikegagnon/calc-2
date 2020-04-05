@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div id="calc-online" style="float:left;">
+    <div id="calc-remote" style="float:left;">
     </div>
 
     <!--<div id="calc1" style="float:left;">
@@ -61,7 +61,7 @@
 
   </body>
   <script type="text/javascript">
-    const GAME_CONFIG = {{ gameConfig|tojson }};
+    const GAME_CONFIG_REMOTE = {{ gameConfig|tojson }};
   </script>
   <script src="{{ url_for('static', filename='js/territories.js')}}"></script>
   <script src="{{ url_for('static', filename='js/calc.js')}}"></script>
