@@ -28,7 +28,7 @@
           <table>
             <tr v-for="player in players">
               <td>
-                <span class="arrow" v-bind:class="[{invisible: !player.active}]">⬤</span>
+                <span class="arrow" v-bind:class="[{hidden: !player.active}]">⬤</span>
               </td>
               <td nowrap class="player-marker" v-bind:class="[player.color]">
                 &nbsp;&nbsp;&nbsp;&nbsp;[[ playerNameText(player) ]]&nbsp;&nbsp;&nbsp;&nbsp;
