@@ -11,12 +11,21 @@
       <div><input name="numPlayers"></div>
 
       <div style="margin-top: 20px">
-        <input type="radio" name="board-init" value="empty" checked>
+        <p>Multi-player online games:</p>
+        <input type="radio" name="board-init" value="empty">
         <label for="empty">Empty board</label><br>
         <input type="radio" name="board-init" value="territories">
         <label for="territories">Territories randomly assigned</label><br>
         <input type="radio" name="board-init" value="armies">
         <label for="armies">Territories and armies randomly assigned</label><br>
+      </div>
+
+      <div style="margin-top: 20px">
+        <p>Offline games:</p>
+        <input type="radio" name="board-init" value="hotseat" checked>
+        <label for="hotseat">Hot-seat with 2 players</label><br>
+        <input type="radio" name="board-init" value="two-boards">
+        <label for="two-boards">1 window, 2 boards, 2 players</label><br>
       </div>
 
       <p>
