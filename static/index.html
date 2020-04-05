@@ -43,15 +43,9 @@
           </table>
         </div>
 
-        <div
-          v-for="player in players"
-          >
-            [[player.name]]
-        </div>
-
-        <div v-if="undoAvailable || redoAvailable">
-          <button v-if="undoAvailable" v-on:click="clickUndo">Undo</button>
-          <button v-if="redoAvailable" v-on:click="clickRedo">Redo</button>
+        <div class="undo-buttons">
+          <button :disabled="!undoAvailable" v-on:click="clickUndo">Undo</button>
+          <button :disabled="!redoAvailable" v-on:click="clickRedo">Redo</button>
         </div>
 
       </div>
