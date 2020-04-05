@@ -280,9 +280,11 @@ class CalcGame {
             data: {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
+                currentPlayerIndex: 0,
+
+                // Non serialized state
                 undoAvailable: false,
                 redoAvailable: false,
-                currentPlayerIndex: 0,
                 thisPlayerIndex: -1,
             },
             computed: {
