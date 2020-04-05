@@ -123,111 +123,111 @@ class RemoteCalcServer {
 
 class LocalCalcServer {
     constructor() {
+        this.maxStatesLength = 100;
         this.states = [];
-        this.serverSideIndex = null;
-        this.clientSideCurrentIndex = null;
+        this.stateIndex = null;
+        this.count = 0;
         this.lastRequestWasUndo = false;
         this.lastRequestWasRedo = false;
-        this.undoAvailable = false;
-        this.redoAvailable = false;
+    }
+
+    getUndoAvailable() {
+        this.stateIndex > 0;
+    }
+
+    getRedoAvailable() {
+        this.stateIndex < this.states.length - 1;
     }
 
     // When the server receives a new state
     pushState(serializedState, callback) {
         this.lastRequestWasUndo = false;
         this.lastRequestWasRedo = false;
+        this.count++;
 
-        if (this.serverSideIndex === null) {
-            this.serverSideIndex = 0;
-        } else {
-            this.serverSideIndex++;
+        this.states = this.states.slice(0, this.stateIndex);
+        this.states.push(serializedState);
+    
+        if (this.states.length === this.maxStatesLength + 1) {
+            this.states.shift();
         }
 
-        this.states = this.states.slice(0, this.serverSideIndex);
-        this.states.push(serializedState);
-        this.clientSideCurrentIndex = this.serverSideIndex;
-
-        this.undoAvailable = this.serverSideIndex > 0;
-        this.redoAvailable = this.serverSideIndex < this.states.length - 1;
+        this.stateIndex = this.states.length - 1;
 
         callback({
-            undoAvailable: this.undoAvailable,
-            redoAvailable: this.redoAvailable,
+            count: this.count,
+            undoAvailable: this.getUndoAvailable(),
+            redoAvailable: this.getRedoAvailable(),
         });
     }
 
     // When the server receives a requeset for the latest state
     requestState(callback) {
-        if (this.serverSideIndex === null) {
+        if (this.stateIndex === null) {
             callback({
-                undoAvailable: this.undoAvailable,
-                redoAvailable: this.redoAvailable,
+                count: this.count,
+                undoAvailable: this.getUndoAvailable(),
+                redoAvailable: this.getRedoAvailable(),
             });
         } else {
-            this.undoAvailable = this.serverSideIndex > 0;
-            this.redoAvailable = this.serverSideIndex < this.states.length - 1;
             const message = {
-                state: this.states[this.serverSideIndex],
-                index: this.serverSideIndex,
+                state: this.states[this.stateIndex],
+                count: this.count,
                 undo: this.lastRequestWasUndo,
                 redo: this.lastRequestWasRedo,
-                undoAvailable: this.undoAvailable,
-                redoAvailable: this.redoAvailable,
+                undoAvailable: this.getUndoAvailable(),
+                redoAvailable: this.getRedoAvailable(),
             };
-            this.clientSideCurrentIndex = this.serverSideIndex;
             callback(message);
         }
     }
 
     requestUndo(callback) {
-        if (this.serverSideIndex === 0 || this.serverSideIndex === null) {
+        if (this.stateIndex === 0 || this.stateIndex === null) {
             callback({
-                undoAvailable: this.undoAvailable,
-                redoAvailable: this.redoAvailable,
+                count: this.count,
+                undoAvailable: this.getUndoAvailable(),
+                redoAvailable: this.getRedoAvailable(),
             });
         } else {
-            this.serverSideIndex--;
-            this.undoAvailable = this.serverSideIndex > 0;
-            this.redoAvailable = true;
+            this.count++;
+            this.stateIndex--;
             this.lastRequestWasUndo = true;
             this.lastRequestWasRedo = false;
             const message = {
-                state: this.states[this.serverSideIndex],
-                index: this.serverSideIndex,
+                state: this.states[this.stateIndex],
+                count: this.count,
                 undo: this.lastRequestWasUndo,
                 redo: this.lastRequestWasRedo,
-                undoAvailable: this.undoAvailable,
-                redoAvailable: this.redoAvailable,
+                undoAvailable: this.getUndoAvailable(),
+                redoAvailable: this.getRedoAvailable(),
             };
             callback(message);
         }
-        this.clientSideCurrentIndex = this.serverSideIndex;
     }
 
     requestRedo(callback) {
         if (this.serverSideIndex === this.states.length - 1 || this.serverSideIndex === null) {
             callback({
-                undoAvailable: this.undoAvailable,
-                redoAvailable: this.redoAvailable,
+                count: this.count,
+                undoAvailable: this.getUndoAvailable(),
+                redoAvailable: this.getRedoAvailable(),
             });
         } else {
-            this.serverSideIndex++;
-            this.undoAvailable = true;
-            this.redoAvailable = this.serverSideIndex < this.states.length - 1;
+            this.count++;
+            this.stateIndex++;
             this.lastRequestWasUndo = false;
             this.lastRequestWasRedo = true;
             const message = {
                 state: this.states[this.serverSideIndex],
-                index: this.serverSideIndex,
+                count: this.count,
                 undo: this.lastRequestWasUndo,
                 redo: this.lastRequestWasRedo,
-                undoAvailable: this.undoAvailable,
-                redoAvailable: this.redoAvailable,
+                undoAvailable: this.getUndoAvailable(),
+                redoAvailable: this.getRedoAvailable(),
             };
             callback(message);
         }
-        this.clientSideCurrentIndex = this.serverSideIndex;
-
     }
 }
 
@@ -295,43 +295,36 @@ class CalcGame {
 
     /* Server communication ***************************************************/
     
+    handleMessage(message) {
+        if ("state" in message) {
+            this.replaceState(message.state);                        
+        } else {
+            console.warn("No state in server");
+        }
+
+        this.app.undoAvailable = message.undoAvailable;
+        this.app.redoAvailable = message.redoAvailable;
+
+        if (!this.online) {
+            this.app.thisPlayerIndex = this.app.currentPlayer.index;
+        }
+
+        if (this.loadNewPlayer()) {
+            this.saveState();
+        }
+    }
+
     issueRequest() {
         const THIS = this;
         this.server.requestState(function(message) {
-            if (!("state" in message)) {
-                console.warn("No states in server");
-            } else if (message.undo || message.redo) {
-                THIS.replaceState(message.state);
-            } else if (message.index >= THIS.server.clientSideCurrentIndex) {
-                THIS.replaceState(message.state);                        
-            } else {
-                console.warn("Received stale message");
-            }
-            THIS.app.undoAvailable = message.undoAvailable;
-            THIS.app.redoAvailable = message.redoAvailable;
-            if (!THIS.online) {
-                THIS.app.thisPlayerIndex = THIS.app.currentPlayer.index;
-            }
-            if (THIS.loadNewPlayer()) {
-                THIS.saveState();
-            }
-            
+            THIS.handleMessage(message);
         });
     }
 
     clickUndo() {
         const THIS = this;
         this.server.requestUndo(function(message) {
-            if (!("state" in message)) {
-                console.warn("No states in server");
-            } else {
-                THIS.replaceState(message.state);                        
-            }
-            THIS.app.undoAvailable = message.undoAvailable;
-            THIS.app.redoAvailable = message.redoAvailable;
-            if (!THIS.online) {
-                THIS.app.thisPlayerIndex = THIS.app.currentPlayer.index;
-            }
+            THIS.handleMessage(message);
         });
 
     }
@@ -339,16 +332,7 @@ class CalcGame {
     clickRedo() {
         const THIS = this;
         this.server.requestRedo(function(message) {
-            if (!("state" in message)) {
-                console.warn("No states in server");
-            } else {
-                THIS.replaceState(message.state);                        
-            }
-            THIS.app.undoAvailable = message.undoAvailable;
-            THIS.app.redoAvailable = message.redoAvailable;
-            if (!THIS.online) {
-                THIS.app.thisPlayerIndex = THIS.app.currentPlayer.index;
-            }
+            THIS.handleMessage(message);
         });
     }
 
