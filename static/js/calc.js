@@ -38,6 +38,87 @@ GAME_CONFIG_ONLINE = {
 
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
 
+/* RemoteCalcServer ***********************************************************/
+/*
+class RemoteCalcServer {
+    constructor(config) {
+        this.postGameStateUrl = config.postGameStateUrl;
+        this.getStateUrl = config.getStateUrl;
+        this.undoUrl = config.undoUrl;
+        this.redoUrl = config.redoUrl;
+        this.clientSideCurrentIndex = null;
+        //this.undoAvailable = false;
+        //this.redoAvailable = false;
+    }
+
+    // When the server receives a new state
+    pushState(serializedState, callback) {
+        const THIS = this;
+        $.ajax({
+            type: "POST",
+            url: this.postGameStateUrl,
+            data: serializedState,
+            dataType: "application/json",
+            contentType: "application/json",
+            success: function(data){
+                THIS.clientSideCurrentIndex = data.index;
+                callback(data);
+            },
+            error: function(data) {
+                alert("Error: there was an unkown error when attempting to connect to the server");
+            },
+            dataType: "json"
+        });
+    }
+
+    // When the server receives a requeset for the latest state
+    requestState(callback) {
+        $.ajax({
+            url: this.getStateUrl,
+            data: null,
+            success: function(data) {
+                THIS.clientSideCurrentIndex = data.index;
+                callback(data);
+            },
+            error: function(data) {
+                console.error(data);
+            },
+            dataType: "json",
+        });
+    }
+
+    requestUndo(callback) {
+         $.ajax({
+            url: this.undoUrl,
+            data: null,
+            success: function(data) {
+                THIS.clientSideCurrentIndex = data.index;
+                callback(data);
+            },
+            error: function(data) {
+                console.error(data);
+            },
+            dataType: "json",
+        });
+    }
+
+    requestRedo(callback) {
+        $.ajax({
+            url: this.redoUrl,
+            data: null,
+            success: function(data) {
+                THIS.clientSideCurrentIndex = data.index; ddd
+                callback(data);
+            },
+            error: function(data) {
+                console.error(data);
+            },
+            dataType: "json",
+        });
+    }
+}
+*/
+
 /* LocalCalcServer ************************************************************/
 
 class LocalCalcServer {
