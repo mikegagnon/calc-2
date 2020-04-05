@@ -102,16 +102,16 @@ def post_state():
 
     game["lastRequestWasUndo"] = False
     game["lastRequestWasRedo"] = False
-    game["count"]++
+    game["count"] += 1
 
     # TODO: test
     game["states"] = game["states"][0:(game["stateIndex"] + 1)]
     game["States"].append()
      #print(data)
-     code = data["code"]
-     GAME_STATE[code].append(state)
+    code = data["code"]
+    GAME_STATE[code].append(state)
 
-     return {}
+    return {}
 
 @app.route("/get_state", methods=["GET"])
 def get_state():
@@ -143,10 +143,10 @@ def play(code):
     if code not in GAMES:
         return "Bad code"
 
-    gameState = GAME_STATE[code]
+    #gameState = GAMES[code]["states"][-1]
 
     gameConfig = {
-        "isHost": len(gameState) == 0,
+        "isHost": True,
         "numPlayers": GAMES[code]["numPlayers"],
         "username": session["username"],
         "init": GAMES[code]["init"],

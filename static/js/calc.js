@@ -636,10 +636,10 @@ if (GAME_CONFIG_REMOTE) {
     REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
 }*/
 
-const LOCAL_SERVER = new LocalCalcServer();
+/*const LOCAL_SERVER = new LocalCalcServer();
 const CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
 const CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
-
+*/
 
 function testLocalServer() {
     function assert(val) {
