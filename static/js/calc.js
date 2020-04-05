@@ -11,7 +11,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    requestStateInterval: 1000
+    requestStateInterval: 1000,
 };
 
 const GAME_CONFIG_1 = {
@@ -166,6 +166,7 @@ class CalcGame {
         this.loadNewPlayer();
 
         if (this.config.isHost) {
+            this.beginPhaseSelectInitPositions();
             //this.setClickable(this.store.getters.currentPlayer.index);
             this.saveState();
         } else {
@@ -281,6 +282,7 @@ class CalcGame {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
                 currentPlayerIndex: 0,
+                currentPhase: "undefined",
 
                 // Non serialized state
                 undoAvailable: false,
@@ -297,7 +299,7 @@ class CalcGame {
                     return player.name;
                 },
                 territoryClickable: function(territory) {
-                    return territory.numPieces === 0;
+                    return this.thisPlayerIndex === this.currentPlayerIndex;
                 },
                 territoryHidden: function(territory) {
                     return territory.numPieces < 0;
@@ -328,7 +330,61 @@ class CalcGame {
         return app;
     }
 
-    /* Game logic *************************************************************/
+    /* beginPhaseSelectInitPositions ******************************************/
+
+    beginPhaseSelectInitPositions() {
+        const THIS = this;
+        this.app.currentPhase = "PhaseSelectInitPositions";
+        setClickable();
+        //initArmiesAvailableForPlacement();
+
+        function setClickable() {
+            for (let i = 0; i < THIS.app.territories.length; i++) {
+                const territory = THIS.app.territories[i];
+                if (territory.numPieces === 0) {
+                    territory.clickableByPlayerIndex = THIS.app.currentPlayer.index;
+                } else {
+                    territory.clickableByPlayerIndex = -1;
+                }
+            }
+        }
+
+        /*function initArmiesAvailableForPlacement() {
+            const app = this.app;
+            if (app.players.length === 2) {
+                app.players[0].armiesAvailableForPlacement = 40;
+                app.players[1].armiesAvailableForPlacement = 40;
+            } else if (app.players.length === 3) {
+                app.players[0].armiesAvailableForPlacement = 35;
+                app.players[1].armiesAvailableForPlacement = 35;
+                app.players[2].armiesAvailableForPlacement = 35;
+            } else if (app.players.length === 4) {
+                app.players[0].armiesAvailableForPlacement = 30;
+                app.players[1].armiesAvailableForPlacement = 30;
+                app.players[2].armiesAvailableForPlacement = 30;
+                app.players[3].armiesAvailableForPlacement = 30;
+            } else if (app.players.length === 5) {
+                app.players[0].armiesAvailableForPlacement = 25;
+                app.players[1].armiesAvailableForPlacement = 25;
+                app.players[2].armiesAvailableForPlacement = 25;
+                app.players[3].armiesAvailableForPlacement = 25;
+                app.players[4].armiesAvailableForPlacement = 25;
+            } else if (app.players.length === 6) {
+                app.players[0].armiesAvailableForPlacement = 20;
+                app.players[1].armiesAvailableForPlacement = 20;
+                app.players[2].armiesAvailableForPlacement = 20;
+                app.players[3].armiesAvailableForPlacement = 20;
+                app.players[4].armiesAvailableForPlacement = 20;
+                app.players[5].armiesAvailableForPlacement = 20;
+            } else {
+                throw "Bad players.length";
+            }
+        }*/
+        
+
+    }
+
+    /* Misc. game logic *******************************************************/
 
     /*setClickable(playerIndex) {
         const territories = this.store.state.territories;
@@ -366,7 +422,7 @@ class CalcGame {
         this.app.thisPlayerIndex = playerIndex;
         player.name = this.config.username;
 
-        if (!this.config.online) {
+        if (!this.online) {
             this.app.thisPlayerIndex = this.app.currentPlayer.index;
         }
 
