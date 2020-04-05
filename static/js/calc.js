@@ -342,6 +342,10 @@ class CalcGame {
     }
 
     clickTerritory(territory) {
+        if (!this.app.territoryClickable(territory)) {
+            return;
+        }
+
         if (this.app.currentPhase === PHASE_SELECT_INIT_POSITIONS) {
             this.clickTerritoryPhaseSelectInitPositions(territory);
         } else {
@@ -428,12 +432,10 @@ class CalcGame {
         this.explodeTerritory(territory);
         this.pickleAndPost();*/
         //const THIS = this;
-        if (this.app.territoryClickable(territory)) {
             territory.numPieces += 1;
             territory.color = "blue";
             this.incrementCurrentPlayer();
             this.saveState();
-        }
     }
 
     /* Misc. game logic *******************************************************/
