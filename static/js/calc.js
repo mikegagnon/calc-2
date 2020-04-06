@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    requestStateInterval: 1000,
+    requestStateInterval: 5000,
 };
 
 /*const GAME_CONFIG_1 = {
@@ -163,6 +163,7 @@ class LocalCalcServer {
 
     // When the server receives a requeset for the latest state
     requestState(callback) {
+        console.log(1);
         if (this.stateIndex === null) {
             callback({
                 count: this.count,
@@ -298,7 +299,6 @@ class CalcGame {
     
     handleMessage(message) {
         if (message.count <= this.serverCount) {
-            console.warn("Stale message");
             return;
         }
 
@@ -323,6 +323,7 @@ class CalcGame {
     }
 
     issueRequest() {
+        console.log(this.config.username);
         const THIS = this;
         this.server.requestState(function(message) {
             THIS.handleMessage(message);
