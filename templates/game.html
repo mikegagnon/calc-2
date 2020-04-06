@@ -73,6 +73,10 @@
                   <span v-on:click="clickDoNotPlay">Do not play a set of three prize cards</span>
                 </div>
 
+                <div v-show="hasOptionalSet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-play">
+                  <span v-on:click="clickDoNotPlay">Play a set of three booty cards to receive N armies.</span>
+                </div>
+
               </td>
               <td valign="bottom">
                 <div class="help-link"><a target="_blank" href="dice.html">Help</a></div>          

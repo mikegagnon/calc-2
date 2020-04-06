@@ -172,3 +172,23 @@ body {
 .button-pretend:hover {
     opacity: 100%;
 }
+
+.button-play {
+    cursor: pointer;
+    font-family: "Helvetica", sans-serif;
+    font-weight: bold;
+    font-size: 10pt;
+    border-radius: 5px;
+    background-color: #f44336;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    opacity: 80%;
+    margin-top: 5px;
+}
+
+.button-play:hover {
+    opacity: 100%;
+}

@@ -476,7 +476,7 @@ class CalcGame {
                     THIS.clickPretend();
                 },
                 clickDoNotPlay() {
-                    THIS.clickDoNotPlay()
+                    THIS.clickDoNotPlay();
                 },
                 hasAtLeastOneCardSet(player) {
                     if (player.numHearts >= 3) {
