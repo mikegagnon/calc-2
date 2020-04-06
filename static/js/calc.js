@@ -238,7 +238,6 @@ class CalcGame {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
         this.serverCount = 0;
         this.config = config;
-        this.clickTerritoryFunction = undefined;
 
         if ("seed" in this.config) {
             this.random = new MersenneTwister(seed);
@@ -260,7 +259,6 @@ class CalcGame {
 
         if (this.config.isHost) {
             this.beginPhaseSelectInitPositions();
-            this.saveState();
         } else {
             this.issueRequest();
         }
@@ -429,6 +427,8 @@ class CalcGame {
         return app;
     }
 
+    /* Generic game logic *****************************************************/
+
     clickTerritory(territory) {
         if (!this.app.territoryClickable(territory)) {
             return;
@@ -441,7 +441,6 @@ class CalcGame {
         }
     }
 
-    /* Generic game logic *****************************************************/
 
     incrementCurrentPlayer() {
         const player = this.app.currentPlayer;
@@ -455,50 +454,69 @@ class CalcGame {
         if (!this.online) {
             this.app.thisPlayerIndex = newPlayerIndex;
         }
+
+        this.setInstructions();
+    }
+
+    setInstructions() {
+        for (let i = 0; i < this.app.players.length; i++) {
+            const player = this.app.players[i];
+            player.instruction = "";
+        }
+
+        const player = this.app.currentPlayer;
+        player.instruction = this.getPlayerInstruction(player);
+        console.log(player.instruction)
+    }
+
+    getPlayerInstruction(player) {
+        if (this.app.currentPhase === PHASE_SELECT_INIT_POSITIONS) {
+            return this.getPlayerInstructionForPhaseSelectInitPositions(player);
+        } else {
+            throw "Bad phase in getPlayerInstruction";
+        }
     }
 
     /* beginPhaseSelectInitPositions ******************************************/
 
     beginPhaseSelectInitPositions() {
-        const THIS = this;
-        this.app.currentPhase = "PHASE_SELECT_INIT_POSITIONS";
+        this.app.currentPhase = PHASE_SELECT_INIT_POSITIONS;
+        this.initArmiesAvailableForPhaseSelectInitPositions();
         this.setClickableForPhaseSelectInitPositions();
-        //initArmiesAvailableForPlacement();
+        this.setInstructions();
+        this.saveState();
+    }
 
-
-
-
-        /*function initArmiesAvailableForPlacement() {
-            const app = this.app;
-            if (app.players.length === 2) {
-                app.players[0].armiesAvailableForPlacement = 40;
-                app.players[1].armiesAvailableForPlacement = 40;
-            } else if (app.players.length === 3) {
-                app.players[0].armiesAvailableForPlacement = 35;
-                app.players[1].armiesAvailableForPlacement = 35;
-                app.players[2].armiesAvailableForPlacement = 35;
-            } else if (app.players.length === 4) {
-                app.players[0].armiesAvailableForPlacement = 30;
-                app.players[1].armiesAvailableForPlacement = 30;
-                app.players[2].armiesAvailableForPlacement = 30;
-                app.players[3].armiesAvailableForPlacement = 30;
-            } else if (app.players.length === 5) {
-                app.players[0].armiesAvailableForPlacement = 25;
-                app.players[1].armiesAvailableForPlacement = 25;
-                app.players[2].armiesAvailableForPlacement = 25;
-                app.players[3].armiesAvailableForPlacement = 25;
-                app.players[4].armiesAvailableForPlacement = 25;
-            } else if (app.players.length === 6) {
-                app.players[0].armiesAvailableForPlacement = 20;
-                app.players[1].armiesAvailableForPlacement = 20;
-                app.players[2].armiesAvailableForPlacement = 20;
-                app.players[3].armiesAvailableForPlacement = 20;
-                app.players[4].armiesAvailableForPlacement = 20;
-                app.players[5].armiesAvailableForPlacement = 20;
-            } else {
-                throw "Bad players.length";
-            }
-        }*/
+    initArmiesAvailableForPhaseSelectInitPositions() {
+        const app = this.app;
+        if (app.players.length === 2) {
+            app.players[0].armiesAvailableForPlacement = 40;
+            app.players[1].armiesAvailableForPlacement = 40;
+        } else if (app.players.length === 3) {
+            app.players[0].armiesAvailableForPlacement = 35;
+            app.players[1].armiesAvailableForPlacement = 35;
+            app.players[2].armiesAvailableForPlacement = 35;
+        } else if (app.players.length === 4) {
+            app.players[0].armiesAvailableForPlacement = 30;
+            app.players[1].armiesAvailableForPlacement = 30;
+            app.players[2].armiesAvailableForPlacement = 30;
+            app.players[3].armiesAvailableForPlacement = 30;
+        } else if (app.players.length === 5) {
+            app.players[0].armiesAvailableForPlacement = 25;
+            app.players[1].armiesAvailableForPlacement = 25;
+            app.players[2].armiesAvailableForPlacement = 25;
+            app.players[3].armiesAvailableForPlacement = 25;
+            app.players[4].armiesAvailableForPlacement = 25;
+        } else if (app.players.length === 6) {
+            app.players[0].armiesAvailableForPlacement = 20;
+            app.players[1].armiesAvailableForPlacement = 20;
+            app.players[2].armiesAvailableForPlacement = 20;
+            app.players[3].armiesAvailableForPlacement = 20;
+            app.players[4].armiesAvailableForPlacement = 20;
+            app.players[5].armiesAvailableForPlacement = 20;
+        } else {
+            throw "Bad players.length";
+        }
     }
 
     setClickableForPhaseSelectInitPositions() {
@@ -512,6 +530,10 @@ class CalcGame {
         }
     }
 
+    getPlayerInstructionForPhaseSelectInitPositions(player) {
+        return `Place 1 army on any available territory. ${player.armiesAvailableForPlacement} armies remaining.`;
+    }
+
     clickTerritoryForPhaseSelectInitPositions(territory) {
         // If a new phase has begun, then the new phase will have set the instructions
         // therefore we don't want to set instructions here.
@@ -523,6 +545,7 @@ class CalcGame {
         //const THIS = this;
         territory.numPieces = 1;
         territory.color = this.app.currentPlayer.color;
+        this.app.currentPlayer.armiesAvailableForPlacement--;
         this.incrementCurrentPlayer();
         this.saveState();
     }
@@ -590,6 +613,7 @@ class CalcGame {
                 color: colors[i],
                 active: false,
                 instruction: "asdf",
+                armiesAvailableForPlacement: -1,
             })
         }
 
