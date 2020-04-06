@@ -51,12 +51,12 @@ class RemoteCalcServer {
     }
 
     // When the server receives a new state
-    pushState(state, callback) {
+    pushState(seriralizedState, callback) {
         const THIS = this;
         $.ajax({
             type: "POST",
             url: this.postGameStateUrl,
-            data: JSON.stringify(state),
+            data: JSON.stringify(seriralizedState),
             dataType: "application/json",
             contentType: "application/json",
             success: callback,
@@ -134,7 +134,7 @@ class LocalCalcServer {
     }
 
     // When the server receives a new state (it must be serialized first)
-    pushState(state, callback) {
+    pushState(serializedState, callback) {
 
         this.lastRequestWasUndo = false;
         this.lastRequestWasRedo = false;
@@ -146,7 +146,7 @@ class LocalCalcServer {
                 throw "Error in pushState";
             }
         }
-        this.states.push(state);
+        this.states.push(serializedState);
     
         if (this.states.length === this.maxStatesLength + 1) {
             this.states.shift();
@@ -383,19 +383,23 @@ class CalcGame {
             currentPhase: this.app.currentPhase,
         }
 
-        return state;
+        return JSON.stringify(state);
     }
 
-    replaceState(state) {
+    replaceState(serializedState) {
+        console.log("replace", serializedState);
+        const state = JSON.parse(serializedState);
         this.app.territories = state.territories;
         this.app.players = state.players;
         this.app.currentPhase = state.currentPhase;
     }
 
     saveState() {
-        const state = this.getSerializedState();
+        console.log("saveState");
+        const serializedState = this.getSerializedState();
         const THIS = this;
-        this.server.pushState(state, function(message) {
+        console.log("saveState", serializedState);
+        this.server.pushState(serializedState, function(message) {
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
         });
@@ -622,7 +626,7 @@ class CalcGame {
             throw "Nope";
         } else {
             this.setClickableForPhaseSelectInitPositions();
-            //this.saveState();            
+            this.saveState();            
         }
     }
 
