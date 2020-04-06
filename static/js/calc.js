@@ -15,8 +15,8 @@ const DEFAULT_CONFIG = {
     },
     requestStateInterval: 1000,
     explosionDuration: 2500,
-    autoDropForPhaseSelectInitPositionsCount: 42,
-    doAutoDropThree: true,
+    autoDropForPhaseSelectInitPositionsCount: 0,
+    doAutoDropThree: false,
     autoDropForPhaseDropThreeVacancies: 5,
 
     startWithPrizeCards: {
@@ -366,10 +366,28 @@ class CalcGame {
             const e = this.app.explosions[i];
             this.observedExplosions.add(e.id);
         }*/
+
+        // 
+        const oldExplosions = new Set(this.app.explosions.map(e => e.id));
+        const newExplosions = []
+        for (let i = 0; i < state.explosions.length; i++) {
+            const explosion = state.explosions[i];
+
+            // If explosion is new, set a timer to remove it
+            if (!oldExplosions.has(explosion.id)) {
+                const THIS = this;
+                setTimeout(function(){
+                    THIS.removeExplosion(explosion.id);
+                }, this.config.explosionDuration);
+            }
+        }
         this.app.explosions = state.explosions;
 
-        console.log(this.observedExplosions);
-        console.log(this.app.explosions);
+
+
+        /*console.log(this.observedExplosions);
+        console.log(this.app.explosions);*/
+
 
         for (let i = 0; i < this.app.territories.length; i++) {
             const territory = this.app.territories[i];
@@ -525,12 +543,22 @@ class CalcGame {
         }
     }
 
+    removeExplosion(explosionId) {
+        this.app.explosions = this.app.explosions.filter(e => e.id != explosionId);
+    }
+
     explodeTerritory(territory) {
+        const explosionId = Math.floor(Math.random() * 9999999);
         this.app.explosions.push({
             territoryIndex: territory.index,
-            id: Math.floor(Math.random() * 9999999), // avoiding mersene here
+            id: explosionId, // avoiding mersene here
             color: territory.color,
         });
+
+        const THIS = this;
+        setTimeout(function(){
+            THIS.removeExplosion(explosionId);
+        }, this.config.explosionDuration);
 
         // TODO: timeout
 

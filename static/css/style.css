@@ -130,7 +130,7 @@ body {
 
     }
     100% {
-        transform: scale(10) rotate(360deg);
+        transform: scale(5) rotate(360deg);
         opacity: 0;
     }
 }
