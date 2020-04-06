@@ -11,10 +11,10 @@ body {
     position: relative;
     font-family: "Helvetica", sans-serif;
     font-weight: bold;
+    font-size: 10pt;
     border: 1px solid #aaa;
     margin-left: 10px;
     margin-top: 10px;
-    font-size: 10pt;
     width: 504px;
 }
 
@@ -132,4 +132,23 @@ body {
         transform: scale(10);
         opacity: 0;
     }
+}
+
+.card {
+    width: 30px;
+    height: 30px;
+    padding: 0px;
+    margin: 0px;
+}
+
+.primary-td {
+    width: 100%;
+    text-align: center;
+}
+
+.cards-label {
+    font-family: "Helvetica", sans-serif;
+    font-weight: bold;
+    font-size: 10pt;
+    padding-left: 5px;
 }

@@ -61,7 +61,21 @@
         </div>
 
         <div class="prize-cards console-component" v-show="playerHasCard">
-          sdf
+          <table >
+            <tr>
+            <td valign="center" nowrap>
+              <div class="cards-label"><center>Your prize cards <br> (no one else can see):</center></div>
+            </td>
+            <td valign="center" class="primary-td">
+              <img v-for="n in players[thisPlayerIndex].numHearts" src="{{ url_for('static', filename='img/heart.png')}}" class="card">
+              <img v-for="n in players[thisPlayerIndex].numClubs" src="{{ url_for('static', filename='img/club.png')}}" class="card">
+              <img v-for="n in players[thisPlayerIndex].numDiamonds" src="{{ url_for('static', filename='img/diamond.png')}}" class="card">
+            </td>
+            <td valign="bottom">
+              <div class="help-link"><a target="_blank" href="{{ url_for('static', filename='help/your-prize-cards.html')}}">Help</a></div>
+            </td>
+            </tr>
+          </table>
         </div>
 
         <div class="undo-buttons console-component">
