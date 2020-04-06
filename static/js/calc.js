@@ -547,7 +547,7 @@ class CalcGame {
         this.app.currentPlayer.armiesAvailableForPlacementThisTurn = 3;
         this.setClickableForPhaseDropThree();
         this.setInstructions();
-        this.saveState()
+        this.saveState();
 
     }
 
@@ -573,6 +573,36 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseDropThree(territory) {
+
+
+        territory.numPieces += 1;
+        this.app.currentPlayer.armiesAvailableForPlacement--;
+        this.app.currentPlayer.armiesAvailableForPlacementThisTurn--;
+        this.explodeTerritory(territory);
+        //this.incrementCurrentPlayer();
+
+        return;
+
+        //if (this.getActivePlayer().armiesAvailableForPlacement === 0) {
+        if (this.getArmiesRemaining() === 0) {
+            this.getActivePlayer().prizeBonus = 0;
+            this.incrementActivePlayer();
+            this.phasePlayCards.begin();
+            newPhaseBegun = true;
+        } else if (this.getActivePlayer().armiesAvailableForPlacementThisTurn === 0) {
+            this.incrementActivePlayer(app);
+            this.getActivePlayer().armiesAvailableForPlacementThisTurn = Math.min(3, this.getActivePlayer().armiesAvailableForPlacement);
+            this.setClickable();
+            this.setInstructions();
+        } else {
+            this.setClickable();
+            this.setInstructions();
+        }
+
+        this.explodeTerritory(territory);
+        this.pickleAndPost();
+
+        return newPhaseBegun;
 
     }
 
