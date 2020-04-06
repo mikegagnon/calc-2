@@ -15,7 +15,7 @@ const DEFAULT_CONFIG = {
     },
     requestStateInterval: 1000,
     explosionDuration: 2500,
-    autoDropForPhaseSelectInitPositionsCount: 42,
+    autoDropForPhaseSelectInitPositionsCount: 0,
     doAutoDropThree: false,
     autoDropForPhaseDropThreeVacancies: 5,
     startWithPrizeCards: {
@@ -398,7 +398,7 @@ class CalcGame {
                 // Non serialized state
                 undoAvailable: false,
                 redoAvailable: false,
-                thisPlayerIndex: -1,
+                thisPlayerIndex: 0, //hack: should really be -1 or something like that
             },
             computed: {
                 currentPlayer: function() {
@@ -519,6 +519,11 @@ class CalcGame {
             .filter(function(t) {
                 return t.clickableByPlayerIndex === THIS.app.currentPlayer.index;
             });
+    }
+
+    /* beginPhasePlayCards ****************************************************/
+    beginPhasePlayCards() {
+
     }
 
     /* beginPhaseDropThree ****************************************************/
@@ -763,6 +768,9 @@ class CalcGame {
                 active: false,
                 instruction: "asdf",
                 armiesAvailableForPlacement: -1,
+                numHearts: 0,
+                numClubs: 0,
+                numDiamonds: 0,
             })
         }
 
