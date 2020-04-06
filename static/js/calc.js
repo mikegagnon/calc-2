@@ -478,6 +478,9 @@ class CalcGame {
                 clickDoNotPlay() {
                     THIS.clickDoNotPlay();
                 },
+                clickPlayCards() {
+                    THIS.clickPlayCards();
+                },
                 hasAtLeastOneCardSet(player) {
                     if (player.numHearts >= 3) {
                         return true;
@@ -655,6 +658,14 @@ class CalcGame {
 
     clickDoNotPlay() {
         this.beginPhaseReinforce();
+    }
+
+    clickPlayCards() {
+        console.log("play cards");
+        // TODO: += scheduled bonus
+        //this.app.currentPlayer.prizeBonus += 4;
+        //this.saveState();
+        //instructions; ddd
     }
 
     /* beginPhaseDropThree ****************************************************/
