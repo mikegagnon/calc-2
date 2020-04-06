@@ -467,7 +467,6 @@ class CalcGame {
 
         const player = this.app.currentPlayer;
         player.instruction = this.getPlayerInstruction(player);
-        console.log(player.instruction)
     }
 
     getPlayerInstruction(player) {
@@ -554,8 +553,13 @@ class CalcGame {
         this.app.currentPlayer.armiesAvailableForPlacement--;
         this.explodeTerritory(territory);
         this.incrementCurrentPlayer();
-        this.setClickableForPhaseSelectInitPositions();
-        this.saveState();
+
+        if (this.app.currentPlayer.armiesAvailableForPlacement === 0) {
+            throw "Nope";
+        } else {
+            this.setClickableForPhaseSelectInitPositions();
+            this.saveState();            
+        }
     }
 
     /* Misc. game logic *******************************************************/
