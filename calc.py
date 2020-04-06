@@ -50,8 +50,18 @@ def hotseat():
         "init": "hotseat",
         "serverOnline": False,
     }
-
     return render_template("game.html", gameConfig=gameConfig)
+
+def two_boards():
+    gameConfig = {
+        "isHost": True,
+        "numPlayers": 2,
+        "username": "Player 1",
+        "init": "two-boards",
+        "serverOnline": False,
+    }
+    return render_template("game.html", gameConfig=gameConfig)
+
 
 @app.route("/create-submit", methods=["POST"])
 def create_submit():

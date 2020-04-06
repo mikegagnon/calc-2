@@ -53,11 +53,11 @@
     <div id="calc-main" style="float:left;">
     </div>
 
-    <!--<div id="calc1" style="float:left;">
+    <div id="calc1" style="float:left;">
     </div>
 
     <div id="calc2" style="float:left;">
-    </div>-->
+    </div>
 
   </body>
   <script src="{{ url_for('static', filename='js/territories.js')}}"></script>
@@ -65,9 +65,20 @@
   <script type="text/javascript">
     var GAME_CONFIG = {{ gameConfig|tojson }};
     var REMOTE_SERVER;
+    var LOCAL_SERVER;
     var GAME;
+    var CALC1;
+    var CALC2;
     if (GAME_CONFIG.init === "hotseat") {
       GAME = new CalcGame("#gameTemplate", "#calc-main", null, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));
+    } else if (GAME_CONFIG.init === "two-boards") {
+      LOCAL_SERVER = new LocalCalcServer();
+      var GAME_CONFIG_2 = $.extend({}, GAME_CONFIG, DEFAULT_CONFIG);
+      GAME_CONFIG_2.username = "Player 2";
+      GAME_CONFIG_2.isHost = false;
+      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));
+      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, GAME_CONFIG_2);
+
     } else {
       REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG);
       GAME = new CalcGame("#gameTemplate", "#calc-main", REMOTE_SERVER, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));

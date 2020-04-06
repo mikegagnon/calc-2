@@ -16,7 +16,7 @@ const DEFAULT_CONFIG = {
     requestStateInterval: 1000,
 };
 
-const GAME_CONFIG_1 = {
+/*const GAME_CONFIG_1 = {
     isHost: true,
     numPlayers: 2,
     username: "Alice",
@@ -26,7 +26,7 @@ const GAME_CONFIG_2 = {
     isHost: false,
     numPlayers: 2,
     username: "Bob",
-};
+};*/
 
 /*GAME_CONFIG_ONLINE = {
     isHost: true,
