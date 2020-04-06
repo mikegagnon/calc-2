@@ -512,8 +512,6 @@ class CalcGame {
         if (!this.online) {
             this.app.thisPlayerIndex = newPlayerIndex;
         }
-
-        this.setInstructions();
     }
 
     setInstructions() {
@@ -595,13 +593,13 @@ class CalcGame {
             this.app.currentPlayer.prizeBonus = 0;
             this.incrementCurrentPlayer();
             this.beginPhasePlayCards();
-            // No need to save state here because beginPhasePlayCards will save the state
+            // No need to save state (nor setInstructions) here because beginPhasePlayCards will save the state
             //newPhaseBegun = true;s
         }
 
         // If this turn os over
         else if (this.app.currentPlayer.armiesAvailableForPlacementThisTurn === 0) {
-            this.incrementCurrentPlayer();
+            this.incrementCurrentPlayer(); // ddd
             this.app.currentPlayer.armiesAvailableForPlacementThisTurn = Math.min(3, this.app.currentPlayer.armiesAvailableForPlacement);
             this.setClickableForPhaseDropThree();
             this.setInstructions();
@@ -734,6 +732,7 @@ class CalcGame {
             this.beginPhaseDropThree();
         } else {
             this.setClickableForPhaseSelectInitPositions();
+            this.setInstructions();
             this.saveState();            
         }
     }
