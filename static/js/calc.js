@@ -15,7 +15,7 @@ const DEFAULT_CONFIG = {
     },
     requestStateInterval: 1000,
     explosionDuration: 2500,
-    autoDropForPhaseSelectInitPositionsCount: 0,
+    autoDropForPhaseSelectInitPositionsCount: 42,
     doAutoDropThree: false,
     autoDropForPhaseDropThreeVacancies: 5,
 
