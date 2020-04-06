@@ -20,7 +20,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
-        0: ["heart", "heart", "club", "diamond"],
+        0: ["heart", "heart", "club", "diamond", "club"],
     }
 
 };
@@ -501,6 +501,9 @@ class CalcGame {
                 clickPlayCards() {
                     THIS.clickPlayCards();
                 },
+                clickMustPlayCards() {
+                    THIS.clickMustPlayCards();
+                },
                 hasAtLeastOneCardSet(player) {
                     if (player.numHearts >= 3) {
                         return true;
@@ -685,7 +688,6 @@ class CalcGame {
     }
 
     clickPlayCards() {
-        console.log("play cards");
         // TODO: += scheduled bonus
         this.app.currentPlayer.prizeBonus += this.app.nextPrize;
         this.app.currentPlayer.numSetsTradedIn += 1;
@@ -699,6 +701,10 @@ class CalcGame {
         //this.saveState();
         //this.saveState();
         //instructions; ddd
+    }
+
+    clickMustPlayCards() {
+        console.log("Must play clicked");
     }
 
     incrementPrizeSchedule() {

@@ -77,6 +77,13 @@
                   <span v-on:click="clickPlayCards">Play a set of three prize cards to receive [[nextPrize]] armies.</span>
                 </div>
 
+                <div v-show="hasMandatorySet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-must-play">
+                  <span v-on:click="clickMustPlayCards">
+                    Play a set of three prize cards to receive [[nextPrize]] armies.
+                    You must click this button since you have 5 or more cards.
+                  </span>
+                </div>
+
               </td>
               <td valign="bottom">
                 <div class="help-link"><a target="_blank" href="dice.html">Help</a></div>          
