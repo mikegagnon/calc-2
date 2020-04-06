@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    requestStateInterval: 100,
+    requestStateInterval: 4000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 0,
 };
@@ -133,9 +133,8 @@ class LocalCalcServer {
         }
     }
 
-    // When the server receives a new state
+    // When the server receives a new state (it must be serialized first)
     pushState(state, callback) {
-        state = JSON.parse(JSON.stringify(state));
 
         this.lastRequestWasUndo = false;
         this.lastRequestWasRedo = false;
@@ -238,6 +237,7 @@ class CalcGame {
 
     constructor(templateDivId, divId, server, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
+        this.id = Math.floor(Math.random() * 999999999); // intentionally avoiding MersenneTwister here
         this.serverCount = 0;
         this.config = config;
 
@@ -341,10 +341,45 @@ class CalcGame {
         });
     }
 
-    getState() {
+    serializePlayers() {
+        const keys = ["index", "name", "color", "active", "instruction", "armiesAvailableForPlacement"];
+        const players = [];
+        for (let i = 0; i < this.app.players.length; i++) {
+            const player = {};
+            for (let j = 0; j < keys.length; j++) {
+                const key = keys[j];
+                player[key] = this.app.players[i][key];
+            }
+            players.push(player);
+        }
+
+        return players;
+
+        //return this.app.players;
+    }
+
+    serializeTerritories() {
+        const keys = ["name", "continent", "top", "left", "neighbors", "index", "color", "numPieces", "clickableByPlayerIndex", "highlighted", "explodeColor"];
+        const territories = [];
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = {};
+            for (let j = 0; j < keys.length; j++) {
+                const key = keys[j];
+                territory[key] = this.app.territories[i][key];
+            }
+            territories.push(territory);
+        }
+
+        console.log(territories);
+
+        //return this.app.territories;
+        return territories;
+    }
+
+    getSerializedState() {
         const state = {
-            players: this.app.players,
-            territories: this.app.territories,
+            players: this.serializePlayers(), //this.app.players,
+            territories: this.serializeTerritories(), //this.app.territories,
             currentPhase: this.app.currentPhase,
         }
 
@@ -358,7 +393,7 @@ class CalcGame {
     }
 
     saveState() {
-        const state = this.getState();
+        const state = this.getSerializedState();
         const THIS = this;
         this.server.pushState(state, function(message) {
             THIS.app.undoAvailable = message.undoAvailable;
@@ -398,6 +433,9 @@ class CalcGame {
                 },
             },
             methods: {
+                territoryId: function(territory) {
+                    return THIS.id + "-" + territory.index;
+                },
                 playerNameText: function(player) {
                     return player.name;
                 },
