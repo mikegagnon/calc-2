@@ -20,7 +20,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
-        0: ["heart", "heart", "club", "diamond", "club"],
+        0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club"],
     }
 
 };
@@ -690,10 +690,8 @@ class CalcGame {
 
     clickPlayCards() {
         // TODO: += scheduled bonus
-        this.app.currentPlayer.prizeBonus += this.app.nextPrize;
-        this.app.currentPlayer.numSetsTradedIn += 1;
-        this.incrementPrizeSchedule();
         
+        this.doPlay();
         // we can skip to this phase since it's impossible for this player
         // to play any more cards, since this button is only available if
         // the player has fewer than five cards.
@@ -705,13 +703,29 @@ class CalcGame {
     }
 
     clickMustPlayCards() {
-        this.app.currentPlayer.prizeBonus += this.app.nextPrize;
-        this.app.currentPlayer.numSetsTradedIn += 1;
-        this.incrementPrizeSchedule();
+        this.doPlay();
         this.setInstructions();
         this.saveState();
         this.beginPhasePlayCards();
 
+    }
+
+    doPlay() {
+        this.app.currentPlayer.prizeBonus += this.app.nextPrize;
+        this.app.currentPlayer.numSetsTradedIn += 1;
+        this.incrementPrizeSchedule();
+
+        if (this.app.currentPlayer.numHearts >= 3) {
+            this.app.currentPlayer.numHearts -= 3;
+        } else if (this.app.currentPlayer.numClubs >= 3) {
+            this.app.currentPlayer.numClubs -= 3;
+        } else if (this.app.currentPlayer.numDiamonds >= 3) {
+            this.app.currentPlayer.numDiamonds -= 3;
+        } else {
+            this.app.currentPlayer.numHearts--;
+            this.app.currentPlayer.numClubs--;
+            this.app.currentPlayer.numDiamonds--;
+        }
     }
 
     incrementPrizeSchedule() {
