@@ -6,7 +6,7 @@ from flask import *
 app = Flask(__name__, static_url_path="/static")
 app.secret_key = 'lkasjdfklasdfkljasdf'
 
-MAX_STATES_LENGTH = 3
+MAX_STATES_LENGTH = 100
 GAMES = {}
 #GAME_STATE = {}
 
