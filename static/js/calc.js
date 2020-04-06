@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    requestStateInterval: 4000,
+    requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 0,
 };
@@ -374,7 +374,7 @@ class CalcGame {
             territories.push(territory);
         }
 
-        console.log(territories);
+        //console.log(territories);
 
         //return this.app.territories;
         return territories;
@@ -382,8 +382,10 @@ class CalcGame {
 
     getSerializedState() {
         const state = {
-            players: this.serializePlayers(), //this.app.players,
-            territories: this.serializeTerritories(), //this.app.territories,
+            //players: this.app.players, //this.serializePlayers(), 
+            //territories: this.app.territories, //this.serializeTerritories(),
+            players: this.serializePlayers(), //
+            territories: this.serializeTerritories(), //,
             currentPhase: this.app.currentPhase,
         }
 
@@ -391,7 +393,7 @@ class CalcGame {
     }
 
     replaceState(serializedState) {
-        console.log("replace", serializedState);
+        //console.log("replace", serializedState);
         let state; 
         if (typeof serializedState === "string") {
             state = JSON.parse(serializedState);
@@ -404,10 +406,10 @@ class CalcGame {
     }
 
     saveState() {
-        console.log("saveState");
+        //console.log("saveState");
         const serializedState = this.getSerializedState();
         const THIS = this;
-        console.log("saveState", serializedState);
+        //console.log("saveState", serializedState);
         this.server.pushState(serializedState, function(message) {
             THIS.app.undoAvailable = message.undoAvailable;
             THIS.app.redoAvailable = message.redoAvailable;
