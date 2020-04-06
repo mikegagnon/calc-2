@@ -15,7 +15,8 @@ const DEFAULT_CONFIG = {
     },
     requestStateInterval: 1000,
     explosionDuration: 2500,
-    autoDropForPhaseSelectInitPositionsCount: 40,
+    autoDropForPhaseSelectInitPositionsCount: 42,
+    autoDropForPhaseDropThreeVacancies: 0,
 };
 
 /*const GAME_CONFIG_1 = {
@@ -539,13 +540,29 @@ class CalcGame {
         setTimeout(function(){territory.explodeColor = false}, this.config.explosionDuration);
     }
 
+    getClickableTerritories() {
+        const THIS = this;
+        return this.app
+            .territories
+            .filter(function(t) {
+                return t.clickableByPlayerIndex === THIS.app.currentPlayer.index;
+            });
+    }
+
     /* beginPhaseDropThree ****************************************************/
+
     beginPhaseDropThree() {
         this.app.currentPhase = PHASE_DROP_THREE;
         this.app.currentPlayer.armiesAvailableForPlacementThisTurn = 3;
         this.setClickableForPhaseDropThree();
-        this.setInstructions();
-        this.saveState();
+        
+        const autoDropVacancies = this.config.autoDropForPhaseDropThreeVacancies;
+        if (autoDropVacancies > 0) {
+            this.autoDropForPhaseDropThree(autoDropVacancies);
+        } else {
+            this.setInstructions();
+            this.saveState();
+        }
 
     }
 
@@ -568,6 +585,32 @@ class CalcGame {
         } else {
             throw "Bad getPlayerInstructionForPhaseDropThree PhaseDropThree";
         }
+    }
+
+    autoDropForPhaseDropThree(numVacancies) {
+        
+        while (this.getAllArmiesRemaining() > numVacancies) {
+            const territories = this.getClickableTerritories();
+            const territory = this.shuffle(territories)[0];
+            this.clickTerritoryForPhaseDropThree(territory);
+        }
+
+        /*const count = {};
+
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (!(territory.color in count)) {
+                count[territory.color] = 0;
+            }
+            count[territory.color] += territory.numPieces;
+        }
+
+        console.log(count);
+
+
+
+        return newPhaseBegun;
+    }*/
     }
 
     clickTerritoryForPhaseDropThree(territory) {
