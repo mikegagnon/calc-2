@@ -68,13 +68,13 @@
       isHost: true,
       numPlayers: 2,
       username: "Alice",
-  };
+    };
 
-  const GAME_CONFIG_2 = {
-      isHost: false,
-      numPlayers: 2,
-      username: "Bob",
-  };
+    const GAME_CONFIG_2 = {
+        isHost: false,
+        numPlayers: 2,
+        username: "Bob",
+    };
     const LOCAL_SERVER = new LocalCalcServer();
     const CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
     const CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));

@@ -10,7 +10,20 @@
 
     <div id="gameTemplate" class="hidden">
       <div class="calc-container">
+        
         <img src="{{ url_for('static', filename='img/standard-board.png')}}" class="standard-board-img">
+
+        <!-- explosions -->
+        <div
+          v-for="territory in territories"
+          class="territory exploding"
+          v-if="territory.numPieces > 0 && territory.explodeColor"
+          v-bind:class="[territory.explodeColor]"
+          v-bind:style="{top:territory.top, left:territory.left}"
+          >
+        </div>
+      
+        <!-- territories -->
         <div
           class="territory"
           v-for="territory in territories"

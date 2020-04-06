@@ -113,4 +113,22 @@ body {
     font-size: 8pt;
 }
 
+.exploding {
+    border: 0px;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    animation: exploding-animation 2.5s;
+    animation-timing-function: linear; /* or: ease, ease-in, ease-in-out, linear, cubic-bezier(x1, y1, x2, y2) */
+}
 
+@keyframes exploding-animation {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(10);
+        opacity: 0;
+    }
+}

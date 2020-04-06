@@ -14,6 +14,7 @@ const DEFAULT_CONFIG = {
         "Asia": 7
     },
     requestStateInterval: 100,
+    explosionDuration: 2500,
 };
 
 /*const GAME_CONFIG_1 = {
@@ -477,6 +478,11 @@ class CalcGame {
         }
     }
 
+    explodeTerritory(territory) {
+        territory.explodeColor = territory.color;
+        setTimeout(function(){territory.explodeColor = false}, this.config.explosionDuration);
+    }
+
     /* beginPhaseSelectInitPositions ******************************************/
 
     beginPhaseSelectInitPositions() {
@@ -546,6 +552,7 @@ class CalcGame {
         territory.numPieces = 1;
         territory.color = this.app.currentPlayer.color;
         this.app.currentPlayer.armiesAvailableForPlacement--;
+        this.explodeTerritory(territory);
         this.incrementCurrentPlayer();
         this.saveState();
     }
