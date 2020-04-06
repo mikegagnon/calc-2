@@ -572,6 +572,10 @@ class CalcGame {
         }
     }
 
+    clickTerritoryForPhaseDropThree(territory) {
+
+    }
+
     /* beginPhaseSelectInitPositions ******************************************/
 
     beginPhaseSelectInitPositions() {
