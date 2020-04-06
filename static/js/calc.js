@@ -664,7 +664,11 @@ class CalcGame {
     }
 
     getPlayerInstructionForPhasePlayCards(player) {
-        return `Would you like to play a set of three cards for ${this.app.nextPrize} armies? (This prompt appears regardless if the current player has a set.)`;
+        let preamble = "";
+        if (this.app.currentPlayer.prizeBonus > 0) {
+            preamble = `You have already traded in ${this.app.currentPlayer.numSetsTradedIn} set(s) of prize cards, for ${this.app.currentPlayer.prizeBonus} armies. `;
+        }
+        return `${preamble}Would you like to play a set of three cards for ${this.app.nextPrize} armies? (This prompt appears regardless if the current player has a set.)`;
     }
 
     clickPretend() {
@@ -675,13 +679,28 @@ class CalcGame {
         this.beginPhaseReinforce();
     }
 
-
     clickPlayCards() {
         console.log("play cards");
         // TODO: += scheduled bonus
-        //this.app.currentPlayer.prizeBonus += 4;
+        this.app.currentPlayer.prizeBonus += this.app.nextPrize;
+        this.app.currentPlayer.numSetsTradedIn += 1;
+        this.incrementPrizeSchedule();
+        this.setInstructions();
+        this.saveState();
         //this.saveState();
         //instructions; ddd
+    }
+
+    incrementPrizeSchedule() {
+        for (let i = 0; i < this.app.prizeSchedule.length; i++) {
+            const prize = this.app.prizeSchedule[i];
+            if (prize.active) {
+                prize.active = false;
+                const nextPrizeIndex = (i + 1) % this.app.prizeSchedule.length;
+                this.app.prizeSchedule[nextPrizeIndex].active = true;
+                return;
+            }
+        }
     }
 
     /* beginPhaseDropThree ****************************************************/
@@ -741,8 +760,9 @@ class CalcGame {
             // We set prizeBonus here, becaue beginPhasePlayCards
             // might be called multiple times, during the same turn, and
             // we want prizeBonus to accumulate
-            this.app.currentPlayer.prizeBonus = 0;
             this.incrementCurrentPlayer();
+            this.app.currentPlayer.prizeBonus = 0;
+            this.app.currentPlayer.numSetsTradedIn = 0;
             this.beginPhasePlayCards();
             // No need to save state (nor setInstructions) here because beginPhasePlayCards will save the state
         }
