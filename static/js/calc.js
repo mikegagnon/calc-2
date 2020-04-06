@@ -19,7 +19,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: false,
     autoDropForPhaseDropThreeVacancies: 5,
     startWithPrizeCards: {
-        0: ["heart", "heart", "diamond"]
+        0: ["heart", "heart", "diamond", "club"]
     }
 };
 
