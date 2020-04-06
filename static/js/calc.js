@@ -471,6 +471,9 @@ class CalcGame {
                 thisPlayer: function() {
                     return this.players[this.thisPlayerIndex];
                 },
+                playerHasCard: function() {
+                    return this.thisPlayer && this.numTotalCards(this.thisPlayer) > 0;
+                }
             },
             methods: {
                 numTotalCards(player) {
