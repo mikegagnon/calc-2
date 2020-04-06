@@ -664,7 +664,7 @@ class CalcGame {
     }
 
     getPlayerInstructionForPhasePlayCards(player) {
-        return "Would you like to play a set of three cards? (This prompt appears regardless if the current player has a set.)";
+        return `Would you like to play a set of three cards for ${this.app.nextPrize} armies? (This prompt appears regardless if the current player has a set.)`;
     }
 
     clickPretend() {
