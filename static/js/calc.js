@@ -567,6 +567,8 @@ class CalcGame {
             this.clickTerritoryForPhaseSelectInitPositions(territory);
         } else if (this.app.currentPhase === PHASE_DROP_THREE) {
             this.clickTerritoryForPhaseDropThree(territory);
+        } else if (this.app.currentPhase === PHASE_REINFORCE) {
+            this.clickTerritoryForPhaseReinforce(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -604,6 +606,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseDropThree(player);
         } else if (this.app.currentPhase === PHASE_PLAY_CARDS) {
             return this.getPlayerInstructionForPhasePlayCards(player);
+        } else if (this.app.currentPhase === PHASE_REINFORCE) {
+            return this.getPlayerInstructionForPhaseReinforce();
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -652,7 +656,105 @@ class CalcGame {
     beginPhaseReinforce() {
         console.log("beginPhaseReinforce");
         this.app.currentPhase = PHASE_REINFORCE;
+        //this.app.currentPlayer.continentBonus = 0;
+        this.app.currentPlayer.armiesAvailableForPlacement = this.getReinforceArmies();
+        //this.app.currentPlayer.ar
+        this.setClickableForPhaseReinforce();
+        this.setInstructions();
         this.saveState();
+
+    }
+
+    countNumTerritoriesOwned() {
+        let count = 0;
+        const color = this.app.currentPlayer.color;
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (territory.color === color) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    calculateContinentBonus(player) {
+        let continentBonus = 0;
+        let continents = [];
+
+        for (let i = 0; i < this.config.continents.length; i++) {
+            const continent = this.config.continents[i];
+            const territories = this.app.territories.filter(t => t.continent === continent);
+            let allMine = true;
+            for (let j = 0; j < territories.length; j++) {
+                const territory = territories[j];
+                if (territory.color !== player.color) {
+                    allMine = false;
+                    break;
+                }
+            }
+
+            if (allMine) {
+                continentBonus += this.config.continentBonus[continent];
+                continents.push(continent);
+            }
+        }
+
+        return {
+            continentBonus: continentBonus,
+            text: continents.join(" and "),
+        };
+    }
+
+    getReinforceArmies() {
+        const numTerritoriesOwned = this.countNumTerritoriesOwned();
+        const div3 = Math.floor(numTerritoriesOwned / 3);
+        const player = this.app.currentPlayer;
+        const continentBonusAndString = this.calculateContinentBonus(player);
+        player.continentBonus = continentBonusAndString.continentBonus;
+        const continentText = continentBonusAndString.text;
+        let numReinforcements;
+        let instruction;
+        if (div3 < 3) {
+            numReinforcements = 3;
+            numReinforcements += player.prizeBonus;
+            numReinforcements += player.continentBonus;
+
+            instruction = `Place ${numReinforcements} armies upon one or more territories you control. You received 3 armies this turn because you control fewer than 9 territories.`;
+            if (player.prizeBonus > 0) {
+                instruction += ` You received ${player.prizeBonus} armies because you traded in ${player.numSetsTradedIn} set(s) of prize cards.`;
+            }
+            if (player.continentBonus > 0) {
+                instruction += ` You received ${player.continentBonus} armies because you control ${continentText}.`;
+            }
+        } else {
+            numReinforcements = div3;
+            numReinforcements += player.prizeBonus;
+            numReinforcements += player.continentBonus;
+
+            instruction = `Place ${numReinforcements} armies upon one or more territories you control. You received ${div3} armies this turn because you control ${numTerritoriesOwned} territories.`;
+            if (player.prizeBonus > 0) {
+                instruction += ` You received ${player.prizeBonus} armies because you traded in ${player.numSetsTradedIn} set(s) of prize cards.`;
+            }
+            if (player.continentBonus > 0) {
+                instruction += ` You received ${player.continentBonus} armies because you control ${continentText}.`;
+            }
+        }
+        return {
+            numReinforcements: numReinforcements,
+            instruction: instruction,
+        };
+    }
+
+    setClickableForPhaseReinforce() {
+        this.setClickableForPhaseDropThree();
+    }
+
+    clickTerritoryForPhaseReinforce(territory) {
+        console.log(1);
+    }
+
+    getPlayerInstructionForPhaseReinforce(player) {
+        return this.getReinforceArmies().instruction;
     }
 
     /* beginPhasePlayCards ****************************************************/
@@ -689,18 +791,13 @@ class CalcGame {
         this.beginPhaseReinforce();
     }
 
-    clickPlayCards() {
-        // TODO: += scheduled bonus
-        
+    clickPlayCards() {        
         this.doPlay();
+
         // we can skip to this phase since it's impossible for this player
         // to play any more cards, since this button is only available if
         // the player has fewer than five cards.
-        this.beginPhaseReinforce(); 
-        //this.setInstructions();
-        //this.saveState();
-        //this.saveState();
-        //instructions; ddd
+        this.beginPhaseReinforce();
     }
 
     clickMustPlayCards() {
@@ -708,7 +805,6 @@ class CalcGame {
         this.setInstructions();
         this.saveState();
         this.beginPhasePlayCards();
-
     }
 
     doPlay() {
@@ -807,7 +903,7 @@ class CalcGame {
 
         // If this turn os over
         else if (this.app.currentPlayer.armiesAvailableForPlacementThisTurn === 0) {
-            this.incrementCurrentPlayer(); // ddd
+            this.incrementCurrentPlayer();
             this.app.currentPlayer.armiesAvailableForPlacementThisTurn = Math.min(3, this.app.currentPlayer.armiesAvailableForPlacement);
             this.setClickableForPhaseDropThree();
             this.setInstructions();
