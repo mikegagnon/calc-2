@@ -15,9 +15,10 @@ const DEFAULT_CONFIG = {
     },
     requestStateInterval: 1000,
     explosionDuration: 2500,
-    autoDropForPhaseSelectInitPositionsCount: 0,
-    doAutoDropThree: false,
+    autoDropForPhaseSelectInitPositionsCount: 42,
+    doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 5,
+
     startWithPrizeCards: {
         0: ["heart", "heart", "diamond", "club"]
     }
@@ -228,7 +229,8 @@ class CalcGame {
         this.id = Math.floor(Math.random() * 999999999); // intentionally avoiding MersenneTwister here
         this.serverCount = 0;
         this.config = config;
-        this.explosionTimeouts = {};
+        this.observedExplosions = new Set();
+        //this.explosionTimeouts = {};
 
         if ("seed" in this.config) {
             this.random = new MersenneTwister(seed);
@@ -337,6 +339,7 @@ class CalcGame {
         const state = {
             players: this.app.players,
             territories: this.app.territories,
+            explosions: this.app.explosions,
             currentPhase: this.app.currentPhase,
         }
 
@@ -354,9 +357,23 @@ class CalcGame {
         this.app.players = state.players;
         this.app.currentPhase = state.currentPhase;
 
+        const THIS = this;
+        /*this.app.explosions = state
+            .explosions
+            .filter(e => !THIS.observedExplosions.has(e.id));
+        */
+        /*for (let i = 0; i < this.app.explosions.length; i++) {
+            const e = this.app.explosions[i];
+            this.observedExplosions.add(e.id);
+        }*/
+        this.app.explosions = state.explosions;
+
+        console.log(this.observedExplosions);
+        console.log(this.app.explosions);
+
         for (let i = 0; i < this.app.territories.length; i++) {
             const territory = this.app.territories[i];
-            if (territory.explodeColor) {
+            /*if (territory.explodeColor) {
                 if (i in this.explosionTimeouts) {
                     const ref = this.explosionTimeouts[i];
                     clearTimeout(ref);
@@ -369,7 +386,7 @@ class CalcGame {
                     territory.explodeColor = territory.color;
                     THIS.explosionTimeouts[i] = setTimeout(function(){territory.explodeColor = null}, THIS.config.explosionDuration);
                 }, 1);
-            }
+            }*/
         }
     }
 
@@ -393,6 +410,7 @@ class CalcGame {
             data: {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
+                explosions: [],
                 currentPhase: "undefined",
 
                 // Non serialized state
@@ -508,8 +526,16 @@ class CalcGame {
     }
 
     explodeTerritory(territory) {
-        territory.explodeColor = territory.color;
-        setTimeout(function(){territory.explodeColor = false}, this.config.explosionDuration);
+        this.app.explosions.push({
+            territoryIndex: territory.index,
+            id: Math.floor(Math.random() * 9999999), // avoiding mersene here
+            color: territory.color,
+        });
+
+        // TODO: timeout
+
+        //territory.explodeColor = territory.color;
+        //setTimeout(function(){territory.explodeColor = false}, this.config.explosionDuration);
     }
 
     getClickableTerritories() {
