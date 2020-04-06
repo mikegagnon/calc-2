@@ -56,7 +56,7 @@ class RemoteCalcServer {
         $.ajax({
             type: "POST",
             url: this.postGameStateUrl,
-            data: JSON.stringify(seriralizedState),
+            data: seriralizedState,
             dataType: "application/json",
             contentType: "application/json",
             success: callback,
@@ -74,7 +74,8 @@ class RemoteCalcServer {
             data: null,
             success: callback,
             error: function(data) {
-                console.error(data);
+                //console.error(data);
+                callback(data); // ddd
             },
             dataType: "json",
         });
@@ -302,6 +303,9 @@ class CalcGame {
         this.serverCount = message.count;
 
         if ("state" in message) {
+            /*if (typeof message.state === "string") {
+                message.state = JSON.parse(message.state);
+            }*/
             this.replaceState(message.state);                        
         } else {
             console.warn("No state in server");
@@ -388,7 +392,12 @@ class CalcGame {
 
     replaceState(serializedState) {
         console.log("replace", serializedState);
-        const state = JSON.parse(serializedState);
+        let state; 
+        if (typeof serializedState === "string") {
+            state = JSON.parse(serializedState);
+        } else {
+            state = serializedState;
+        }
         this.app.territories = state.territories;
         this.app.players = state.players;
         this.app.currentPhase = state.currentPhase;
