@@ -39,6 +39,7 @@ const GAME_CONFIG_2 = {
 /* Phases *********************************************************************/
 
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
+const PHASE_DROP_THREE = "PHASE_DROP_THREE";
 
 /* RemoteCalcServer ***********************************************************/
 
@@ -491,6 +492,8 @@ class CalcGame {
 
         if (this.app.currentPhase === PHASE_SELECT_INIT_POSITIONS) {
             this.clickTerritoryForPhaseSelectInitPositions(territory);
+        } else if (this.app.currentPhase === PHASE_DROP_THREE) {
+            this.clickTerritoryForPhaseDropThree(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -526,6 +529,8 @@ class CalcGame {
     getPlayerInstruction(player) {
         if (this.app.currentPhase === PHASE_SELECT_INIT_POSITIONS) {
             return this.getPlayerInstructionForPhaseSelectInitPositions(player);
+        } else if (this.app.currentPhase === PHASE_DROP_THREE) {
+            return this.getPlayerInstructionForPhaseDropThree(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -534,6 +539,37 @@ class CalcGame {
     explodeTerritory(territory) {
         territory.explodeColor = territory.color;
         setTimeout(function(){territory.explodeColor = false}, this.config.explosionDuration);
+    }
+
+    /* beginPhaseDropThree ****************************************************/
+    beginPhaseDropThree() {
+        this.app.currentPhase = PHASE_DROP_THREE;
+        this.app.currentPlayer.armiesAvailableForPlacementThisTurn = 3;
+        this.setClickableForPhaseDropThree();
+        this.setInstructions();
+        this.saveState()
+
+    }
+
+    setClickableForPhaseDropThree() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (territory.color === this.app.currentPlayer.color) {
+                territory.clickableByPlayerIndex = this.app.currentPlayer.index;
+            } else {
+                territory.clickableByPlayerIndex = -1;
+            }
+        }
+    }
+
+    getPlayerInstructionForPhaseDropThree(player) {
+        if (player.armiesAvailableForPlacementThisTurn > 1) {
+            return `Place ${player.armiesAvailableForPlacementThisTurn} armies upon one or more territories you control. ${player.armiesAvailableForPlacement} armies remaining in total.`;
+        } else if (player.armiesAvailableForPlacementThisTurn === 1) {
+            return `Place 1 army upon a territory you control. ${player.armiesAvailableForPlacement} armies remaining in total.`;
+        } else {
+            throw "Bad getPlayerInstruction PhaseDropThree";
+        }
     }
 
     /* beginPhaseSelectInitPositions ******************************************/
@@ -633,8 +669,11 @@ class CalcGame {
         this.explodeTerritory(territory);
         this.incrementCurrentPlayer();
 
-        if (this.app.currentPlayer.armiesAvailableForPlacement === 0) {
-            throw "Nope";
+        const numEmptyTerritories =
+            this.app.territories.filter(t => t.numPieces === 0).length;
+
+        if (numEmptyTerritories === 0) {
+            this.beginPhaseDropThree();
         } else {
             this.setClickableForPhaseSelectInitPositions();
             this.saveState();            
