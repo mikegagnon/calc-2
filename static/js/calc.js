@@ -401,7 +401,7 @@ class CalcGame {
                     return player.name;
                 },
                 territoryClickable: function(territory) {
-                    return this.thisPlayerIndex === this.currentPlayer.index;
+                    return territory.clickableByPlayerIndex === this.thisPlayerIndex;
                 },
                 territoryHidden: function(territory) {
                     return territory.numPieces < 0;
@@ -554,6 +554,7 @@ class CalcGame {
         this.app.currentPlayer.armiesAvailableForPlacement--;
         this.explodeTerritory(territory);
         this.incrementCurrentPlayer();
+        this.setClickableForPhaseSelectInitPositions();
         this.saveState();
     }
 
