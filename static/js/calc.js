@@ -3,6 +3,7 @@
 const TESTING = true;
 
 const DEFAULT_CONFIG = {
+    seed: 0,
     colors: ["red", "blue", "green", "orange", "purple", "black"],
     continents: ["North America", "South America", "Africa", "Australia", "Europe", "Asia"],
     continentBonus: {
@@ -16,12 +17,12 @@ const DEFAULT_CONFIG = {
     requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 42,
-    doAutoDropThree: false,
-    autoDropForPhaseDropThreeVacancies: 5,
-
+    doAutoDropThree: true,
+    autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
         0: ["heart", "heart", "diamond", "club"]
     }
+
 };
 
 /* Phases *********************************************************************/
@@ -233,7 +234,7 @@ class CalcGame {
         //this.explosionTimeouts = {};
 
         if ("seed" in this.config) {
-            this.random = new MersenneTwister(seed);
+            this.random = new MersenneTwister(this.config.seed);
         } else {
             this.random = new MersenneTwister();
         }
@@ -575,8 +576,17 @@ class CalcGame {
             });
     }
 
+    setClickableNone() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            territory.clickableByPlayerIndex = -1;
+        }   
+    }
+
     /* beginPhasePlayCards ****************************************************/
     beginPhasePlayCards() {
+        this.setClickableNone();
+        this.saveState();
 
     }
 
