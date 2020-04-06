@@ -29,6 +29,7 @@ const DEFAULT_CONFIG = {
 
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
 const PHASE_DROP_THREE = "PHASE_DROP_THREE";
+const PHASE_PLAY_CARDS = "PHASE_PLAY_CARDS";
 
 /* RemoteCalcServer ***********************************************************/
 
@@ -539,6 +540,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseSelectInitPositions(player);
         } else if (this.app.currentPhase === PHASE_DROP_THREE) {
             return this.getPlayerInstructionForPhaseDropThree(player);
+        } else if (this.app.currentPhase === PHASE_PLAY_CARDS) {
+            return this.getPlayerInstructionForPhasePlayCards(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -583,11 +586,26 @@ class CalcGame {
         }   
     }
 
+
     /* beginPhasePlayCards ****************************************************/
     beginPhasePlayCards() {
-        this.setClickableNone();
-        this.saveState();
+        if (this.mustSkipPhasePlayCards()) {
+            throw "Not implemented mustSkipPhasePlayCards";
+        } else {
+            this.app.currentPhase = PHASE_PLAY_CARDS;
+            this.setClickableNone();
+            this.setInstructions();
+            //this.showPlayCardButtons();
+            this.saveState();
+        }
+    }
 
+    mustSkipPhasePlayCards() {
+        return this.app.numTotalCards(this.app.currentPlayer) < 3;
+    }
+
+    getPlayerInstructionForPhasePlayCards(player) {
+        return "Would you like to play a set of three cards? (This prompt appears regardless if the current player has a set.)";
     }
 
     /* beginPhaseDropThree ****************************************************/
