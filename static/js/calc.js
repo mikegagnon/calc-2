@@ -30,6 +30,7 @@ const DEFAULT_CONFIG = {
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
 const PHASE_DROP_THREE = "PHASE_DROP_THREE";
 const PHASE_PLAY_CARDS = "PHASE_PLAY_CARDS";
+const PHASE_REINFORCE = "PHASE_REINFORCE";
 
 /* RemoteCalcServer ***********************************************************/
 
@@ -461,7 +462,8 @@ class CalcGame {
                         !this.hasAtLeasatOneCardSet(this.currentPlayer);
                 },
                 showButtons: function() {
-                    return this.hasPretendSet;
+                    return this.currentPhase === PHASE_PLAY_CARDS &&
+                        this.hasPretendSet;
                 },
             },
             methods: {
@@ -610,11 +612,18 @@ class CalcGame {
         }   
     }
 
+    /* beginPhaseReinforce ****************************************************/
+    beginPhaseReinforce() {
+        console.log("beginPhaseReinforce");
+        this.app.currentPhase = PHASE_REINFORCE;
+        this.saveState();
+    }
 
     /* beginPhasePlayCards ****************************************************/
+
     beginPhasePlayCards() {
         if (this.mustSkipPhasePlayCards()) {
-            throw "Not implemented mustSkipPhasePlayCards";
+            this.beginPhaseReinforce();
         } else {
             this.app.currentPhase = PHASE_PLAY_CARDS;
             this.setClickableNone();
@@ -633,7 +642,7 @@ class CalcGame {
     }
 
     clickPretend() {
-        console.log("Click pretend");
+        this.beginPhaseReinforce();
     }
 
     /* beginPhaseDropThree ****************************************************/
