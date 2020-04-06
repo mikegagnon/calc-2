@@ -383,10 +383,10 @@ class CalcGame {
 
     getSerializedState() {
         const state = {
-            //players: this.app.players, //this.serializePlayers(), 
-            //territories: this.app.territories, //this.serializeTerritories(),
-            players: this.serializePlayers(), //
-            territories: this.serializeTerritories(), //,
+            players: this.app.players, //this.serializePlayers(), 
+            territories: this.app.territories, //this.serializeTerritories(),
+            //players: this.serializePlayers(), //
+            //territories: this.serializeTerritories(), //,
             currentPhase: this.app.currentPhase,
         }
 
@@ -568,7 +568,7 @@ class CalcGame {
         } else if (player.armiesAvailableForPlacementThisTurn === 1) {
             return `Place 1 army upon a territory you control. ${player.armiesAvailableForPlacement} armies remaining in total.`;
         } else {
-            throw "Bad getPlayerInstruction PhaseDropThree";
+            throw "Bad getPlayerInstructionForPhaseDropThree PhaseDropThree";
         }
     }
 
@@ -581,29 +581,53 @@ class CalcGame {
         this.explodeTerritory(territory);
         //this.incrementCurrentPlayer();
 
-        return;
+        //return;
 
         //if (this.getActivePlayer().armiesAvailableForPlacement === 0) {
-        if (this.getArmiesRemaining() === 0) {
-            this.getActivePlayer().prizeBonus = 0;
-            this.incrementActivePlayer();
-            this.phasePlayCards.begin();
-            newPhaseBegun = true;
-        } else if (this.getActivePlayer().armiesAvailableForPlacementThisTurn === 0) {
-            this.incrementActivePlayer(app);
-            this.getActivePlayer().armiesAvailableForPlacementThisTurn = Math.min(3, this.getActivePlayer().armiesAvailableForPlacement);
-            this.setClickable();
-            this.setInstructions();
-        } else {
-            this.setClickable();
-            this.setInstructions();
+
+        // If this phase is over
+        if (this.getAllArmiesRemaining() === 0) {
+            // TODO: TEST
+
+            // We set prizeBonus here, becaue beginPhasePlayCards
+            // might be called multiple times, during the same turn, and
+            // we want prizeBonus to accumulate
+            this.app.currentPlayer.prizeBonus = 0;
+            this.incrementCurrentPlayer();
+            this.beginPhasePlayCards();
+            // No need to save state here because beginPhasePlayCards will save the state
+            //newPhaseBegun = true;s
         }
 
-        this.explodeTerritory(territory);
-        this.pickleAndPost();
+        // If this turn os over
+        else if (this.app.currentPlayer.armiesAvailableForPlacementThisTurn === 0) {
+            this.incrementCurrentPlayer();
+            this.app.currentPlayer.armiesAvailableForPlacementThisTurn = Math.min(3, this.app.currentPlayer.armiesAvailableForPlacement);
+            this.setClickableForPhaseDropThree();
+            this.setInstructions();
+            this.saveState();
 
-        return newPhaseBegun;
+        } 
 
+        // If current player gets to go again
+        else {
+            this.setClickableForPhaseDropThree();
+            this.setInstructions();
+            this.saveState();
+        }
+
+
+        //return newPhaseBegun;
+
+    }
+
+    getAllArmiesRemaining() {
+        let armiesRemaining = 0;
+        for (let i = 0; i < this.app.players.length; i++) {
+            const player = this.app.players[i];
+            armiesRemaining += player.armiesAvailableForPlacement;
+        }
+        return armiesRemaining;
     }
 
     /* beginPhaseSelectInitPositions ******************************************/
