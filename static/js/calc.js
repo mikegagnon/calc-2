@@ -468,9 +468,14 @@ class CalcGame {
                         this.hasAtLeastOneCardSet(this.currentPlayer) &&
                         this.numTotalCards(this.currentPlayer) < 5;
                 },
+                hasMandatorySet: function() {
+                    return this.numTotalCards(this.currentPlayer) >= 5;
+                },
                 showButtons: function() {
                     return this.currentPhase === PHASE_PLAY_CARDS &&
-                        (this.hasPretendSet || this.hasOptionalSet);
+                        (this.hasPretendSet ||
+                         this.hasOptionalSet ||
+                         this.hasMandatorySet);
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
@@ -685,8 +690,13 @@ class CalcGame {
         this.app.currentPlayer.prizeBonus += this.app.nextPrize;
         this.app.currentPlayer.numSetsTradedIn += 1;
         this.incrementPrizeSchedule();
-        this.setInstructions();
-        this.saveState();
+        
+        // we can skip to this phase since it's impossible for this player
+        // to play any more cards, since this button is only available if
+        // the player has fewer than five cards.
+        this.beginPhaseReinforce(); 
+        //this.setInstructions();
+        //this.saveState();
         //this.saveState();
         //instructions; ddd
     }
