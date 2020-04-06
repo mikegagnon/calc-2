@@ -16,7 +16,8 @@ const DEFAULT_CONFIG = {
     requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 42,
-    autoDropForPhaseDropThreeVacancies: 0,
+    doAutoDropThree: true,
+    autoDropForPhaseDropThreeVacancies: 5,
 };
 
 /*const GAME_CONFIG_1 = {
@@ -556,9 +557,8 @@ class CalcGame {
         this.app.currentPlayer.armiesAvailableForPlacementThisTurn = 3;
         this.setClickableForPhaseDropThree();
         
-        const autoDropVacancies = this.config.autoDropForPhaseDropThreeVacancies;
-        if (autoDropVacancies > 0) {
-            this.autoDropForPhaseDropThree(autoDropVacancies);
+        if (this.config.doAutoDropThree) {
+            this.autoDropForPhaseDropThree(this.config.autoDropForPhaseDropThreeVacancies);
         } else {
             this.setInstructions();
             this.saveState();
