@@ -474,6 +474,16 @@ class CalcGame {
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
+                },
+                nextPrize: function() {
+                    let value = undefined;
+                    for (let i = 0; i < this.prizeSchedule.length; i++) {
+                        const prize = this.prizeSchedule[i];
+                        if (prize.active) {
+                            value = prize.value;
+                        }
+                    }
+                    return value;
                 }
             },
             methods: {
@@ -664,6 +674,7 @@ class CalcGame {
     clickDoNotPlay() {
         this.beginPhaseReinforce();
     }
+
 
     clickPlayCards() {
         console.log("play cards");
