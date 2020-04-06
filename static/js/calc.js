@@ -23,24 +23,6 @@ const DEFAULT_CONFIG = {
     }
 };
 
-/*const GAME_CONFIG_1 = {
-    isHost: true,
-    numPlayers: 2,
-    username: "Alice",
-};
-
-const GAME_CONFIG_2 = {
-    isHost: false,
-    numPlayers: 2,
-    username: "Bob",
-};*/
-
-/*GAME_CONFIG_ONLINE = {
-    isHost: true,
-    numPlayers: 2,
-    username: "Host"
-}*/
-
 /* Phases *********************************************************************/
 
 const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
@@ -80,8 +62,7 @@ class RemoteCalcServer {
             data: null,
             success: callback,
             error: function(data) {
-                //console.error(data);
-                callback(data); // ddd
+                callback(data);
             },
             dataType: "json",
         });
@@ -283,7 +264,7 @@ class CalcGame {
 
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
     /**
-     * Shuffles array in place.
+     * Shuffles array in NOT in place.
      * @param {Array} a items An array containing the items.
      */
     shuffle(a) {
@@ -352,47 +333,10 @@ class CalcGame {
         });
     }
 
-    serializePlayers() {
-        const keys = ["index", "name", "color", "active", "instruction", "armiesAvailableForPlacement"];
-        const players = [];
-        for (let i = 0; i < this.app.players.length; i++) {
-            const player = {};
-            for (let j = 0; j < keys.length; j++) {
-                const key = keys[j];
-                player[key] = this.app.players[i][key];
-            }
-            players.push(player);
-        }
-
-        return players;
-
-        //return this.app.players;
-    }
-
-    serializeTerritories() {
-        const keys = ["name", "continent", "top", "left", "neighbors", "index", "color", "numPieces", "clickableByPlayerIndex", "highlighted", "explodeColor"];
-        const territories = [];
-        for (let i = 0; i < this.app.territories.length; i++) {
-            const territory = {};
-            for (let j = 0; j < keys.length; j++) {
-                const key = keys[j];
-                territory[key] = this.app.territories[i][key];
-            }
-            territories.push(territory);
-        }
-
-        //console.log(territories);
-
-        //return this.app.territories;
-        return territories;
-    }
-
     getSerializedState() {
         const state = {
-            players: this.app.players, //this.serializePlayers(), 
-            territories: this.app.territories, //this.serializeTerritories(),
-            //players: this.serializePlayers(), //
-            //territories: this.serializeTerritories(), //,
+            players: this.app.players,
+            territories: this.app.territories,
             currentPhase: this.app.currentPhase,
         }
 
@@ -400,7 +344,6 @@ class CalcGame {
     }
 
     replaceState(serializedState) {
-        //console.log("replace", serializedState);
         let state; 
         if (typeof serializedState === "string") {
             state = JSON.parse(serializedState);
@@ -616,47 +559,21 @@ class CalcGame {
     }
 
     autoDropForPhaseDropThree(numVacancies) {
-        
         while (this.getAllArmiesRemaining() > numVacancies) {
             const territories = this.getClickableTerritories();
             const territory = this.shuffle(territories)[0];
             this.clickTerritoryForPhaseDropThree(territory);
         }
-
-        /*const count = {};
-
-        for (let i = 0; i < this.app.territories.length; i++) {
-            const territory = this.app.territories[i];
-            if (!(territory.color in count)) {
-                count[territory.color] = 0;
-            }
-            count[territory.color] += territory.numPieces;
-        }
-
-        console.log(count);
-
-
-
-        return newPhaseBegun;
-    }*/
     }
 
     clickTerritoryForPhaseDropThree(territory) {
-
-
         territory.numPieces += 1;
         this.app.currentPlayer.armiesAvailableForPlacement--;
         this.app.currentPlayer.armiesAvailableForPlacementThisTurn--;
         this.explodeTerritory(territory);
-        //this.incrementCurrentPlayer();
-
-        //return;
-
-        //if (this.getActivePlayer().armiesAvailableForPlacement === 0) {
 
         // If this phase is over
         if (this.getAllArmiesRemaining() === 0) {
-            // TODO: TEST
 
             // We set prizeBonus here, becaue beginPhasePlayCards
             // might be called multiple times, during the same turn, and
@@ -665,7 +582,6 @@ class CalcGame {
             this.incrementCurrentPlayer();
             this.beginPhasePlayCards();
             // No need to save state (nor setInstructions) here because beginPhasePlayCards will save the state
-            //newPhaseBegun = true;s
         }
 
         // If this turn os over
@@ -684,10 +600,6 @@ class CalcGame {
             this.setInstructions();
             this.saveState();
         }
-
-
-        //return newPhaseBegun;
-
     }
 
     getAllArmiesRemaining() {
@@ -724,13 +636,8 @@ class CalcGame {
                 territory = territories[territoryIndex];
             } while (territory.numPieces > 0)
 
-            //this.setActivePlayer(territory.clickableByPlayerIndex);
-            //if (this.pickTerritory(territory)) {
-
             this.clickTerritoryForPhaseSelectInitPositions(territory);
         }
-
-        //return false;
     }
 
 
@@ -782,14 +689,6 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseSelectInitPositions(territory) {
-        // If a new phase has begun, then the new phase will have set the instructions
-        // therefore we don't want to set instructions here.
-        /*if (!this.pickTerritory(territory)) {
-            this.setInstructions();
-        }
-        this.explodeTerritory(territory);
-        this.pickleAndPost();*/
-        //const THIS = this;
         territory.numPieces = 1;
         territory.color = this.app.currentPlayer.color;
         this.app.currentPlayer.armiesAvailableForPlacement--;
@@ -809,14 +708,6 @@ class CalcGame {
     }
 
     /* Misc. game logic *******************************************************/
-
-    /*setClickable(playerIndex) {
-        const territories = this.store.state.territories;
-        for (let i = 0; i < territories.length; i++) {
-            //const territory = territories[i];
-            this.store.commit('setTerritoryClickable', [i, playerIndex]);
-        }
-    }*/
 
     loadNewPlayer() {
         const THIS = this;
@@ -904,19 +795,6 @@ class CalcGame {
 }
 
 /* Tests **********************************************************************/
-
-//const remoteServer = new RemoteCalcServer(GAME_CONFIG_REMOTE);
-/*let REMOTE_SERVER;
-let REMOTE_GAME;
-if (GAME_CONFIG_REMOTE) {
-    REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG_REMOTE);
-    REMOTE_GAME = new CalcGame("#gameTemplate", "#calc-remote", null, $.extend({}, GAME_CONFIG_REMOTE, DEFAULT_CONFIG));
-}*/
-
-/*const LOCAL_SERVER = new LocalCalcServer();
-const CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-const CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
-*/
 
 function testLocalServer() {
     function assert(val) {
