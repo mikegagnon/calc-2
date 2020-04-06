@@ -15,6 +15,7 @@ const DEFAULT_CONFIG = {
     },
     requestStateInterval: 100,
     explosionDuration: 2500,
+    autoDropForPhaseSelectInitPositionsCount: 0,
 };
 
 /*const GAME_CONFIG_1 = {
@@ -489,8 +490,33 @@ class CalcGame {
         this.initArmiesAvailableForPhaseSelectInitPositions();
         this.setClickableForPhaseSelectInitPositions();
         this.setInstructions();
-        this.saveState();
+
+        const autoDropCount = this.config.autoDropForPhaseSelectInitPositionsCount;
+        if (autoDropCount > 0) {
+            this.autoDropForPhaseSelectInitPositions(autoDropCount);
+        } else {
+            this.saveState();
+        }
     }
+
+    autoDropForPhaseSelectInitPositions(numTerritories) {
+        const territories = this.app.territories;
+        for (let i = 0; i < numTerritories; i++) {
+            let territory;
+            do {
+                const territoryIndex = Math.floor(this.random.random() * territories.length);
+                territory = territories[territoryIndex];
+            } while (territory.numPieces > 0)
+
+            //this.setActivePlayer(territory.clickableByPlayerIndex);
+            //if (this.pickTerritory(territory)) {
+
+            this.clickTerritoryForPhaseSelectInitPositions(territory);
+        }
+
+        //return false;
+    }
+
 
     initArmiesAvailableForPhaseSelectInitPositions() {
         const app = this.app;
@@ -558,7 +584,7 @@ class CalcGame {
             throw "Nope";
         } else {
             this.setClickableForPhaseSelectInitPositions();
-            this.saveState();            
+            //this.saveState();            
         }
     }
 
