@@ -192,3 +192,19 @@ body {
 .button-play:hover {
     opacity: 100%;
 }
+
+.prize {
+    font-weight: normal;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.prize-schedule {
+    padding-left: 10px;
+}
+
+.currentPrize {
+    border: 1px solid #888;
+    font-weight: bold;
+    background-color: #f9ff87;
+}

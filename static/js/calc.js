@@ -328,7 +328,6 @@ class CalcGame {
         this.server.requestUndo(function(message) {
             THIS.handleMessage(message);
         });
-
     }
 
     clickRedo() {
@@ -342,6 +341,7 @@ class CalcGame {
         const state = {
             players: this.app.players,
             territories: this.app.territories,
+            prizeSchedule: this.app.prizeSchedule,
             explosions: this.app.explosions,
             currentPhase: this.app.currentPhase,
         }
@@ -358,6 +358,7 @@ class CalcGame {
         }
         this.app.territories = state.territories;
         this.app.players = state.players;
+        this.app.prizeSchedule = state.prizeSchedule;
         this.app.currentPhase = state.currentPhase;
 
         const THIS = this;
@@ -431,6 +432,7 @@ class CalcGame {
             data: {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
+                prizeSchedule: this.getInitPrizeSchedule(),
                 explosions: [],
                 currentPhase: "undefined",
 
@@ -470,6 +472,9 @@ class CalcGame {
                     return this.currentPhase === PHASE_PLAY_CARDS &&
                         (this.hasPretendSet || this.hasOptionalSet);
                 },
+                abridgedPrizeSchedule: function() {
+                    return this.prizeSchedule.slice(0, 8);
+                }
             },
             methods: {
                 clickPretend() {
@@ -889,6 +894,26 @@ class CalcGame {
         }
 
         return true;
+    }
+
+    getInitPrizeSchedule() {
+        return [
+            {value: 4, active: true},
+            {value: 6, active: false},
+            {value: 8, active: false},
+            {value: 10, active: false},
+            {value: 12, active: false},
+            {value: 15, active: false},
+            {value: 20, active: false},
+            {value: 25, active: false},
+            {value: 30, active: false},
+            {value: 35, active: false},
+            {value: 40, active: false},
+            {value: 45, active: false},
+            {value: 50, active: false},
+            {value: 55, active: false},
+            {value: 60, active: false},
+        ];
     }
 
     getInitPlayers() {

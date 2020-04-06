@@ -103,6 +103,13 @@
           </table>
         </div>
 
+        <div class="prize-schedule console-component">Prize schedule: &nbsp;&nbsp;&nbsp;
+          <span v-for="prize in abridgedPrizeSchedule" class="prize" v-bind:class="[{currentPrize: prize.active}]">[[prize.value]]</span>
+          
+          <div class="help-link"><a target="_blank" href="{{ url_for('static', filename='help/prize-schedule.html')}}">Help</a></div>
+        </div>
+
+
         <div class="undo-buttons console-component">
           <button :disabled="!undoAvailable" v-on:click="clickUndo">Undo</button>
           <button :disabled="!redoAvailable" v-on:click="clickRedo">Redo</button>
