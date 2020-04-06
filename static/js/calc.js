@@ -244,6 +244,7 @@ class CalcGame {
         this.id = Math.floor(Math.random() * 999999999); // intentionally avoiding MersenneTwister here
         this.serverCount = 0;
         this.config = config;
+        this.explosionTimeouts = {};
 
         if ("seed" in this.config) {
             this.random = new MersenneTwister(seed);
@@ -410,8 +411,18 @@ class CalcGame {
         for (let i = 0; i < this.app.territories.length; i++) {
             const territory = this.app.territories[i];
             if (territory.explodeColor) {
-                setTimeout(function(){territory.explodeColor = null}, this.config.explosionDuration);
-
+                if (i in this.explosionTimeouts) {
+                    const ref = this.explosionTimeouts[i];
+                    clearTimeout(ref);
+                    territory.explodeColor = false;
+                }
+                const THIS = this;
+                
+                // We delay creating the explosion so that VUE has the chance to erase the previous explosion
+                setTimeout(function() {
+                    territory.explodeColor = territory.color;
+                    THIS.explosionTimeouts[i] = setTimeout(function(){territory.explodeColor = null}, THIS.config.explosionDuration);
+                }, 1);
             }
         }
     }
