@@ -166,4 +166,9 @@ body {
     text-align: center;
     text-decoration: none;
     display: inline-block;
+    opacity: 80%;
+}
+
+.button-pretend:hover {
+    opacity: 100%;
 }

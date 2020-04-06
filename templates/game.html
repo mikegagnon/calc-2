@@ -66,7 +66,11 @@
               <td class="primary-td">
 
                 <div v-show="hasPretendSet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
-                  <a v-on:click="clickPretend">You cannot play a set of prize cards this turn.<br>Click this button to move on.</a>
+                  <span v-on:click="clickPretend">You cannot play a set of prize cards this turn.<br>Click this button to move on.</span>
+                </div>
+
+                <div v-show="hasOptionalSet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
+                  <span v-on:click="clickDoNotPlay">Do not play a set of three prize cards</span>
                 </div>
 
               </td>

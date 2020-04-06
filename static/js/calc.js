@@ -20,7 +20,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
-        0: ["heart", "heart", "club"]
+        0: ["heart", "heart", "club", "diamond"],
     }
 
 };
@@ -459,18 +459,26 @@ class CalcGame {
                 hasPretendSet: function() {
                     return this.thisPlayer.index === this.currentPlayer.index &&
                         this.numTotalCards(this.currentPlayer) >= 3 &&
-                        !this.hasAtLeasatOneCardSet(this.currentPlayer);
+                        !this.hasAtLeastOneCardSet(this.currentPlayer);
+                },
+                hasOptionalSet: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.hasAtLeastOneCardSet(this.currentPlayer) &&
+                        this.numTotalCards(this.currentPlayer) < 5;
                 },
                 showButtons: function() {
                     return this.currentPhase === PHASE_PLAY_CARDS &&
-                        this.hasPretendSet;
+                        (this.hasPretendSet || this.hasOptionalSet);
                 },
             },
             methods: {
                 clickPretend() {
                     THIS.clickPretend();
                 },
-                hasAtLeasatOneCardSet(player) {
+                clickDoNotPlay() {
+                    THIS.clickDoNotPlay()
+                },
+                hasAtLeastOneCardSet(player) {
                     if (player.numHearts >= 3) {
                         return true;
                     } else if (player.numClubs >= 3) {
@@ -642,6 +650,10 @@ class CalcGame {
     }
 
     clickPretend() {
+        this.beginPhaseReinforce();
+    }
+
+    clickDoNotPlay() {
         this.beginPhaseReinforce();
     }
 
