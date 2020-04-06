@@ -42,8 +42,24 @@ def join_submit():
 
     return redirect(url_for("play", code=code))
 
+def hotseat():
+    gameConfig = {
+        "isHost": True,
+        "numPlayers": 2,
+        "username": "Player 1",
+        "init": "hotseat",
+        "serverOnline": False,
+    }
+
+    return render_template("game.html", gameConfig=gameConfig)
+
 @app.route("/create-submit", methods=["POST"])
 def create_submit():
+    if request.form["board-init"] == "hotseat":
+        return hotseat()
+    if request.form["board-init"] == "two-boards":
+        return two_boards()
+
     username = request.form["name"]
     try:
         numPlayers = int(request.form["numPlayers"])
