@@ -18,6 +18,9 @@ const DEFAULT_CONFIG = {
     autoDropForPhaseSelectInitPositionsCount: 42,
     doAutoDropThree: false,
     autoDropForPhaseDropThreeVacancies: 5,
+    startWithPrizeCards: {
+        0: ["heart", "heart", "diamond"]
+    }
 };
 
 /*const GAME_CONFIG_1 = {
@@ -470,6 +473,9 @@ class CalcGame {
                 },
             },
             methods: {
+                numTotalCards(player) {
+                    return player.numHearts + player.numClubs + player.numDiamonds;
+                },
                 territoryId: function(territory) {
                     return THIS.id + "-" + territory.index;
                 },
@@ -866,19 +872,15 @@ class CalcGame {
             })
         }
 
-        /*
-        const playersWithStartCards = Object.keys(CONFIG.startWithPrizeCards);
+        const playersWithStartCards = Object.keys(this.config.startWithPrizeCards);
         for (let i = 0; i < playersWithStartCards.length; i++) {
             const playerIndex = playersWithStartCards[i];
-            const cards = CONFIG.startWithPrizeCards[playerIndex];
+            const cards = this.config.startWithPrizeCards[playerIndex];
             const player = players[playerIndex];
             player.numHearts = cards.filter(c => c === "heart").length;
             player.numClubs = cards.filter(c => c === "club").length;
             player.numDiamonds = cards.filter(c => c === "diamond").length;
-            player.numTotalCards = player.numHearts + player.numClubs + player.numDiamonds;
         }
-        */
-
 
         players[0].active = true;
 

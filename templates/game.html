@@ -41,7 +41,7 @@
         </div>
 
                 <!-- INSTRUCTIONS ----------------------------------------------------->      
-        <div class="player-instructions">
+        <div class="player-instructions console-component">
           <table>
             <tr v-for="player in players">
               <td>
@@ -60,7 +60,11 @@
           </table>
         </div>
 
-        <div class="undo-buttons">
+        <div class="prize-cards console-component" v-show="numTotalCards(players[thisPlayerIndex]) > 0">
+          sdf
+        </div>
+
+        <div class="undo-buttons console-component">
           <button :disabled="!undoAvailable" v-on:click="clickUndo">Undo</button>
           <button :disabled="!redoAvailable" v-on:click="clickRedo">Redo</button>
         </div>
