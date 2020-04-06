@@ -469,7 +469,8 @@ class CalcGame {
                         this.numTotalCards(this.currentPlayer) < 5;
                 },
                 hasMandatorySet: function() {
-                    return this.numTotalCards(this.currentPlayer) >= 5;
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.numTotalCards(this.currentPlayer) >= 5;
                 },
                 showButtons: function() {
                     return this.currentPhase === PHASE_PLAY_CARDS &&
@@ -704,7 +705,13 @@ class CalcGame {
     }
 
     clickMustPlayCards() {
-        console.log("Must play clicked");
+        this.app.currentPlayer.prizeBonus += this.app.nextPrize;
+        this.app.currentPlayer.numSetsTradedIn += 1;
+        this.incrementPrizeSchedule();
+        this.setInstructions();
+        this.saveState();
+        this.beginPhasePlayCards();
+
     }
 
     incrementPrizeSchedule() {
