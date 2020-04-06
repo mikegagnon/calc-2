@@ -13,7 +13,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    requestStateInterval: 5000,
+    requestStateInterval: 100,
 };
 
 /*const GAME_CONFIG_1 = {
@@ -51,7 +51,6 @@ class RemoteCalcServer {
     // When the server receives a new state
     pushState(state, callback) {
         const THIS = this;
-        console.log(state);
         $.ajax({
             type: "POST",
             url: this.postGameStateUrl,
@@ -163,7 +162,6 @@ class LocalCalcServer {
 
     // When the server receives a requeset for the latest state
     requestState(callback) {
-        console.log(1);
         if (this.stateIndex === null) {
             callback({
                 count: this.count,
@@ -262,7 +260,6 @@ class CalcGame {
 
         if (this.config.isHost) {
             this.beginPhaseSelectInitPositions();
-            //this.setClickable(this.store.getters.currentPlayer.index);
             this.saveState();
         } else {
             this.issueRequest();
@@ -323,7 +320,6 @@ class CalcGame {
     }
 
     issueRequest() {
-        console.log(this.config.username);
         const THIS = this;
         this.server.requestState(function(message) {
             THIS.handleMessage(message);
@@ -439,7 +435,7 @@ class CalcGame {
         }
 
         if (this.app.currentPhase === PHASE_SELECT_INIT_POSITIONS) {
-            this.clickTerritoryPhaseSelectInitPositions(territory);
+            this.clickTerritoryForPhaseSelectInitPositions(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -466,19 +462,9 @@ class CalcGame {
     beginPhaseSelectInitPositions() {
         const THIS = this;
         this.app.currentPhase = "PHASE_SELECT_INIT_POSITIONS";
-        setClickable();
+        this.setClickableForPhaseSelectInitPositions();
         //initArmiesAvailableForPlacement();
 
-        function setClickable() {
-            for (let i = 0; i < THIS.app.territories.length; i++) {
-                const territory = THIS.app.territories[i];
-                if (territory.numPieces === 0) {
-                    territory.clickableByPlayerIndex = THIS.app.currentPlayer.index;
-                } else {
-                    territory.clickableByPlayerIndex = -1;
-                }
-            }
-        }
 
 
 
@@ -515,7 +501,18 @@ class CalcGame {
         }*/
     }
 
-    clickTerritoryPhaseSelectInitPositions(territory) {
+    setClickableForPhaseSelectInitPositions() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (territory.numPieces === 0) {
+                territory.clickableByPlayerIndex = this.app.currentPlayer.index;
+            } else {
+                territory.clickableByPlayerIndex = -1;
+            }
+        }
+    }
+
+    clickTerritoryForPhaseSelectInitPositions(territory) {
         // If a new phase has begun, then the new phase will have set the instructions
         // therefore we don't want to set instructions here.
         /*if (!this.pickTerritory(territory)) {
@@ -524,10 +521,10 @@ class CalcGame {
         this.explodeTerritory(territory);
         this.pickleAndPost();*/
         //const THIS = this;
-            territory.numPieces += 1;
-            territory.color = "blue";
-            this.incrementCurrentPlayer();
-            this.saveState();
+        territory.numPieces = 1;
+        territory.color = this.app.currentPlayer.color;
+        this.incrementCurrentPlayer();
+        this.saveState();
     }
 
     /* Misc. game logic *******************************************************/
@@ -659,7 +656,6 @@ function testLocalServer() {
     // Test 1
     server = new LocalCalcServer();
     server.requestUndo(function(message) {
-        console.log(message);
         assert(message.count === 0);
         assert(message.undoAvailable === false);
         assert(message.redoAvailable === false);
