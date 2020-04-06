@@ -20,7 +20,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
-        0: ["heart", "heart", "diamond", "club"]
+        0: ["heart", "heart", "club"]
     }
 
 };
@@ -454,9 +454,33 @@ class CalcGame {
                 },
                 playerHasCard: function() {
                     return this.thisPlayer && this.numTotalCards(this.thisPlayer) > 0;
-                }
+                },
+                hasPretendSet: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.numTotalCards(this.currentPlayer) >= 3 &&
+                        !this.hasAtLeasatOneCardSet(this.currentPlayer);
+                },
+                showButtons: function() {
+                    return this.hasPretendSet;
+                },
             },
             methods: {
+                clickPretend() {
+                    THIS.clickPretend();
+                },
+                hasAtLeasatOneCardSet(player) {
+                    if (player.numHearts >= 3) {
+                        return true;
+                    } else if (player.numClubs >= 3) {
+                        return true;
+                    } else if (player.numDiamonds >= 3) {
+                        return true;
+                    } else if (player.numHearts >= 1 && player.numClubs >= 1 && player.numDiamonds >= 1) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                },
                 numTotalCards(player) {
                     return player.numHearts + player.numClubs + player.numDiamonds;
                 },
@@ -606,6 +630,10 @@ class CalcGame {
 
     getPlayerInstructionForPhasePlayCards(player) {
         return "Would you like to play a set of three cards? (This prompt appears regardless if the current player has a set.)";
+    }
+
+    clickPretend() {
+        console.log("Click pretend");
     }
 
     /* beginPhaseDropThree ****************************************************/

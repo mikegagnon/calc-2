@@ -40,7 +40,7 @@
             [[territoryText(territory)]]
         </div>
 
-                <!-- INSTRUCTIONS ----------------------------------------------------->      
+        <!-- INSTRUCTIONS ----------------------------------------------------->      
         <div class="player-instructions console-component">
           <table>
             <tr v-for="player in players">
@@ -55,6 +55,23 @@
               </td>
               <td valign="bottom">
                 <div v-if="player.index === players.length - 1" class="help-link"><a target="_blank" href="dice.html">Help</a></div>          
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="buttons console-component" v-show="showButtons">
+          <table>
+            <tr>
+              <td class="primary-td">
+
+                <div v-show="hasPretendSet" class="button-pretend">
+                  <button type="button" v-on:click="clickPretend">You cannot play a set of booty cards this turn.<br>Click this button to move on.</button>
+                </div>
+
+              </td>
+              <td valign="bottom">
+                <div class="help-link"><a target="_blank" href="dice.html">Help</a></div>          
               </td>
             </tr>
           </table>
