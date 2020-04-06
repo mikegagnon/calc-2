@@ -16,7 +16,7 @@ const DEFAULT_CONFIG = {
     requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 42,
-    doAutoDropThree: true,
+    doAutoDropThree: false,
     autoDropForPhaseDropThreeVacancies: 5,
 };
 
@@ -406,6 +406,14 @@ class CalcGame {
         this.app.territories = state.territories;
         this.app.players = state.players;
         this.app.currentPhase = state.currentPhase;
+
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (territory.explodeColor) {
+                setTimeout(function(){territory.explodeColor = null}, this.config.explosionDuration);
+
+            }
+        }
     }
 
     saveState() {
