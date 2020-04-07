@@ -45,6 +45,7 @@ const PHASE_CHOOSE_REPEAT_OR_CANCEL = "PHASE_CHOOSE_REPEAT_OR_CANCEL";
 const PHASE_FORTIFY = "PHASE_FORTIFY";
 const PHASE_FORTIFY_SELECT_RECIPIENT = "PHASE_FORTIFY_SELECT_RECIPIENT"
 const PHASE_CALCULATE = "PHASE_CALCULATE";
+const PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY";
 
 /* DICE ***********************************************************************/
 
@@ -802,7 +803,7 @@ class CalcGame {
 
         // TODO: more general phase condition
         } else if (this.app &&
-            this.app.currentPhase === PHASE_CALCULATE &&
+            (this.app.currentPhase === PHASE_CALCULATE  || this.app.currentPhase === PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY) &&
             this.app.currentPlayer.simAttackForce > 0 &&
             this.app.currentPlayer.simAttackingTerritoryIndex === territory.index) {
             const a = this.app.currentPlayer.simAttackForce;
@@ -838,6 +839,8 @@ class CalcGame {
             this.clickTerritoryForPhaseFortifySelectRecipient(territory);
         } else if (this.app.currentPhase === PHASE_CALCULATE) {
             this.clickTerritoryForPhaseCalculate(territory);
+        } else if (this.app.currentPhase === PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY) {
+            this.clickTerritoryForPhaseCalculateChooseDefendingTerritory(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -892,6 +895,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseFortifySelectRecipient(player);
         } else if (this.app.currentPhase === PHASE_CALCULATE) {
             return this.getPlayerInstructionForPhaseCalculate(player);
+        } else if (this.app.currentPhase === PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY) {
+            return this.getPlayerInstructionForPhaseCalculateChooseDefendingTerritory(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -974,6 +979,26 @@ class CalcGame {
         }
     }
 
+    /* beginPhaseCalculateChooseDefendingTerritory ****************************/
+
+    beginPhaseCalculateChooseDefendingTerritory() {
+        this.app.currentPhase = PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY;
+        this.setInstructions();
+    }
+
+    clickTerritoryForPhaseCalculateChooseDefendingTerritory(territory) {
+        console.log("clickTerritoryForPhaseCalculateChooseDefendingTerritory");
+    }
+
+    getPlayerInstructionForPhaseCalculateChooseDefendingTerritory(player) {
+        const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
+        if (player.simAttackForce === simAttackingTerritory.numPieces - 1) {
+            return "You cannot add any more armies to the simulated attack. Choose which territory to attack in the simulation. Or, cancel the simulated attack.";
+        } else {
+            return "Click the simulated attacking territory again to add another army to the simulated attack. Or, choose which territory to attack in the simulation. Or, cancel the simulated attack.";
+        }
+    }
+
     /* beginPhaseCalculate ****************************************************/
     beginPhaseCalculate() {
         this.app.currentPhase = PHASE_CALCULATE;
@@ -995,7 +1020,7 @@ class CalcGame {
         this.app.currentPlayer.simAttackForce = 1; // ddd
         this.app.currentPlayer.simAttackingTerritoryIndex = territory.index;
         this.explodeTerritory(territory);
-        //this.beginPhaseChooseDefendingTerritory();
+        this.beginPhaseCalculateChooseDefendingTerritory();
     }
 
     getPlayerInstructionForPhaseCalculate() {
