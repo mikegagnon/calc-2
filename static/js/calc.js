@@ -687,6 +687,9 @@ class CalcGame {
                 clickRepeatAttack() {
                     THIS.clickRepeatAttack();
                 },
+                clickFortify() {
+                    THIS.clickFortify()
+                },
                 clickCancelAttack() {
                     THIS.clickCancelAttack();
                 },
@@ -922,7 +925,7 @@ class CalcGame {
     clickRepeatAttack() {
         console.log("repeat");
         const defenderTerritory = this.app.territories[this.app.currentPlayer.defendingTerritoryIndex];
-        this.selectDefendingTerritory(defenderTerritory); // ddd
+        this.selectDefendingTerritory(defenderTerritory);
         this.app.currentPlayer.rollResult = this.getRandomAttackRoll(defenderTerritory);
         this.app.currentPlayer.showDice = true;
         const THIS = this; 
@@ -938,7 +941,7 @@ class CalcGame {
         this.app.currentPhase = PHASE_CONCLUDE_ATTACK;
         const player = this.app.currentPlayer;
         const numRedWins = player.rollResult.numRedWins;
-        const numWhiteWins = player.rollResult.numWhiteWins; // ddd
+        const numWhiteWins = player.rollResult.numWhiteWins;
         const attackingTerritory = this.app.territories[player.attackingTerritoryIndex];
         const defendingTerritory = this.app.territories[player.defendingTerritoryIndex];
         //const attackForce 
@@ -962,7 +965,6 @@ class CalcGame {
             offerAgain = false;
         }
 
-        // // ddd
         if (attackVictory) {
 
             if (!player.receivedCardThisTurn) {
@@ -1084,24 +1086,16 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseChooseDefendingTerritory(territory) {
-
         if (territory.index === this.app.currentPlayer.attackingTerritoryIndex) {
             this.incrementAttackForce(territory);
             this.setInstructions();
             this.explodeTerritory(territory);
             this.saveState();
         } else {
-            //app.showDice = true;
             this.explodeTerritory(territory);
             this.selectDefendingTerritory(territory);
             this.beginPhaseAnimateRoll();
-
-            //dddconst rollResult = app.attackRollResult;
-            //DICE.animate(rollResult, function(){ beginPhaseDisplayAttackResult(app); });
-            //*/
         }
-
-
     }
 
     incrementAttackForce(territory) {
@@ -1206,6 +1200,13 @@ class CalcGame {
 
     clickAttack() {
         this.beginPhaseChooseAttackingTerritory();
+    }
+
+    clickFortify() {
+        this.removeHightlights();
+        this.app.currentPlayer.showDice = false;
+        console.log("fortify");
+        this.saveState();
     }
 
     /* beginPhaseReinforce ****************************************************/
