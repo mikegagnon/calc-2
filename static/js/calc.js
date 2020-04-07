@@ -997,6 +997,8 @@ class CalcGame {
             this.incrementSimNumArmies(territory);
             this.setInstructions();
         } else {
+            player.simAttackPath.push(territory.index);
+            this.setClickableForPhaseCalculateChooseDefendingTerritory();
             //selectFreeMoveRecipient(app, territory);
             /*this.setClickableNone();
             //setInstructions(app);
@@ -1026,13 +1028,14 @@ class CalcGame {
 
         const possibleDefenders = this.getNeighbors(simAttackingTerritory)
             .filter(function(otherTerritory){
-                return otherTerritory.color !== simAttackingTerritory.color;
+                return otherTerritory.color !== simAttackingTerritory.color &&
+                    !player.simAttackPath.includes(otherTerritory.index);
             });
 
         for (let i = 0; i < possibleDefenders.length; i++) {
             const territory = possibleDefenders[i];
             territory.clickableByPlayerIndex = this.app.currentPlayer.index;
-        } 
+        }
     }
 
     getPlayerInstructionForPhaseCalculateChooseDefendingTerritory(player) {
@@ -1049,6 +1052,7 @@ class CalcGame {
         this.app.currentPhase = PHASE_CALCULATE;
         this.app.currentPlayer.simAttackForce = 0;
         this.app.currentPlayer.simAttackingTerritoryIndex = -1;
+        this.app.currentPlayer.simAttackPath = []; // list of territory indices
         this.setClickableForPhaseCalculate();
         this.setInstructions();
         this.saveState();
