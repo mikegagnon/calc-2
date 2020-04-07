@@ -700,6 +700,10 @@ class CalcGame {
         }
     }
 
+    clickTerritoryForPhaseChooseAttackingTerritory(territory) {
+        console.log(territory.numPieces);
+    }
+
     getPlayerInstructionForPhaseChooseAttackingTerritory(player) {
         return "Choose which territory will conduct the attack";
     }
