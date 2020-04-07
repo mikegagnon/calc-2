@@ -158,7 +158,7 @@
                   <span>Cancel attack</span>
                 </div>
 
-                <div v-show="hasChooseActionButtons" class="button-attack">
+                <div v-show="hasChooseActionButtons" v-on:click="clickCalculate" class="button-attack">
                   <span>Calculate</span>
                 </div>
 

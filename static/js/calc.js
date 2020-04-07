@@ -41,6 +41,7 @@ const PHASE_CONCLUDE_ATTACK = "PHASE_CONCLUDE_ATTACK";
 const PHASE_CHOOSE_REPEAT_OR_CANCEL = "PHASE_CHOOSE_REPEAT_OR_CANCEL";
 const PHASE_FORTIFY = "PHASE_FORTIFY";
 const PHASE_FORTIFY_SELECT_RECIPIENT = "PHASE_FORTIFY_SELECT_RECIPIENT"
+const PHASE_CALCULATE = "PHASE_CALCULATE";
 
 /* DICE ***********************************************************************/
 
@@ -696,6 +697,9 @@ class CalcGame {
                 clickCancelFortification() {
                     THIS.clickCancelFortification();
                 },
+                clickCalculate() {
+                    THIS.clickCalculate();
+                },
                 clickPass() {
                     THIS.clickPass();
                 },
@@ -954,6 +958,11 @@ class CalcGame {
             const territory = this.app.territories[i];
             territory.highlighted = false;
         }
+    }
+
+    /* beginPhaseCalculate ****************************************************/
+    beginPhaseCalculate() {
+        this.app.currentPhase = PHASE_CALCULATE;
     }
 
     /* beginPhaseFortifySelectRecipient ***************************************/
@@ -1359,6 +1368,10 @@ class CalcGame {
 
     clickFortify() {
         this.beginPhaseFortify();
+    }
+
+    clickCalculate() {
+        this.beginPhaseCalculate();
     }
 
     clickPass() {
