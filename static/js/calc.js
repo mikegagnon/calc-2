@@ -1115,6 +1115,10 @@ class CalcGame {
     }
 
     clickSimTerritory(territory) {
+        if (territory.clickableByPlayerIndex !== this.app.currentPlayer.index) {
+            return;
+        }
+
         territory.numPieces++;
         this.setClickableForPhaseCalculateChooseDefendingTerritory();
     }
@@ -1158,6 +1162,7 @@ class CalcGame {
         }
         this.removeHighlights();
         this.beginPhaseChooseAction();
+        this.saveState();
     }
 
     /* beginPhaseFortifySelectRecipient ***************************************/
