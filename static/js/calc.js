@@ -480,12 +480,16 @@ class CalcGame {
                     return this.thisPlayer.index === this.currentPlayer.index &&
                         this.currentPhase === 'PHASE_CHOOSE_ACTION';
                 },
+                hasCancelAttackButton: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.currentPhase === 'PHASE_CHOOSE_ATTACKING_TERRITORY';
+                },
                 showButtons: function() {
                     return (this.currentPhase === PHASE_PLAY_CARDS &&
                                 (this.hasPretendSet ||
                                  this.hasOptionalSet ||
                                  this.hasMandatorySet) ||
-                            (this.hasChooseActionButtons));
+                            (this.hasChooseActionButtons || this.hasCancelAttackButton));
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
@@ -503,7 +507,11 @@ class CalcGame {
             },
             methods: {
                 clickAttack() {
+                    //console.log("Attack")
                     THIS.clickAttack();
+                },
+                clickCancelAttack() {
+                    THIS.clickCancelAttack();
                 },
                 clickPretend() {
                     THIS.clickPretend();
@@ -716,6 +724,10 @@ class CalcGame {
 
     getPlayerInstructionForPhaseChooseAttackingTerritory(player) {
         return "Choose which territory will conduct the attack";
+    }
+
+    clickCancelAttack() {
+        console.log("cancel");
     }
 
     /* beginPhaseChooseAction *************************************************/

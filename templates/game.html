@@ -66,27 +66,31 @@
             <tr>
               <td class="primary-td">
 
-                <div v-show="hasPretendSet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
-                  <span v-on:click="clickPretend">You cannot play a set of prize cards this turn.<br>Click this button to move on.</span>
+                <div v-show="hasPretendSet && currentPhase === 'PHASE_PLAY_CARDS'" v-on:click="clickPretend" class="button-pretend">
+                  <span>You cannot play a set of prize cards this turn.<br>Click this button to move on.</span>
                 </div>
 
-                <div v-show="hasOptionalSet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
-                  <span v-on:click="clickDoNotPlay">Do not play a set of three prize cards</span>
+                <div v-show="hasOptionalSet && currentPhase === 'PHASE_PLAY_CARDS'" v-on:click="clickDoNotPlay" class="button-pretend">
+                  <span>Do not play a set of three prize cards</span>
                 </div>
 
-                <div v-show="hasOptionalSet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-play">
-                  <span v-on:click="clickPlayCards">Play a set of three prize cards to receive [[nextPrize]] armies.</span>
+                <div v-show="hasOptionalSet && currentPhase === 'PHASE_PLAY_CARDS'" v-on:click="clickPlayCards" class="button-play">
+                  <span>Play a set of three prize cards to receive [[nextPrize]] armies.</span>
                 </div>
 
-                <div v-show="hasMandatorySet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-must-play">
-                  <span v-on:click="clickMustPlayCards">
+                <div v-show="hasMandatorySet && currentPhase === 'PHASE_PLAY_CARDS'" v-on:click="clickMustPlayCards" class="button-must-play">
+                  <span>
                     Play a set of three prize cards to receive [[nextPrize]] armies.
                     You must click this button since you have 5 or more cards.
                   </span>
                 </div>
 
-                <div v-show="hasChooseActionButtons" class="button-attack">
-                  <span v-on:click="clickAttack">Attack</span>
+                <div v-show="hasChooseActionButtons" v-on:click="clickAttack" class="button-attack">
+                  <span>Attack</span>
+                </div>
+
+                <div v-show="hasCancelAttackButton" v-on:click="clickCancelAttack" class="button-pass">
+                  <span>Cancel attack</span>
                 </div>
 
                 <div v-show="hasChooseActionButtons" class="button-attack">
