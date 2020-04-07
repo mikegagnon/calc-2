@@ -1020,6 +1020,7 @@ class CalcGame {
             .animate(this.divId, rollResult, function() {
                 THIS.beginPhaseDisplayRollResult();
             });
+        this.setInstructions();
         this.saveState();
     }
 
