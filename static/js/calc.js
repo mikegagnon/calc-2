@@ -21,7 +21,7 @@ const DEFAULT_CONFIG = {
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
         //0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
-        //0: ["heart", "heart", "heart"],
+        0: ["heart", "heart", "heart"],
     }
 
 };
@@ -619,24 +619,25 @@ class CalcGame {
 
     explodeTerritory(territory) {
 
-        //const angles = ["angle-a", "angle-b"];
+        const angles = ["exploding-a", "exploding-b"];
 
         // numExplosionsOnThisTerritoryAlready
-        //const n = this.app.explosions.filter(e => e.territoryIndex === territory.index).length;
+        const n = this.app.explosions.filter(e => e.territoryIndex === territory.index).length;
 
-        //const angle = angles[n % angles.length];
+        const angle = angles[n % angles.length];
 
         const explosionId = Math.floor(Math.random() * 9999999);
         this.app.explosions.push({
             territoryIndex: territory.index,
             id: explosionId, // avoiding mersene here
             color: territory.color,
-            //angle: angle,
+            angle: angle,
+            classes: [territory.color, angle],
         });
 
         const THIS = this;
         setTimeout(function(){
-            THIS.removeExplosion(explosionId);
+            //THIS.removeExplosion(explosionId);
         }, this.config.explosionDuration);
 
         // TODO: timeout

@@ -21,9 +21,9 @@
         <!-- explosions -->
         <div
           v-for="explosion in explosions"
-          class="territory exploding"
+          class="territory"
           v-bind:key="explosion.id"
-          v-bind:class="[explosion.color, , explosion.angle]"
+          v-bind:class="[explosion.classes]"
           v-bind:style="{top: territories[explosion.territoryIndex].top, left: territories[explosion.territoryIndex].left}"
           >
         </div>

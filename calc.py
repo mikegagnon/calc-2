@@ -60,6 +60,7 @@ def two_boards():
         "init": "two-boards",
         "serverOnline": False,
     }
+    #abort(404)
     return render_template("game.html", gameConfig=gameConfig)
 
 
