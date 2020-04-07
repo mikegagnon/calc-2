@@ -1,5 +1,8 @@
 // TODO: only current player can undo/redo
 // TODO: phaeReinforceArmiesAvailableForPlacement 
+// TODO: elimination
+// TODO: resignation
+// TODO: detect victory
 
 const TESTING = true;
 
@@ -562,7 +565,7 @@ class CalcGame {
             this.observedExplosions.add(e.id);
         }*/
 
-        // 
+        // TODO: this should not be here?
         const oldExplosions = new Set(this.app.explosions.map(e => e.id));
         const newExplosions = []
         for (let i = 0; i < state.explosions.length; i++) {
@@ -796,6 +799,15 @@ class CalcGame {
             const a = this.app.currentPlayer.fortifyNumArmies;
             const b = territory.numPieces;
             return `${a}/${b}`;
+
+        // TODO: more general phase condition
+        } else if (this.app &&
+            this.app.currentPhase === PHASE_CALCULATE &&
+            this.app.currentPlayer.simAttackForce > 0 &&
+            this.app.currentPlayer.simAttackingTerritoryIndex === territory.index) {
+            const a = this.app.currentPlayer.simAttackForce;
+            const b = territory.numPieces;
+            return `${a}/${b}`;
         } else {
             return territory.numPieces;
         }
@@ -976,8 +988,14 @@ class CalcGame {
         this.setClickableForPhaseChooseAttackingTerritory();
     }
 
-    clickTerritoryForPhaseCalculate() {
+    clickTerritoryForPhaseCalculate(territory) {
         console.log("click clickTerritoryForPhaseCalculate");
+        territory.highlighted = true;
+        territory.highlightColor = "highlight-red";
+        this.app.currentPlayer.simAttackForce = 1; // ddd
+        this.app.currentPlayer.simAttackingTerritoryIndex = territory.index;
+        this.explodeTerritory(territory);
+        //this.beginPhaseChooseDefendingTerritory();
     }
 
     getPlayerInstructionForPhaseCalculate() {
