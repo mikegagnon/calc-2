@@ -602,6 +602,7 @@ class CalcGame {
             data: {
                 players: this.getInitPlayers(),
                 territories: this.getVacantTerritories(),
+                simTerritories: this.getSimTerritories(),
                 prizeSchedule: this.getInitPrizeSchedule(),
                 explosions: [],
                 currentPhase: "undefined",
@@ -738,6 +739,9 @@ class CalcGame {
                 territoryId: function(territory) {
                     return THIS.id + "-" + territory.index;
                 },
+                simTerritoryId: function(territory) {
+                    return THIS.id + "-sim-" + territory.index;
+                },
                 playerNameText: function(player) {
                     const c = this.numTotalCards(player);
                     if (c === 0) {
@@ -766,6 +770,9 @@ class CalcGame {
                 territoryText: function(territory) {
                     return THIS.territoryText(territory);
                 },
+                simTerritoryText: function(territory) {
+                    return THIS.simTerritoryText(territory);
+                }
             },
             delimiters: ["[[","]]"],
         });
@@ -788,6 +795,10 @@ class CalcGame {
         } else {
             return territory.numPieces;
         }
+    }
+
+    simTerritoryText(territory) {
+        return "1";
     }
 
     clickTerritory(territory) {
@@ -1842,6 +1853,15 @@ class CalcGame {
         return players;
     }
 
+    getSimTerritories() {
+        //return getStandardTerritories();
+        const territories = getStandardTerritories();
+        for (let i = 0; i < territories.length; i++) {
+            const territory = territories[i];
+            territory.numPieces = -1;
+        }
+       return territories;
+    }
 
     getVacantTerritories() {
         const territories = getStandardTerritories();

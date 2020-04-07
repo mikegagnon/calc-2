@@ -40,6 +40,19 @@
             [[territoryText(territory)]]
         </div>
 
+        <!-- simulated territories -->
+        <div
+          class="territory"
+          v-for="territory in simTerritories"
+          v-bind:key="simTerritoryId(territory)" 
+          v-bind:style="{top:territory.top + 5, left:territory.left + 5}"
+          v-bind:class="[territory.color, territory.highlightColor, {clickable: territoryClickable(territory), highlighted: territory.highlighted, hidden: territoryHidden(territory)}]"
+          v-on:click="clickSimTerritory(territory);"
+          >
+            [[simTerritoryText(territory)]]
+        </div>
+
+
         <div class="dice console-component" v-bind:class="[{hidden: !showDice}]">
           <table>
             <tr>
