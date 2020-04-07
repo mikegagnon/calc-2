@@ -818,14 +818,14 @@ class CalcGame {
             this.clickTerritoryForPhaseReinforce(territory);
         } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
             this.clickTerritoryForPhaseChooseAttackingTerritory(territory);
-        } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
-            this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
         } else if (this.app.currentPhase === PHASE_CHOOSE_DEFENDING_TERRITORY) {
             this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
         } else if (this.app.currentPhase === PHASE_FORTIFY) {
             this.clickTerritoryForPhaseFortify(territory);
         } else if (this.app.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT) {
             this.clickTerritoryForPhaseFortifySelectRecipient(territory);
+        } else if (this.app.currentPhase === PHASE_CALCULATE) {
+            this.clickTerritoryForPhaseCalculate(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -878,6 +878,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseFortify(player);
         } else if (this.app.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT) {
             return this.getPlayerInstructionForPhaseFortifySelectRecipient(player);
+        } else if (this.app.currentPhase === PHASE_CALCULATE) {
+            return this.getPlayerInstructionForPhaseCalculate(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -963,6 +965,23 @@ class CalcGame {
     /* beginPhaseCalculate ****************************************************/
     beginPhaseCalculate() {
         this.app.currentPhase = PHASE_CALCULATE;
+        this.app.currentPlayer.simAttackForce = 0;
+        this.app.currentPlayer.simAttackingTerritoryIndex = -1;
+        this.setClickableForPhaseCalculate();
+        this.setInstructions();
+        this.saveState();
+    }
+
+    setClickableForPhaseCalculate() {
+        this.setClickableForPhaseChooseAttackingTerritory();
+    }
+
+    clickTerritoryForPhaseCalculate() {
+        console.log("click clickTerritoryForPhaseCalculate");
+    }
+
+    getPlayerInstructionForPhaseCalculate() {
+        return "Choose which territory will conduct the simulated attack";
     }
 
     /* beginPhaseFortifySelectRecipient ***************************************/
