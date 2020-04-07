@@ -695,6 +695,9 @@ class CalcGame {
                 clickCancelFortification() {
                     THIS.clickCancelFortification();
                 },
+                clickPass() {
+                    THIS.clickPass();
+                },
                 clickRepeatAttack() {
                     THIS.clickRepeatAttack();
                 },
