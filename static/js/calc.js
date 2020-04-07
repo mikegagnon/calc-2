@@ -784,6 +784,9 @@ class CalcGame {
                 clickTerritory: function(territory) {
                     THIS.clickTerritory(territory);
                 },
+                clickSimTerritory: function(territory) {
+                    THIS.clickSimTerritory(territory);
+                },
                 territoryText: function(territory) {
                     return THIS.territoryText(territory);
                 },
@@ -824,7 +827,7 @@ class CalcGame {
     }
 
     simTerritoryText(territory) {
-        return "1";
+        return territory.numPieces;
     }
 
     clickTerritory(territory) {
@@ -1000,6 +1003,7 @@ class CalcGame {
         this.explodeTerritory(territory);
         if (territory.index === player.simAttackingTerritoryIndex) {
             this.incrementSimNumArmies(territory);
+            this.setClickableForPhaseCalculateChooseDefendingTerritory();
             this.setInstructions();
         } else {
             player.simAttackPath.push(territory.index);
@@ -1008,6 +1012,8 @@ class CalcGame {
             simTerritory.color = player.color;
 
             this.setClickableForPhaseCalculateChooseDefendingTerritory();
+            this.setInstructions();
+
             //selectFreeMoveRecipient(app, territory);
             /*this.setClickableNone();
             //setInstructions(app);
@@ -1094,6 +1100,10 @@ class CalcGame {
         } else {
             return "Click the simulated attacking territory again to add another army to the simulated attack. Or, choose which territory to attack in the simulation. Or, cancel the simulated attack.";
         }
+    }
+
+    clickSimTerritory(territory) {
+        territory.numPieces++;
     }
 
     /* beginPhaseCalculate ****************************************************/
