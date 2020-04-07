@@ -170,8 +170,11 @@
     var GAME;
     var CALC1;
     var CALC2;
+    var DICE;
+
     if (GAME_CONFIG.init === "hotseat") {
-      GAME = new CalcGame("#gameTemplate", "#calc-main", null, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));
+      DICE = new Dice();
+      GAME = new CalcGame("#gameTemplate", "#calc-main", null, DICE, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));
     } else if (GAME_CONFIG.init === "two-boards") {
       /*var GAME_CONFIG_2 = $.extend({}, GAME_CONFIG, DEFAULT_CONFIG);
       GAME_CONFIG_2.username = "Player 2";
@@ -188,14 +191,16 @@
           username: "Bob",
       };
 
+      DICE = new Dice(0);
       LOCAL_SERVER = new LocalCalcServer();
-      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, DICE, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, DICE, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 
 
     } else {
+      DICE = new Dice();
       REMOTE_SERVER = new RemoteCalcServer(GAME_CONFIG);
-      GAME = new CalcGame("#gameTemplate", "#calc-main", REMOTE_SERVER, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));
+      GAME = new CalcGame("#gameTemplate", "#calc-main", REMOTE_SERVER, DICE, $.extend({}, GAME_CONFIG, DEFAULT_CONFIG));
     }
   </script>
 </html>

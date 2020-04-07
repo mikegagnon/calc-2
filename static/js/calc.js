@@ -37,6 +37,186 @@ const PHASE_CHOOSE_ACTION = "PHASE_CHOOSE_ACTION";
 const PHASE_CHOOSE_ATTACKING_TERRITORY = "PHASE_CHOOSE_ATTACKING_TERRITORY";
 const PHASE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CHOOSE_DEFENDING_TERRITORY";
 
+/* DICE ***********************************************************************/
+
+class Dice {
+
+    // omit seed parameter for randomized seed
+    constructor(seed) {
+        this.random = new MersenneTwister(seed);
+    }
+
+    removeHighlights() {
+        $(".dice img").removeClass("diceHighlight");
+    }
+
+    hide() {
+        $("#red-die-1").addClass("hidden");
+        $("#red-die-2").addClass("hidden");
+        $("#red-die-3").addClass("hidden");
+        $("#white-die-1").addClass("hidden");
+        $("#white-die-2").addClass("hidden");
+    }
+
+    show() {
+        $("#red-die-1").removeClass("hidden");
+        $("#red-die-2").removeClass("hidden");
+        $("#red-die-3").removeClass("hidden");
+        $("#white-die-1").removeClass("hidden");
+        $("#white-die-2").removeClass("hidden");
+    }
+
+    randValues(numRed, numWhite) {
+        if (numRed < 1 || numRed > 3 || numWhite < 1 || numWhite > 2) {
+            throw "Bad randValues";
+        }
+
+        const redValues = [];
+        const whiteValues = [];
+
+        for (let i = 0; i < numRed; i++) {
+            redValues.push(Math.floor(this.random.random() * 6) + 1);
+        }
+        for (let i = 0; i < numWhite; i++) {
+            whiteValues.push(Math.floor(this.random.random() * 6) + 1);
+        }
+
+        const numWins = Math.min(numRed, numWhite);
+        const redValuesSorted = [...redValues].sort().reverse();
+        const whiteValuesSorted = [...whiteValues].sort().reverse();
+        let numRedWins = 0;
+        let numWhiteWins = 0;
+        const redWinIndices = [];
+        const whiteWinIndices = [];
+
+        for (let i = 0; i < numWins; i++) {
+            const redValue = redValuesSorted[i];
+            const whiteValue = whiteValuesSorted[i];
+
+            if (redValue > whiteValue) {
+                numRedWins++;
+                for (let j = 0; j < redValues.length; j++) {
+                    if (redValues[j] == redValue && !redWinIndices.includes(j)) {
+                        redWinIndices.push(j);
+                        break;
+                    }
+                }
+            } else {
+                numWhiteWins++;
+                for (let j = 0; j < whiteValues.length; j++) {
+                    if (whiteValues[j] == whiteValue && !whiteWinIndices.includes(j)) {
+                        whiteWinIndices.push(j);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return {
+            "red": redValues,
+            "white": whiteValues,
+            "numRedWins": numRedWins,
+            "numWhiteWins": numWhiteWins,
+            "redWinIndices": redWinIndices,
+            "whiteWinIndices": whiteWinIndices,
+        };
+    }
+
+    roll(divId, finalValue, numRolls, callback) {
+        console.log("roll", divId, finalValue, numRolls);
+        const delay = 80;
+        let count = 0;
+        const interval = setInterval(function(){
+            let done = false;
+            count++;
+            let val;
+            if (count === numRolls) {
+                clearInterval(interval);
+                val = finalValue - 1;
+                done = true;
+            } else {
+                val = Math.floor(this.random.random() * 6);
+            }
+
+            $(`#${divId} img`).addClass("hidden")
+            $(`#${divId} img`).eq(val).removeClass("hidden");
+
+            if (done && callback) {
+                callback();
+            }
+
+        }, delay);
+    } 
+
+    highlightDice(finalValues) {
+        for (let i = 0; i < finalValues.redWinIndices.length; i++) {
+            const index = finalValues.redWinIndices[i];
+            const divId = `red-die-${index + 1}`;
+            const value = finalValues.red[index];
+            $(`#${divId} img`).eq(value - 1).addClass("diceHighlight");
+        }
+        for (let i = 0; i < finalValues.whiteWinIndices.length; i++) {
+            const index = finalValues.whiteWinIndices[i];
+            const divId = `white-die-${index + 1}`;
+            const value = finalValues.white[index];
+            $(`#${divId} img`).eq(value - 1).addClass("diceHighlight");
+        }
+
+        console.log(finalValues);
+    }
+
+    animate(finalValues, finalCallback) {
+        this.removeHighlights();
+        //this.hide();
+        let numRolls = 10;
+        const step = 10;
+        if (finalValues.red.length >= 1) {
+            console.log(1);
+            this.roll("red-die-1", finalValues.red[0], numRolls);
+            numRolls += step;
+        }
+        if (finalValues.red.length >= 2) {
+            this.roll("red-die-2", finalValues.red[1], numRolls);
+            numRolls += step;
+        } else {
+            $(`#red-die-2 img`).addClass("hidden");
+        }
+        if (finalValues.red.length >= 3) {
+            this.roll("red-die-3", finalValues.red[2], numRolls);
+            numRolls += step;
+        } else {
+            $(`#red-die-3 img`).addClass("hidden");
+        }
+        if (finalValues.white.length >= 1) {
+            let callback = false;
+            if (finalValues.white.length == 1) {
+                const THIS = this;
+                callback = function() {
+                    THIS.highlightDice(finalValues);
+                    finalCallback();
+                }
+            }
+
+            this.roll("white-die-1", finalValues.white[0], numRolls, callback);
+            numRolls += step;
+        }
+        if (finalValues.white.length >= 2) {
+            const THIS = this;
+            let callback = function() {
+                THIS.highlightDice(finalValues);
+                finalCallback();
+
+            }
+            this.roll("white-die-2", finalValues.white[1], numRolls, callback);
+        } else {
+            $(`#white-die-2 img`).addClass("hidden");
+        }
+
+        this.show();
+
+    }
+}
+
 /* RemoteCalcServer ***********************************************************/
 
 class RemoteCalcServer {
@@ -232,12 +412,14 @@ class LocalCalcServer {
 
 class CalcGame {
 
-    constructor(templateDivId, divId, server, config) {
+    constructor(templateDivId, divId, server, dice, config) {
         $(templateDivId + " .calc-container").clone().appendTo(divId);
         this.id = Math.floor(Math.random() * 999999999); // intentionally avoiding MersenneTwister here
         this.serverCount = 0;
         this.config = config;
         this.observedExplosions = new Set();
+        this.dice = dice;
+
         //this.explosionTimeouts = {};
 
         if ("seed" in this.config) {
@@ -665,7 +847,7 @@ class CalcGame {
 
         const angle = angles[n % angles.length];
 
-        const explosionId = Math.floor(Math.random() * 9999999);
+        const explosionId = Math.floor(Math.random() * 9999999); // intentionally avoiding mersene twister
         this.app.explosions.push({
             territoryIndex: territory.index,
             id: explosionId, // avoiding mersene here
@@ -766,7 +948,7 @@ class CalcGame {
         } else {
             //app.showDice = true;
             this.selectDefendingTerritory(territory);
-            //const rollResult = app.attackRollResult;
+            //dddconst rollResult = app.attackRollResult;
             //DICE.animate(rollResult, function(){ beginPhaseDisplayAttackResult(app); });
             //*/
         }
@@ -787,13 +969,22 @@ class CalcGame {
         this.setClickableNone();
         defendingTerritory.highlighted = true;
         defendingTerritory.highlightColor = "highlight-grey";
-
+        this.app.currentPlayer.defendingTerritoryIndex = defendingTerritory.index;
+        this.app.currentPlayer.rollResult = this.getRandomAttackRoll(defendingTerritory);
+        this.beginPhaseAnimateRoll();
 
         /*app.phase = PLAYERS_MAIN_PHASE_ANIMATE_ATTACK;
         app.defendingTerritoryIndex = defendingTerritory.index;
         app.attackRollResult = getRandomAttackRoll(app);
         setInstructions(app);*/
     }
+
+    getRandomAttackRoll(defendingTerritory) {
+        const numRed = Math.min(app.attackForce, 3);
+        const numWhite = Math.min(defendingTerritory.numPieces, 2);
+        return this.dice.randValues(numRed, numWhite);
+    }
+
 
 
     /* beginPhaseChooseAttackingTerritory *************************************/
