@@ -577,28 +577,8 @@ class CalcGame {
         }
         this.app.explosions = state.explosions;
 
-
-
-        /*console.log(this.observedExplosions);
-        console.log(this.app.explosions);*/
-
-
-        for (let i = 0; i < this.app.territories.length; i++) {
-            const territory = this.app.territories[i];
-            /*if (territory.explodeColor) {
-                if (i in this.explosionTimeouts) {
-                    const ref = this.explosionTimeouts[i];
-                    clearTimeout(ref);
-                    territory.explodeColor = false;
-                }
-                const THIS = this;
-                
-                // We delay creating the explosion so that VUE has the chance to erase the previous explosion
-                setTimeout(function() {
-                    territory.explodeColor = territory.color;
-                    THIS.explosionTimeouts[i] = setTimeout(function(){territory.explodeColor = null}, THIS.config.explosionDuration);
-                }, 1);
-            }*/
+        if (this.app.currentPhase === PHASE_ANIMATE_ROLL) {
+            this.dice.animate(this.divId, this.app.currentPlayer.rollResult, function(){ });
         }
     }
 
@@ -921,6 +901,7 @@ class CalcGame {
     beginPhaseAnimateRoll() {
         this.setClickableNone();
         //this.app.c
+        this.app.currentPhase = PHASE_ANIMATE_ROLL;
         const rollResult = this.app.currentPlayer.rollResult;
         const THIS = this;
         this.app.currentPlayer.showDice = true;
@@ -929,6 +910,7 @@ class CalcGame {
             .animate(this.divId, rollResult, function() {
                 THIS.beginPhaseDisplayRollResult();
             });
+        this.saveState();
     }
 
     getPlayerInstructionForPhaseAnimateRoll() {

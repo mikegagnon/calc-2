@@ -243,10 +243,11 @@
           username: "Bob",
       };
 
-      DICE = new Dice(0);
+      DICE1 = new Dice(0);
+      DICE2 = new Dice(1);
       LOCAL_SERVER = new LocalCalcServer();
-      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, DICE, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, DICE, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, DICE1, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
+      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, DICE2, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
 
 
     } else {
