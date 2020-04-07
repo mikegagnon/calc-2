@@ -619,7 +619,7 @@ class CalcGame {
 
     explodeTerritory(territory) {
 
-        const angles = ["exploding-a", "exploding-b"];
+        const angles = ["exploding-a", "exploding-b", "exploding-c", "exploding-d"];
 
         // numExplosionsOnThisTerritoryAlready
         const n = this.app.explosions.filter(e => e.territoryIndex === territory.index).length;
@@ -637,7 +637,7 @@ class CalcGame {
 
         const THIS = this;
         setTimeout(function(){
-            //THIS.removeExplosion(explosionId);
+            THIS.removeExplosion(explosionId);
         }, this.config.explosionDuration);
 
         // TODO: timeout

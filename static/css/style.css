@@ -146,12 +146,54 @@ body {
 
 @keyframes exploding-animation-b {
     0% {
+        transform: scale(1) rotate(22.5deg);
+        opacity: 1;
+
+    }
+    100% {
+        transform: scale(5) rotate(22.5deg);
+        opacity: 0;
+    }
+}
+
+.exploding-c {
+    border: 0px;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    animation: exploding-animation-c 2.5s;
+    animation-timing-function: linear; /* or: ease, ease-in, ease-in-out, linear, cubic-bezier(x1, y1, x2, y2) */
+}
+
+@keyframes exploding-animation-c {
+    0% {
         transform: scale(1) rotate(45deg);
         opacity: 1;
 
     }
     100% {
         transform: scale(5) rotate(45deg);
+        opacity: 0;
+    }
+}
+
+.exploding-d {
+    border: 0px;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    animation: exploding-animation-d 2.5s;
+    animation-timing-function: linear; /* or: ease, ease-in, ease-in-out, linear, cubic-bezier(x1, y1, x2, y2) */
+}
+
+@keyframes exploding-animation-d {
+    0% {
+        transform: scale(1) rotate(67.5deg);
+        opacity: 1;
+
+    }
+    100% {
+        transform: scale(5) rotate(67.5deg);
         opacity: 0;
     }
 }
