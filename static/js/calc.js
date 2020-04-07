@@ -20,7 +20,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
-        0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
+        //0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
         //0: ["heart", "heart", "heart"],
     }
 
@@ -618,11 +618,20 @@ class CalcGame {
     }
 
     explodeTerritory(territory) {
+
+        //const angles = ["angle-a", "angle-b"];
+
+        // numExplosionsOnThisTerritoryAlready
+        //const n = this.app.explosions.filter(e => e.territoryIndex === territory.index).length;
+
+        //const angle = angles[n % angles.length];
+
         const explosionId = Math.floor(Math.random() * 9999999);
         this.app.explosions.push({
             territoryIndex: territory.index,
             id: explosionId, // avoiding mersene here
             color: territory.color,
+            //angle: angle,
         });
 
         const THIS = this;

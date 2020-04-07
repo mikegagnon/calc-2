@@ -123,14 +123,22 @@ body {
     animation-timing-function: linear; /* or: ease, ease-in, ease-in-out, linear, cubic-bezier(x1, y1, x2, y2) */
 }
 
+.angle-a {
+    transform: rotate(0deg);
+}
+
+.angle-b {
+    transform: rotate(45deg);
+}
+
 @keyframes exploding-animation {
     0% {
-        transform: scale(1) rotate(0deg);
+        transform: scale(1)
         opacity: 1;
 
     }
     100% {
-        transform: scale(5) rotate(0deg);
+        transform: scale(5)
         opacity: 0;
     }
 }
