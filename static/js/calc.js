@@ -667,9 +667,7 @@ class CalcGame {
     beginPhaseReinforce() {
         console.log("beginPhaseReinforce");
         this.app.currentPhase = PHASE_REINFORCE;
-        //this.app.currentPlayer.continentBonus = 0;
         this.app.currentPlayer.armiesAvailableForPlacementReinforce = this.getReinforceArmies().numReinforcements;
-        //this.app.currentPlayer.ar
         this.setClickableForPhaseReinforce();
         this.setInstructions();
         this.saveState();
