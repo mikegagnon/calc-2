@@ -1029,12 +1029,19 @@ class CalcGame {
     setClickableForPhaseCalculateChooseDefendingTerritory() {
         this.setClickableNone();
         this.setSimClickableNone();
-        
+
         const player = this.app.currentPlayer;
 
         const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
         if (player.simAttackForce < simAttackingTerritory.numPieces - 1) {
             simAttackingTerritory.clickableByPlayerIndex = this.app.currentPlayer.index;    
+        }
+
+        // If there are no sim attack forces available to be placed, then 
+        // nothing can be clicked
+        console.log("this.getNumAvailableSimForces()", this.getNumAvailableSimForces());
+        if (this.getNumAvailableSimForces() === 0) {
+            return;
         }
 
         let locus;
@@ -1055,6 +1062,22 @@ class CalcGame {
             const territory = possibleDefenders[i];
             territory.clickableByPlayerIndex = this.app.currentPlayer.index;
         }
+
+        for (let i = 0; i < player.simAttackPath.length; i++) {
+            const index = player.simAttackPath[i];
+            this.app.simTerritories[index].clickableByPlayerIndex = player.index;
+        }
+    }
+
+    getNumAvailableSimForces() {
+        const player = this.app.currentPlayer;
+        let numAvailable = this.app.currentPlayer.simAttackForce;
+        for (let i = 0; i < player.simAttackPath.length; i++) {
+            const index = player.simAttackPath[i];
+            numAvailable -= this.app.simTerritories[index].numPieces;
+        }
+
+        return numAvailable;
     }
 
     setSimClickableNone() {
