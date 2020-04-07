@@ -475,12 +475,16 @@ class CalcGame {
                     return this.thisPlayer.index === this.currentPlayer.index &&
                         this.numTotalCards(this.currentPlayer) >= 5;
                 },
+                hasChooseActionButtons: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.currentPhase === 'PHASE_CHOOSE_ACTION';
+                },
                 showButtons: function() {
                     return (this.currentPhase === PHASE_PLAY_CARDS &&
                                 (this.hasPretendSet ||
                                  this.hasOptionalSet ||
                                  this.hasMandatorySet) ||
-                            (this.currentPhase === PHASE_CHOOSE_ACTION));
+                            (this.hasChooseActionButtons));
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
