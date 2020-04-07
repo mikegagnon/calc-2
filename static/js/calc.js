@@ -21,7 +21,7 @@ const DEFAULT_CONFIG = {
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
-        //0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
+        0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
         //0: ["heart", "heart", "heart"],
     }
 
@@ -476,10 +476,11 @@ class CalcGame {
                         this.numTotalCards(this.currentPlayer) >= 5;
                 },
                 showButtons: function() {
-                    return this.currentPhase === PHASE_PLAY_CARDS &&
-                        (this.hasPretendSet ||
-                         this.hasOptionalSet ||
-                         this.hasMandatorySet);
+                    return (this.currentPhase === PHASE_PLAY_CARDS &&
+                                (this.hasPretendSet ||
+                                 this.hasOptionalSet ||
+                                 this.hasMandatorySet) ||
+                            (this.currentPhase === PHASE_CHOOSE_ACTION));
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
@@ -681,7 +682,7 @@ class CalcGame {
         return "Choose to either: (1) attack, or (2) calculate an attack, or (3) end your turn by fortifying a territory, or (4) pass";
     }
 
-    /* beginPhaseReinforce ****************************************************/
+    /* beginPhaseReinforce ddd ****************************************************/
     
     beginPhaseReinforce() {
         console.log("beginPhaseReinforce");
