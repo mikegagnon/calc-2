@@ -35,6 +35,7 @@ const PHASE_PLAY_CARDS = "PHASE_PLAY_CARDS";
 const PHASE_REINFORCE = "PHASE_REINFORCE";
 const PHASE_CHOOSE_ACTION = "PHASE_CHOOSE_ACTION";
 const PHASE_CHOOSE_ATTACKING_TERRITORY = "PHASE_CHOOSE_ATTACKING_TERRITORY";
+const PHASE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CHOOSE_DEFENDING_TERRITORY";
 
 /* RemoteCalcServer ***********************************************************/
 
@@ -563,11 +564,7 @@ class CalcGame {
                     THIS.clickTerritory(territory);
                 },
                 territoryText: function(territory) {
-                    if (territory.numPieces === 0) {
-                        return "";
-                    } else {
-                        return territory.numPieces;
-                    }
+                    return THIS.territoryText(territory);
                 },
             },
             delimiters: ["[[","]]"],
@@ -575,7 +572,17 @@ class CalcGame {
         return app;
     }
 
-    /* Generic game logic *****************************************************/
+    /* Generic game logic ddd *****************************************************/
+
+    territoryText(territory) {
+        if (territory.numPieces === 0) {
+            return "";
+        } else if (this.app.currentPlayer.attackForce > 0 && this.app.currentPlayer.attackingTerritoryIndex === territory.index) {
+            return `${this.app.currentPlayer.attackForce}/${territory.numPieces}`;
+        } else {
+            return territory.numPieces;
+        }
+    }
 
     clickTerritory(territory) {
         if (!this.app.territoryClickable(territory)) {
@@ -590,6 +597,8 @@ class CalcGame {
             this.clickTerritoryForPhaseReinforce(territory);
         } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
             this.clickTerritoryForPhaseChooseAttackingTerritory(territory);
+        } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
+            this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -633,6 +642,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseChooseAction(player);
         } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
             return this.getPlayerInstructionForPhaseChooseAttackingTerritory(player);
+        } else if (this.app.currentPhase === PHASE_CHOOSE_DEFENDING_TERRITORY) {
+            return this.getPlayerInstructionForPhaseChooseDefendingTerritory(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -688,11 +699,30 @@ class CalcGame {
         }   
     }
 
+    /* beginPhaseChooseDefendingTerritory *************************************/
+
+    beginPhaseChooseDefendingTerritory() {
+        console.log("beginPhaseChooseDefendingTerritory");
+        this.app.currentPhase = PHASE_CHOOSE_DEFENDING_TERRITORY;
+        this.setInstructions();
+        this.saveState();
+    }
+
+    getPlayerInstructionForPhaseChooseDefendingTerritory(player) {
+        const attackingTerritory = this.app.territories[player.attackingTerritoryIndex];
+        if (player.attackForce === attackingTerritory.numPieces - 1) {
+            return "You cannot add any more armies to the attack. Choose which territory to attack. Or, cancel the attack.";
+        } else {
+            return "Click the attacking territory again to add another army to the attack. Or, choose which territory to attack. Or, cancel the attack.";                
+        }
+    }
+
     /* beginPhaseChooseAttackingTerritory *************************************/
     
     beginPhaseChooseAttackingTerritory() {
         this.app.currentPhase = PHASE_CHOOSE_ATTACKING_TERRITORY;
         this.app.currentPlayer.attackForce = 0;
+        this.app.currentPlayer.attackingTerritoryIndex = -1;
         this.setClickableForPhaseChooseAttackingTerritory();
         this.setInstructions();
         this.saveState();
@@ -716,11 +746,13 @@ class CalcGame {
         //this.app.currentPhase = PLAYERS_MAIN_PHASE_CHOOSE_DEFENDING_TERRITORY;
         //app.attackingTerritoryIndex = territory.index;
         this.app.currentPlayer.attackForce = 1;
+        this.app.currentPlayer.attackingTerritoryIndex = territory.index;
         this.explodeTerritory(territory);
 
         //setClickableDefenders(app);
-        this.setInstructions();
-        this.saveState();
+        //this.setInstructions();
+        //this.saveState();
+        this.beginPhaseChooseDefendingTerritory();
     }
 
     getPlayerInstructionForPhaseChooseAttackingTerritory(player) {
