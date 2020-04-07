@@ -47,24 +47,24 @@ class Dice {
         this.random = new MersenneTwister(seed);
     }
 
-    removeHighlights() {
-        $(".dice img").removeClass("diceHighlight");
+    removeHighlights(containerDivId) {
+        $(`${containerDivId} .dice img`).removeClass("diceHighlight");
     }
 
-    hide() {
-        $("#red-die-1").addClass("hidden");
-        $("#red-die-2").addClass("hidden");
-        $("#red-die-3").addClass("hidden");
-        $("#white-die-1").addClass("hidden");
-        $("#white-die-2").addClass("hidden");
+    hide(containerDivId) {
+        $(containerDivId + " .red-die-1").addClass("hidden");
+        $(containerDivId + " .red-die-2").addClass("hidden");
+        $(containerDivId + " .red-die-3").addClass("hidden");
+        $(containerDivId + " .white-die-1").addClass("hidden");
+        $(containerDivId + " .white-die-2").addClass("hidden");
     }
 
-    show() {
-        $("#red-die-1").removeClass("hidden");
-        $("#red-die-2").removeClass("hidden");
-        $("#red-die-3").removeClass("hidden");
-        $("#white-die-1").removeClass("hidden");
-        $("#white-die-2").removeClass("hidden");
+    show(containerDivId) {
+        $(containerDivId + " .red-die-1").removeClass("hidden");
+        $(containerDivId + " .red-die-2").removeClass("hidden");
+        $(containerDivId + " .red-die-3").removeClass("hidden");
+        $(containerDivId + " .white-die-1").removeClass("hidden");
+        $(containerDivId + " .white-die-2").removeClass("hidden");
     }
 
     randValues(numRed, numWhite) {
@@ -123,10 +123,11 @@ class Dice {
         };
     }
 
-    roll(divId, finalValue, numRolls, callback) {
+    roll(containerDivId, divId, finalValue, numRolls, callback) {
         console.log("roll", divId, finalValue, numRolls);
         const delay = 80;
         let count = 0;
+        const THIS = this;
         const interval = setInterval(function(){
             let done = false;
             count++;
@@ -136,11 +137,11 @@ class Dice {
                 val = finalValue - 1;
                 done = true;
             } else {
-                val = Math.floor(this.random.random() * 6);
+                val = Math.floor(THIS.random.random() * 6);
             }
 
-            $(`#${divId} img`).addClass("hidden")
-            $(`#${divId} img`).eq(val).removeClass("hidden");
+            $(`${containerDivId} .${divId} img`).addClass("hidden")
+            $(`${containerDivId} .${divId} img`).eq(val).removeClass("hidden");
 
             if (done && callback) {
                 callback();
@@ -149,71 +150,71 @@ class Dice {
         }, delay);
     } 
 
-    highlightDice(finalValues) {
+    highlightDice(containerDivId, finalValues) {
         for (let i = 0; i < finalValues.redWinIndices.length; i++) {
             const index = finalValues.redWinIndices[i];
-            const divId = `red-die-${index + 1}`;
+            const selector = `${containerDivId} .red-die-${index + 1} img`;
             const value = finalValues.red[index];
-            $(`#${divId} img`).eq(value - 1).addClass("diceHighlight");
+            $(selector).eq(value - 1).addClass("diceHighlight");
         }
         for (let i = 0; i < finalValues.whiteWinIndices.length; i++) {
             const index = finalValues.whiteWinIndices[i];
-            const divId = `white-die-${index + 1}`;
+            const selector = `${containerDivId} .white-die-${index + 1} img`;
             const value = finalValues.white[index];
-            $(`#${divId} img`).eq(value - 1).addClass("diceHighlight");
+            $(selector).eq(value - 1).addClass("diceHighlight");
         }
 
         console.log(finalValues);
     }
 
-    animate(finalValues, finalCallback) {
-        this.removeHighlights();
+    animate(containerDivId, finalValues, finalCallback) {
+        this.removeHighlights(containerDivId);
         //this.hide();
         let numRolls = 10;
         const step = 10;
         if (finalValues.red.length >= 1) {
             console.log(1);
-            this.roll("red-die-1", finalValues.red[0], numRolls);
+            this.roll(containerDivId, "red-die-1", finalValues.red[0], numRolls);
             numRolls += step;
         }
         if (finalValues.red.length >= 2) {
-            this.roll("red-die-2", finalValues.red[1], numRolls);
+            this.roll(containerDivId, "red-die-2", finalValues.red[1], numRolls);
             numRolls += step;
         } else {
-            $(`#red-die-2 img`).addClass("hidden");
+            $(`${containerDivId} .red-die-2 img`).addClass("hidden");
         }
         if (finalValues.red.length >= 3) {
-            this.roll("red-die-3", finalValues.red[2], numRolls);
+            this.roll(containerDivId, "red-die-3", finalValues.red[2], numRolls);
             numRolls += step;
         } else {
-            $(`#red-die-3 img`).addClass("hidden");
+            $(`${containerDivId} .red-die-3 img`).addClass("hidden");
         }
         if (finalValues.white.length >= 1) {
             let callback = false;
             if (finalValues.white.length == 1) {
                 const THIS = this;
                 callback = function() {
-                    THIS.highlightDice(finalValues);
+                    THIS.highlightDice(containerDivId, finalValues);
                     finalCallback();
                 }
             }
 
-            this.roll("white-die-1", finalValues.white[0], numRolls, callback);
+            this.roll(containerDivId, "white-die-1", finalValues.white[0], numRolls, callback);
             numRolls += step;
         }
         if (finalValues.white.length >= 2) {
             const THIS = this;
             let callback = function() {
-                THIS.highlightDice(finalValues);
+                THIS.highlightDice(containerDivId, finalValues);
                 finalCallback();
 
             }
-            this.roll("white-die-2", finalValues.white[1], numRolls, callback);
+            this.roll(containerDivId, "white-die-2", finalValues.white[1], numRolls, callback);
         } else {
-            $(`#white-die-2 img`).addClass("hidden");
+            $(`${containerDivId } .white-die-2 img`).addClass("hidden");
         }
 
-        this.show();
+        this.show(containerDivId);
 
     }
 }
@@ -420,6 +421,8 @@ class CalcGame {
         this.config = config;
         this.observedExplosions = new Set();
         this.dice = dice;
+        this.divId = divId;
+        //this.dice.containerDivId = "divId";
 
         //this.explosionTimeouts = {};
 
@@ -437,7 +440,7 @@ class CalcGame {
             this.online = false;
         }
         
-        this.app = this.initApp(divId);
+        this.app = this.initApp(this.divId);
 
         this.loadNewPlayer();
 
@@ -640,6 +643,9 @@ class CalcGame {
 
                     throw "No active player in app:computed";
                 },
+                showDice: function() {
+                    return this.currentPlayer.showDice;
+                },
                 thisPlayer: function() {
                     return this.players[this.thisPlayerIndex];
                 },
@@ -797,7 +803,7 @@ class CalcGame {
         const newPlayerIndex = (player.index + 1) % this.app.players.length;
         const nextPlayer = this.app.players[newPlayerIndex];
         nextPlayer.active = true;
-
+        nextPlayer.showDice = false;
         // This is the hack
         if (!this.online) {
             this.app.thisPlayerIndex = newPlayerIndex;
@@ -907,7 +913,7 @@ class CalcGame {
 
     /* beginPhaseDisplayRollResult ********************************************/
     
-    beginPhaseAnimateRoll() {
+    beginPhaseDisplayRollResult() {
         console.log("beginPhaseAnimateRoll");
     }
 
@@ -918,9 +924,10 @@ class CalcGame {
         //this.app.c
         const rollResult = this.app.currentPlayer.rollResult;
         const THIS = this;
+        this.app.currentPlayer.showDice = true;
         this
             .dice
-            .animate(rollResult, function() {
+            .animate(this.divId, rollResult, function() {
                 THIS.beginPhaseDisplayRollResult();
             });
     }

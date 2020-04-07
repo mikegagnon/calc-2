@@ -40,6 +40,50 @@
             [[territoryText(territory)]]
         </div>
 
+        <div class="dice" v-bind:class="[{hidden: !showDice}]">
+          <div class="red-die-1 red-die hidden">
+            <img src="{{ url_for('static', filename='img/red-die-1.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-2.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-3.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-4.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-5.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-6.png')}}">
+          </div>
+          <div class="red-die-2 red-die hidden">
+            <img src="{{ url_for('static', filename='img/red-die-1.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-2.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-3.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-4.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-5.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-6.png')}}">
+          </div>
+          <div class="red-die-3 red-die hidden">
+            <img src="{{ url_for('static', filename='img/red-die-1.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-2.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-3.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-4.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-5.png')}}">
+            <img src="{{ url_for('static', filename='img/red-die-6.png')}}">
+          </div>
+          <div class="white-die-1 white-die hidden">
+            <img src="{{ url_for('static', filename='img/white-die-1.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-2.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-3.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-4.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-5.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-6.png')}}">
+          </div>
+          <div class="white-die-2 white-die hidden">
+            <img src="{{ url_for('static', filename='img/white-die-1.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-2.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-3.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-4.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-5.png')}}">
+            <img src="{{ url_for('static', filename='img/white-die-6.png')}}">
+          </div>
+          <div class="help-link"><a target="_blank" href="{{ url_for('static', filename='help/dice.html')}}">Help</a></div>
+        </div>
+
         <!-- INSTRUCTIONS ----------------------------------------------------->      
         <div class="player-instructions console-component">
           <table>
