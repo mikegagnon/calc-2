@@ -750,7 +750,21 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseReinforce(territory) {
-        console.log(1);
+        territory.numPieces += 1;
+        this.app.currentPlayer.armiesAvailableForPlacement--;
+        this.explodeTerritory(territory);
+
+        // If this phase is over
+        if (this.getAllArmiesRemaining() === 0) {
+            this.beginPhaseChooseAction();
+        }
+        // If current player gets to go again
+        else {
+            this.setClickableForPhaseReinforce();
+            this.setInstructions();
+            this.saveState();
+        }
+
     }
 
     getPlayerInstructionForPhaseReinforce(player) {
