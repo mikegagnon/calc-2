@@ -692,6 +692,7 @@ class CalcGame {
     
     beginPhaseChooseAttackingTerritory() {
         this.app.currentPhase = PHASE_CHOOSE_ATTACKING_TERRITORY;
+        this.app.currentPlayer.attackForce = 0;
         this.setClickableForPhaseChooseAttackingTerritory();
         this.setInstructions();
         this.saveState();
@@ -727,7 +728,18 @@ class CalcGame {
     }
 
     clickCancelAttack() {
-        console.log("cancel");
+        this.removeHightlights();
+        this.beginPhaseChooseAction();
+
+        //console.log("cancel");
+    }
+
+    removeHightlights() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            territory.highlighted = false;
+            territory.highlightColor = "no-highlight";
+        }
     }
 
     /* beginPhaseChooseAction *************************************************/
