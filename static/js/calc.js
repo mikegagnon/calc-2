@@ -38,6 +38,7 @@ const PHASE_CHOOSE_ATTACKING_TERRITORY = "PHASE_CHOOSE_ATTACKING_TERRITORY";
 const PHASE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CHOOSE_DEFENDING_TERRITORY";
 const PHASE_ANIMATE_ROLL = "PHASE_ANIMATE_ROLL";
 const PHASE_CONCLUDE_ATTACK = "PHASE_CONCLUDE_ATTACK";
+const PHASE_CHOOSE_REPEAT_OR_CANCEL = "PHASE_CHOOSE_REPEAT_OR_CANCEL";
 
 /* DICE ***********************************************************************/
 
@@ -124,7 +125,6 @@ class Dice {
     }
 
     roll(containerDivId, divId, finalValue, numRolls, callback) {
-        console.log("roll", divId, finalValue, numRolls);
         const delay = 80;
         let count = 0;
         const THIS = this;
@@ -163,8 +163,6 @@ class Dice {
             const value = finalValues.white[index];
             $(selector).eq(value - 1).addClass("diceHighlight");
         }
-
-        console.log(finalValues);
     }
 
     animate(containerDivId, finalValues, finalCallback) {
@@ -173,7 +171,6 @@ class Dice {
         let numRolls = 10;
         const step = 10;
         if (finalValues.red.length >= 1) {
-            console.log(1);
             this.roll(containerDivId, "red-die-1", finalValues.red[0], numRolls);
             numRolls += step;
         }
@@ -674,12 +671,19 @@ class CalcGame {
                         }
                     }
                     return value;
+                },
+                phaseRepeatOrCancel: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.currentPhase === PHASE_CHOOSE_REPEAT_OR_CANCEL;
                 }
             },
             methods: {
                 clickAttack() {
                     //console.log("Attack")
                     THIS.clickAttack();
+                },
+                clickRepeatAttack() {
+                    THIS.clickRepeatAttack();
                 },
                 clickCancelAttack() {
                     THIS.clickCancelAttack();
@@ -817,6 +821,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseChooseDefendingTerritory(player);
         } else if (this.app.currentPhase === PHASE_ANIMATE_ROLL) {
             return this.getPlayerInstructionForPhaseAnimateRoll(player)
+        } else if (this.app.currentPhase === PHASE_CHOOSE_REPEAT_OR_CANCEL) {
+            return this.getPlayerInstructionForChooseRepeatOrCancel(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -891,6 +897,23 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
+    /* beginPhaseChooseRepeatOrCancel ********************************************/
+
+    beginPhaseChooseRepeatOrCancel() {
+        this.app.currentPhase = PHASE_CHOOSE_REPEAT_OR_CANCEL;
+        this.setInstructions();
+        this.saveState();
+    }
+
+    
+    getPlayerInstructionForChooseRepeatOrCancel(player) {
+        return "Repeat the same attack, or cancel the attack";
+    }
+
+    clickRepeatAttack() {
+        this.console.log("repeat");
+    }
+
     /* beginPhaseDisplayRollResult ********************************************/
     
     beginPhaseDisplayRollResult() {
@@ -945,6 +968,7 @@ class CalcGame {
 
             this.explodeTerritory(defendingTerritory);
 
+            // TODO: test
             this.beginPhaseChooseAction();
 
             //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_ATTACK_OR_PASS;
@@ -964,6 +988,7 @@ class CalcGame {
             }
             //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_REPEAT_OR_CANCEL;
             console.log("offerAgain");
+            this.beginPhaseChooseRepeatOrCancel();
         } else {
             //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_ATTACK_OR_PASS;
             console.log("do not offerAgain");
@@ -973,6 +998,8 @@ class CalcGame {
             if (numWhiteWins > 0) {
                 this.explodeTerritory(attackingTerritory);
             }
+
+            // TODO: test
             this.beginPhaseChooseAction();
         }
     }
@@ -1003,7 +1030,6 @@ class CalcGame {
     /* beginPhaseChooseDefendingTerritory *************************************/
 
     beginPhaseChooseDefendingTerritory() {
-        console.log("beginPhaseChooseDefendingTerritory");
         this.app.currentPhase = PHASE_CHOOSE_DEFENDING_TERRITORY;
         this.setClickableForPhaseChooseDefendingTerritory();
         this.setInstructions();
@@ -1161,14 +1187,12 @@ class CalcGame {
     }
 
     clickAttack() {
-        console.log(1);
         this.beginPhaseChooseAttackingTerritory();
     }
 
     /* beginPhaseReinforce ****************************************************/
     
     beginPhaseReinforce() {
-        console.log("beginPhaseReinforce");
         this.app.currentPhase = PHASE_REINFORCE;
         this.app.currentPlayer.armiesAvailableForPlacementReinforce = this.getReinforceArmies().numReinforcements;
         this.app.currentPlayer.receivedCardThisTurn = false;
