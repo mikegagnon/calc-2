@@ -1028,6 +1028,8 @@ class CalcGame {
 
     setClickableForPhaseCalculateChooseDefendingTerritory() {
         this.setClickableNone();
+        this.setSimClickableNone();
+        
         const player = this.app.currentPlayer;
 
         const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
@@ -1053,6 +1055,13 @@ class CalcGame {
             const territory = possibleDefenders[i];
             territory.clickableByPlayerIndex = this.app.currentPlayer.index;
         }
+    }
+
+    setSimClickableNone() {
+        for (let i = 0; i < this.app.simTerritories.length; i++) {
+            const territory = this.app.simTerritories[i];
+            territory.clickableByPlayerIndex = -1;
+        }   
     }
 
     getPlayerInstructionForPhaseCalculateChooseDefendingTerritory(player) {
