@@ -208,6 +208,7 @@ body {
 .primary-td {
     width: 100%;
     text-align: center;
+    padd
 }
 
 .cards-label {
@@ -269,7 +270,7 @@ body {
     text-decoration: none;
     display: inline-block;
     opacity: 80%;
-    margin-top: 5px;
+    margin-top: 0px;
 }
 
 .button-must-play:hover {
@@ -290,7 +291,7 @@ body {
     text-decoration: none;
     display: inline-block;
     opacity: 80%;
-    margin-top: 5px;
+    margin-top: 0px;
 }
 
 .button-attack:hover {
