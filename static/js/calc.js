@@ -764,11 +764,11 @@ class CalcGame {
         if (territory.index === this.app.currentPlayer.attackingTerritoryIndex) {
             this.incrementAttackForce(territory);
         } else {
-            /*app.showDice = true;
-            selectDefendingTerritory(app, territory);
-            const rollResult = app.attackRollResult;
-            DICE.animate(rollResult, function(){ beginPhaseDisplayAttackResult(app); });
-            */
+            //app.showDice = true;
+            this.selectDefendingTerritory(territory);
+            //const rollResult = app.attackRollResult;
+            //DICE.animate(rollResult, function(){ beginPhaseDisplayAttackResult(app); });
+            //*/
         }
 
         this.setInstructions();
@@ -781,6 +781,18 @@ class CalcGame {
         if (this.app.currentPlayer.attackForce === territory.numPieces - 1) {
             this.setClickableForPhaseChooseDefendingTerritory();
         }
+    }
+
+    selectDefendingTerritory(defendingTerritory) {
+        this.setClickableNone();
+        defendingTerritory.highlighted = true;
+        defendingTerritory.highlightColor = "highlight-grey";
+
+
+        /*app.phase = PLAYERS_MAIN_PHASE_ANIMATE_ATTACK;
+        app.defendingTerritoryIndex = defendingTerritory.index;
+        app.attackRollResult = getRandomAttackRoll(app);
+        setInstructions(app);*/
     }
 
 

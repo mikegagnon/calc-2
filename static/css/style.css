@@ -350,3 +350,7 @@ body {
 .highlight-red {
     border: 5px solid red;
 }
+
+.highlight-grey {
+    border: 5px solid grey;
+}
