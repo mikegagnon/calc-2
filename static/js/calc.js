@@ -753,7 +753,7 @@ class CalcGame {
     }
 
     getPlayerInstructionForPhaseChooseAction(player) {
-        return "Choose to either: (1) attack, or (2) calculate an attack, or (3) end your turn by fortifying a territory, or (4) pass";
+        return "Choose to either: (1) attack, or (2) calculate an attack, or (3) end your turn by fortifying a territory, or (4) end your turn by passing";
     }
 
     clickAttack() {
