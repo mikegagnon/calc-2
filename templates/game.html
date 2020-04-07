@@ -178,6 +178,10 @@
                   <span>Cancel attack</span>
                 </div>
 
+                <div v-show="phaseCalculate" v-on:click="clickCancelSimAttack" class="button-pass">
+                  <span>Cancel simulated attack</span>
+                </div>
+
                 <div v-show="phaseFortificySelectRecipient" v-on:click="clickCancelFortification" class="button-pass">
                   <span>Cancel fortification</span>
                 </div>

@@ -668,7 +668,8 @@ class CalcGame {
                             (this.hasChooseActionButtons ||
                              this.hasCancelAttackButton ||
                              this.phaseRepeatOrCancel ||
-                             this.phaseFortificySelectRecipient));
+                             this.phaseFortificySelectRecipient ||
+                             this.phaseCalculate));
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
@@ -692,6 +693,11 @@ class CalcGame {
                         (this.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT ||
                         this.currentPhase === PHASE_FORTIFY);
                 },
+                phaseCalculate: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        (this.currentPhase === PHASE_CALCULATE ||
+                        this.currentPhase === PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY);
+                }
             },
             methods: {
                 clickAttack() {
@@ -715,6 +721,9 @@ class CalcGame {
                 },
                 clickCancelAttack() {
                     THIS.clickCancelAttack();
+                },
+                clickCancelSimAttack() {
+                    THIS.clickCancelSimAttack();
                 },
                 clickPretend() {
                     THIS.clickPretend();
@@ -973,10 +982,13 @@ class CalcGame {
 
     // TODO: where else should we call this?
     removeHighlights() {
-        for (let i = 0; i < this.app.territories.length; i++) {
+        /*for (let i = 0; i < this.app.territories.length; i++) {
             const territory = this.app.territories[i];
             territory.highlighted = false;
-        }
+
+            ddd
+        }*/
+        this.removeHightlights(); // TODO: fix spelling error properly
     }
 
     /* beginPhaseCalculateChooseDefendingTerritory ****************************/
@@ -1082,6 +1094,12 @@ class CalcGame {
 
     getPlayerInstructionForPhaseCalculate() {
         return "Choose which territory will conduct the simulated attack";
+    }
+
+    // TODO: more cleanup
+    clickCancelSimAttack() {
+        this.removeHighlights();
+        this.beginPhaseChooseAction();
     }
 
     /* beginPhaseFortifySelectRecipient ***************************************/
