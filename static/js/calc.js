@@ -18,6 +18,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
+    simIterations: 1000,
     requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 42,
@@ -1050,8 +1051,19 @@ class CalcGame {
         }
     }
 
+    runCampaign() {
+        
+    }
+
     calculateProbability() {
-        return 32;
+        let wins = 0;
+        for (let i = 0; i < this.config.simIterations; i++) {
+            if (this.runCampaign()) {
+                wins++;
+            }
+        }
+
+        return Math.floor(wins / this.config.simIterations * 100);
     }
 
     setClickableForPhaseCalculateChooseDefendingTerritory() {
