@@ -39,6 +39,7 @@ const PHASE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CHOOSE_DEFENDING_TERRITORY";
 const PHASE_ANIMATE_ROLL = "PHASE_ANIMATE_ROLL";
 const PHASE_CONCLUDE_ATTACK = "PHASE_CONCLUDE_ATTACK";
 const PHASE_CHOOSE_REPEAT_OR_CANCEL = "PHASE_CHOOSE_REPEAT_OR_CANCEL";
+const PHASE_FORTIFY = "PHASE_FORTIFY";
 
 /* DICE ***********************************************************************/
 
@@ -787,6 +788,8 @@ class CalcGame {
             this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
         } else if (this.app.currentPhase === PHASE_CHOOSE_DEFENDING_TERRITORY) {
             this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
+        } else if (this.app.currentPhase === PHASE_FORTIFY) {
+            this.clickTerritoryForPhaseFortify(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -835,6 +838,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseAnimateRoll(player)
         } else if (this.app.currentPhase === PHASE_CHOOSE_REPEAT_OR_CANCEL) {
             return this.getPlayerInstructionForChooseRepeatOrCancel(player);
+        } else if (this.app.currentPhase === PHASE_FORTIFY) {
+            return this.getPlayerInstructionForPhaseFortify(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -909,7 +914,38 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
-    /* beginPhaseChooseRepeatOrCancel ********************************************/
+    /* beginPhaseFortify ******************************************************/
+    beginPhaseFortify() {
+        this.app.currentPhase = PHASE_FORTIFY;
+        this.app.currentPlayer.showDice = false;
+        this.removeHightlights();
+        this.setClickableForPhaseFortify();
+        this.setInstructions();
+        this.saveState();
+    }
+
+    clickTerritoryForPhaseFortify(territory) {
+        console.log("clickTerritoryForPhaseFortify");
+    }
+
+    getPlayerInstructionForPhaseFortify(player) {
+        return "Click one of your territories with at least 2 armies. Each time you click the territory, you will increase the number of armies that you will move to an adjacnet territory."
+    }
+
+    setClickableForPhaseFortify() {
+        const player = this.app.currentPlayer;
+
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (territory.color === player.color && territory.numPieces > 1) {
+                territory.clickableByPlayerIndex = player.index;
+            } else {
+                territory.clickableByPlayerIndex = -1;
+            }
+        }
+    }
+
+    /* beginPhaseChooseRepeatOrCancel *****************************************/
 
     beginPhaseChooseRepeatOrCancel() {
         this.app.currentPhase = PHASE_CHOOSE_REPEAT_OR_CANCEL;
@@ -1203,10 +1239,7 @@ class CalcGame {
     }
 
     clickFortify() {
-        this.removeHightlights();
-        this.app.currentPlayer.showDice = false;
-        console.log("fortify");
-        this.saveState();
+        this.beginPhaseFortify();
     }
 
     /* beginPhaseReinforce ****************************************************/
