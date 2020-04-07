@@ -53,6 +53,12 @@
         </div>
 
 
+        <div class="probability console-component" v-show="hasProbability">
+          [[probability]]
+        </div>
+
+
+
         <div class="dice console-component" v-bind:class="[{hidden: !showDice}]">
           <table>
             <tr>

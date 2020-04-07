@@ -611,6 +611,7 @@ class CalcGame {
                 prizeSchedule: this.getInitPrizeSchedule(),
                 explosions: [],
                 currentPhase: "undefined",
+                probability: -1,
 
                 // Non serialized state
                 undoAvailable: false,
@@ -697,6 +698,11 @@ class CalcGame {
                     return this.thisPlayer.index === this.currentPlayer.index &&
                         (this.currentPhase === PHASE_CALCULATE ||
                         this.currentPhase === PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY);
+                },
+                hasProbability: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        this.currentPlayer.simAttackPath &&
+                        this.currentPlayer.simAttackPath.length > 0;
                 }
             },
             methods: {
@@ -1152,9 +1158,7 @@ class CalcGame {
         return "Choose which territory will conduct the simulated attack";
     }
 
-    // TODO: more cleanup
     clickCancelSimAttack() {
-
         for (let i = 0; i < this.app.simTerritories.length; i++) {
             const territory = this.app.simTerritories[i];
             territory.clickableByPlayerIndex = -1;
