@@ -766,7 +766,7 @@ class CalcGame {
         this.explodeTerritory(territory);
 
         // If this phase is over
-        if (this.getAllArmiesRemainingReinforce() === 0) {
+        if (this.app.currentPlayer.armiesAvailableForPlacementReinforce === 0) {
             this.beginPhaseChooseAction();
         }
         // If current player gets to go again
@@ -782,14 +782,14 @@ class CalcGame {
         return this.getReinforceArmies().instruction;
     }
 
-    getAllArmiesRemainingReinforce() {
+    /*getAllArmiesRemainingReinforce() {
         let armiesRemaining = 0;
         for (let i = 0; i < this.app.players.length; i++) {
             const player = this.app.players[i];
             armiesRemaining += player.armiesAvailableForPlacementReinforce;
         }
         return armiesRemaining;
-    }
+    }*/
 
     /* beginPhasePlayCards ****************************************************/
 
