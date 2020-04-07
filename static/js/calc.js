@@ -34,6 +34,7 @@ const PHASE_DROP_THREE = "PHASE_DROP_THREE";
 const PHASE_PLAY_CARDS = "PHASE_PLAY_CARDS";
 const PHASE_REINFORCE = "PHASE_REINFORCE";
 const PHASE_CHOOSE_ACTION = "PHASE_CHOOSE_ACTION";
+const PHASE_CHOOSE_ATTACKING_TERRITORY = "PHASE_CHOOSE_ATTACKING_TERRITORY";
 
 /* RemoteCalcServer ***********************************************************/
 
@@ -579,6 +580,8 @@ class CalcGame {
             this.clickTerritoryForPhaseDropThree(territory);
         } else if (this.app.currentPhase === PHASE_REINFORCE) {
             this.clickTerritoryForPhaseReinforce(territory);
+        } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
+            this.clickTerritoryForPhaseChooseAttackingTerritory(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -620,6 +623,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseReinforce(player);
         } else if (this.app.currentPhase === PHASE_CHOOSE_ACTION) {
             return this.getPlayerInstructionForPhaseChooseAction(player);
+        } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
+            return this.getPlayerInstructionForPhaseChooseAttackingTerritory(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -675,6 +680,30 @@ class CalcGame {
         }   
     }
 
+    /* beginPhaseChooseAttackingTerritory *************************************/
+    
+    beginPhaseChooseAttackingTerritory() {
+        this.app.currentPhase = PHASE_CHOOSE_ATTACKING_TERRITORY;
+        this.setClickableForPhaseChooseAttackingTerritory();
+        this.setInstructions();
+        this.saveState();
+    }
+
+    setClickableForPhaseChooseAttackingTerritory() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            if (territory.color === this.app.currentPlayer.color && territory.numPieces > 1) {
+                territory.clickableByPlayerIndex = this.app.currentPlayer.index;
+            } else {
+                territory.clickableByPlayerIndex = -1;
+            }
+        }
+    }
+
+    getPlayerInstructionForPhaseChooseAttackingTerritory(player) {
+        return "Choose which territory will conduct the attack";
+    }
+
     /* beginPhaseChooseAction *************************************************/
     
     beginPhaseChooseAction() {
@@ -690,7 +719,8 @@ class CalcGame {
     }
 
     clickAttack() {
-        console.log("Attack!")
+        console.log(1);
+        this.beginPhaseChooseAttackingTerritory();
     }
 
     /* beginPhaseReinforce ****************************************************/
