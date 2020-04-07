@@ -479,11 +479,12 @@ class CalcGame {
                 },
                 hasChooseActionButtons: function() {
                     return this.thisPlayer.index === this.currentPlayer.index &&
-                        this.currentPhase === 'PHASE_CHOOSE_ACTION';
+                        this.currentPhase === PHASE_CHOOSE_ACTION;
                 },
                 hasCancelAttackButton: function() {
                     return this.thisPlayer.index === this.currentPlayer.index &&
-                        this.currentPhase === 'PHASE_CHOOSE_ATTACKING_TERRITORY';
+                        (this.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY ||
+                         this.currentPhase === PHASE_CHOOSE_DEFENDING_TERRITORY);
                 },
                 showButtons: function() {
                     return (this.currentPhase === PHASE_PLAY_CARDS &&
@@ -826,6 +827,7 @@ class CalcGame {
     }
 
     clickCancelAttack() {
+        this.app.currentPlayer.attackForce = -1;
         this.removeHightlights();
         this.beginPhaseChooseAction();
 
