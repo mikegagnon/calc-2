@@ -599,11 +599,12 @@ class CalcGame {
             this.clickTerritoryForPhaseChooseAttackingTerritory(territory);
         } else if (this.app.currentPhase === PHASE_CHOOSE_ATTACKING_TERRITORY) {
             this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
+        } else if (this.app.currentPhase === PHASE_CHOOSE_DEFENDING_TERRITORY) {
+            this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
     }
-
 
     incrementCurrentPlayer() {
         const player = this.app.currentPlayer;
@@ -756,6 +757,31 @@ class CalcGame {
             territory.clickableByPlayerIndex = this.app.currentPlayer.index;
         }
     }
+
+    clickTerritoryForPhaseChooseDefendingTerritory(territory) {
+
+        if (territory.index === this.app.currentPlayer.attackingTerritoryIndex) {
+            this.incrementAttackForce(territory);
+        } else {
+            /*app.showDice = true;
+            selectDefendingTerritory(app, territory);
+            const rollResult = app.attackRollResult;
+            DICE.animate(rollResult, function(){ beginPhaseDisplayAttackResult(app); });
+            */
+        }
+
+        this.setInstructions();
+        this.explodeTerritory(territory);
+        this.saveState();
+    }
+
+    incrementAttackForce(territory) {
+        this.app.currentPlayer.attackForce += 1;
+        if (this.app.currentPlayer.attackForce === territory.numPieces - 1) {
+            this.setClickableForPhaseChooseDefendingTerritory();
+        }
+    }
+
 
     /* beginPhaseChooseAttackingTerritory *************************************/
     
