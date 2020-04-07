@@ -657,7 +657,9 @@ class CalcGame {
                                 (this.hasPretendSet ||
                                  this.hasOptionalSet ||
                                  this.hasMandatorySet) ||
-                            (this.hasChooseActionButtons || this.hasCancelAttackButton));
+                            (this.hasChooseActionButtons ||
+                             this.hasCancelAttackButton ||
+                             this.phaseRepeatOrCancel));
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
@@ -1020,7 +1022,7 @@ class CalcGame {
             .animate(this.divId, rollResult, function() {
                 THIS.beginPhaseDisplayRollResult();
             });
-        this.setInstructions();
+        this.setInstructions()
         this.saveState();
     }
 
