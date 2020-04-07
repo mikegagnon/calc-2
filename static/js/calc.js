@@ -1026,7 +1026,15 @@ class CalcGame {
             simAttackingTerritory.clickableByPlayerIndex = this.app.currentPlayer.index;    
         }
 
-        const possibleDefenders = this.getNeighbors(simAttackingTerritory)
+        let locus;
+        if (player.simAttackPath.length === 0) {
+            locus = simAttackingTerritory;
+        } else {
+            const index = player.simAttackPath[player.simAttackPath.length - 1];
+            locus = this.app.territories[index];
+        }
+
+        const possibleDefenders = this.getNeighbors(locus)
             .filter(function(otherTerritory){
                 return otherTerritory.color !== simAttackingTerritory.color &&
                     !player.simAttackPath.includes(otherTerritory.index);
