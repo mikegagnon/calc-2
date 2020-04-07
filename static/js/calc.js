@@ -989,6 +989,8 @@ class CalcGame {
 
     clickTerritoryForPhaseCalculateChooseDefendingTerritory(territory) {
         console.log("clickTerritoryForPhaseCalculateChooseDefendingTerritory");
+        const player = this.app.currentPlayer;
+
         //const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
         this.explodeTerritory(territory);
         if (territory.index === player.simAttackingTerritoryIndex) {
@@ -1016,7 +1018,7 @@ class CalcGame {
     setClickableForPhaseCalculateChooseDefendingTerritory() {
         this.setClickableNone();
         const player = this.app.currentPlayer;
-        
+
         const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
         if (player.simAttackForce < simAttackingTerritory.numPieces - 1) {
             simAttackingTerritory.clickableByPlayerIndex = this.app.currentPlayer.index;    
