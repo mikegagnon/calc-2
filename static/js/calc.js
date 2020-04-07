@@ -827,7 +827,19 @@ class CalcGame {
     }
 
     simTerritoryText(territory) {
-        return territory.numPieces;
+        if (!this.app) {
+            return territory.numPieces;
+        }
+        if (!this.app.currentPlayer.simAttackPath) {
+            return territory.numPieces;
+        }
+
+        const path = this.app.currentPlayer.simAttackPath;
+        if (path[path.length - 1] === territory.index) {
+            return territory.numPieces + "+";
+        } else {
+            return territory.numPieces;
+        }
     }
 
     clickTerritory(territory) {
