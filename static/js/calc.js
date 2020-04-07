@@ -40,6 +40,7 @@ const PHASE_ANIMATE_ROLL = "PHASE_ANIMATE_ROLL";
 const PHASE_CONCLUDE_ATTACK = "PHASE_CONCLUDE_ATTACK";
 const PHASE_CHOOSE_REPEAT_OR_CANCEL = "PHASE_CHOOSE_REPEAT_OR_CANCEL";
 const PHASE_FORTIFY = "PHASE_FORTIFY";
+const PHASE_FORTIFY_SELECT_RECIPIENT = "PHASE_FORTIFY_SELECT_RECIPIENT"
 
 /* DICE ***********************************************************************/
 
@@ -790,6 +791,8 @@ class CalcGame {
             this.clickTerritoryForPhaseChooseDefendingTerritory(territory);
         } else if (this.app.currentPhase === PHASE_FORTIFY) {
             this.clickTerritoryForPhaseFortify(territory);
+        } else if (this.app.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT) {
+            this.clickTerritoryForPhaseFortifySelectRecipient();
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -840,6 +843,8 @@ class CalcGame {
             return this.getPlayerInstructionForChooseRepeatOrCancel(player);
         } else if (this.app.currentPhase === PHASE_FORTIFY) {
             return this.getPlayerInstructionForPhaseFortify(player);
+        } else if (this.app.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT) {
+            return this.getPlayerInstructionForPhaseFortifySelectRecipient(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -914,18 +919,76 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
+    /* beginPhaseFortifySelectRecipient ***************************************/
+
+    beginPhaseFortifySelectRecipient() {
+        this.app.currentPhase = PHASE_FORTIFY_SELECT_RECIPIENT;
+        this.setClickableForPhaseFortifySelectRecipients();
+        this.setInstructions();
+        this.saveState();
+    }
+
+    setClickableForPhaseFortifySelectRecipients() {
+        this.setClickableNone();
+
+        const donorTerritory = this.app.territories[this.app.currentPlayer.fortifyDonorTerritoryIndex];
+        if (this.app.currentPlayer.fortifyNumArmies < donorTerritory.numPieces - 1) {
+            donorTerritory.clickableByPlayerIndex = this.app.currentPlayer.index;    
+        }
+
+        const possibleRecipients = this.getNeighbors(donorTerritory)
+            .filter(function(otherTerritory){
+                return otherTerritory.color === donorTerritory.color;
+            });
+
+        for (let i = 0; i < possibleRecipients.length; i++) {
+            const territory = possibleRecipients[i];
+            territory.clickableByPlayerIndex = this.app.currentPlayer.index;
+        } 
+    }
+
+    clickTerritoryForPhaseFortifySelectRecipient() {
+        console.log("click clickTerritoryForPhaseFortifySelectRecipient");
+    }
+
+    getPlayerInstructionForPhaseFortifySelectRecipient() {
+        const donorTerritory = this.app.territories[this.app.currentPlayer.fortifyDonorTerritoryIndex];
+        if (this.app.currentPlayer.fortifyNumArmies === donorTerritory.numPieces - 1) {
+            return "You cannot add any more armies to the fortification. Choose which territory to receive the fortification. Or, cancel the fortification.";
+        } else {
+            return "Click the 'donor' territory again to add another army to your fortification. Or, choose which territory to receive the fortification. Or, cancel the fortification.";
+        }
+    }
+
+    removeHighlights() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            territory.highlighted = false;
+        }
+    }
+
     /* beginPhaseFortify ******************************************************/
+
     beginPhaseFortify() {
         this.app.currentPhase = PHASE_FORTIFY;
         this.app.currentPlayer.showDice = false;
-        this.removeHightlights();
+        this.removeHighlights();
         this.setClickableForPhaseFortify();
         this.setInstructions();
         this.saveState();
     }
 
     clickTerritoryForPhaseFortify(territory) {
-        console.log("clickTerritoryForPhaseFortify");
+        //console.log("clickTerritoryForPhaseFortify");
+        this.explodeTerritory(territory);
+        this.removeHighlights();
+        territory.highlighted = true;
+        territory.highlightColor = "highlight-black";
+        this.app.currentPlayer.fortifyDonorTerritoryIndex = territory.index;
+        this.app.currentPlayer.fortifyNumArmies = 1;
+        this.beginPhaseFortifySelectRecipient();
+        /*app.phase = PLAYERS_MAIN_PHASE_FREEMOVE_SELECT_RECIPIENT;
+        */
     }
 
     getPlayerInstructionForPhaseFortify(player) {
