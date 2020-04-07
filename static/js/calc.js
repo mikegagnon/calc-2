@@ -983,11 +983,54 @@ class CalcGame {
 
     beginPhaseCalculateChooseDefendingTerritory() {
         this.app.currentPhase = PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY;
+        this.setClickableForPhaseCalculateChooseDefendingTerritory();
         this.setInstructions();
     }
 
     clickTerritoryForPhaseCalculateChooseDefendingTerritory(territory) {
         console.log("clickTerritoryForPhaseCalculateChooseDefendingTerritory");
+        //const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
+        this.explodeTerritory(territory);
+        if (territory.index === player.simAttackingTerritoryIndex) {
+            this.incrementSimNumArmies(territory);
+            this.setInstructions();
+        } else {
+            //selectFreeMoveRecipient(app, territory);
+            /*this.setClickableNone();
+            //setInstructions(app);
+            this.removeHighlights();
+            territory.numPieces += this.app.currentPlayer.fortifyNumArmies;
+            const donorTerritory = this.app.territories[donorIndex];
+            donorTerritory.numPieces -= this.app.currentPlayer.fortifyNumArmies;
+            this.clickPass();*/
+        }
+    }
+
+    incrementSimNumArmies(territory) {
+        this.app.currentPlayer.simAttackForce++;
+        if (this.app.currentPlayer.simAttackForce === territory.numPieces - 1) {
+            this.setClickableForPhaseCalculateChooseDefendingTerritory();
+        }
+    }
+
+    setClickableForPhaseCalculateChooseDefendingTerritory() {
+        this.setClickableNone();
+        const player = this.app.currentPlayer;
+        
+        const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
+        if (player.simAttackForce < simAttackingTerritory.numPieces - 1) {
+            simAttackingTerritory.clickableByPlayerIndex = this.app.currentPlayer.index;    
+        }
+
+        const possibleDefenders = this.getNeighbors(simAttackingTerritory)
+            .filter(function(otherTerritory){
+                return otherTerritory.color !== simAttackingTerritory.color;
+            });
+
+        for (let i = 0; i < possibleDefenders.length; i++) {
+            const territory = possibleDefenders[i];
+            territory.clickableByPlayerIndex = this.app.currentPlayer.index;
+        } 
     }
 
     getPlayerInstructionForPhaseCalculateChooseDefendingTerritory(player) {
