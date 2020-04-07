@@ -34,7 +34,7 @@
           v-for="territory in territories"
           v-bind:key="territoryId(territory)" 
           v-bind:style="{top:territory.top, left:territory.left}"
-          v-bind:class="[territory.color, {clickable: territoryClickable(territory), hidden: territoryHidden(territory)}]"
+          v-bind:class="[territory.color, territory.highlightColor, {clickable: territoryClickable(territory), highlighted: territory.highlighted, hidden: territoryHidden(territory)}]"
           v-on:click="clickTerritory(territory);"
           >
             [[territoryText(territory)]]

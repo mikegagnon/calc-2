@@ -701,7 +701,17 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseChooseAttackingTerritory(territory) {
-        console.log(territory.numPieces);
+        //console.log(territory.numPieces);
+        territory.highlighted = true;
+        territory.highlightColor = "highlight-red";
+        //this.app.currentPhase = PLAYERS_MAIN_PHASE_CHOOSE_DEFENDING_TERRITORY;
+        //app.attackingTerritoryIndex = territory.index;
+        this.app.currentPlayer.attackForce = 1;
+        this.explodeTerritory(territory);
+
+        //setClickableDefenders(app);
+        this.setInstructions();
+        this.saveState();
     }
 
     getPlayerInstructionForPhaseChooseAttackingTerritory(player) {

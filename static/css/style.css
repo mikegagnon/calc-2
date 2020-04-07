@@ -333,3 +333,16 @@ body {
     font-weight: bold;
     background-color: #f9ff87;
 }
+
+.highlighted {
+    transform:translate(-4px,-4px);
+}
+
+
+/* intentionally left blank */
+.no-highlight {    
+} 
+
+.highlight-red {
+    border: 5px solid red;
+}

@@ -510,7 +510,9 @@ function getStandardTerritories() {
         territory.color = "white";
         territory.numPieces = -1;
         territory.clickableByPlayerIndex = 0;
-        territory.highlighted = "no-highlight";
+        territory.highlighted = false; //"no-highlight";
+        territory.highlightColor = "no-highlight";
+        //territory.highlightColor = "highlight-red";
         territory.explodeColor = false;
     }
 
