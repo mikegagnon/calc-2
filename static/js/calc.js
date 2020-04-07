@@ -1,4 +1,5 @@
 // TODO: only current player can undo/redo
+// TODO: phaeReinforceArmiesAvailableForPlacement 
 
 const TESTING = true;
 
@@ -21,7 +22,7 @@ const DEFAULT_CONFIG = {
     autoDropForPhaseDropThreeVacancies: 0,
     startWithPrizeCards: {
         //0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
-        0: ["heart", "heart", "heart"],
+        //0: ["heart", "heart", "heart"],
     }
 
 };
@@ -667,7 +668,7 @@ class CalcGame {
         console.log("beginPhaseReinforce");
         this.app.currentPhase = PHASE_REINFORCE;
         //this.app.currentPlayer.continentBonus = 0;
-        this.app.currentPlayer.armiesAvailableForPlacement = this.getReinforceArmies().numReinforcements;
+        this.app.currentPlayer.armiesAvailableForPlacementReinforce = this.getReinforceArmies().numReinforcements;
         //this.app.currentPlayer.ar
         this.setClickableForPhaseReinforce();
         this.setInstructions();
@@ -729,7 +730,7 @@ class CalcGame {
             numReinforcements += player.prizeBonus;
             numReinforcements += player.continentBonus;
 
-            instruction = `Place ${player.armiesAvailableForPlacement} armies upon one or more territories you control. You received 3 armies this turn because you control fewer than 9 territories.`;
+            instruction = `Place ${player.armiesAvailableForPlacementReinforce} armies upon one or more territories you control. You received 3 armies this turn because you control fewer than 9 territories.`;
             if (player.prizeBonus > 0) {
                 instruction += ` You received ${player.prizeBonus} armies because you traded in ${player.numSetsTradedIn} set(s) of prize cards.`;
             }
@@ -741,7 +742,7 @@ class CalcGame {
             numReinforcements += player.prizeBonus;
             numReinforcements += player.continentBonus;
 
-            instruction = `Place ${player.armiesAvailableForPlacement} armies upon one or more territories you control. You received ${div3} armies this turn because you control ${numTerritoriesOwned} territories.`;
+            instruction = `Place ${player.armiesAvailableForPlacementReinforce} armies upon one or more territories you control. You received ${div3} armies this turn because you control ${numTerritoriesOwned} territories.`;
             if (player.prizeBonus > 0) {
                 instruction += ` You received ${player.prizeBonus} armies because you traded in ${player.numSetsTradedIn} set(s) of prize cards.`;
             }
@@ -761,7 +762,7 @@ class CalcGame {
 
     clickTerritoryForPhaseReinforce(territory) {
         territory.numPieces += 1;
-        this.app.currentPlayer.armiesAvailableForPlacement--;
+        this.app.currentPlayer.armiesAvailableForPlacementReinforce--;
         this.explodeTerritory(territory);
 
         // If this phase is over
