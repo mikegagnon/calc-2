@@ -572,12 +572,12 @@ class CalcGame {
         return app;
     }
 
-    /* Generic game logic ddd *****************************************************/
+    /* Generic game logic *****************************************************/
 
     territoryText(territory) {
         if (territory.numPieces === 0) {
             return "";
-        } else if (this.app.currentPlayer.attackForce > 0 && this.app.currentPlayer.attackingTerritoryIndex === territory.index) {
+        } else if (this.app && this.app.currentPlayer.attackForce > 0 && this.app.currentPlayer.attackingTerritoryIndex === territory.index) {
             return `${this.app.currentPlayer.attackForce}/${territory.numPieces}`;
         } else {
             return territory.numPieces;
@@ -699,11 +699,31 @@ class CalcGame {
         }   
     }
 
+    areNeighbors(t1, t2) {
+        for (let i = 0; i < t1.neighbors.length; i++) {
+            const neighborName = t1.neighbors[i];
+            if (t2.name === neighborName) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    getNeighbors(territory) {
+        const THIS = this;
+        return this
+            .app
+            .territories
+            .filter(function(t){ return THIS.areNeighbors(territory, t) });
+    }
+
     /* beginPhaseChooseDefendingTerritory *************************************/
 
     beginPhaseChooseDefendingTerritory() {
         console.log("beginPhaseChooseDefendingTerritory");
         this.app.currentPhase = PHASE_CHOOSE_DEFENDING_TERRITORY;
+        this.setClickableForPhaseChooseDefendingTerritory();
         this.setInstructions();
         this.saveState();
     }
@@ -714,6 +734,26 @@ class CalcGame {
             return "You cannot add any more armies to the attack. Choose which territory to attack. Or, cancel the attack.";
         } else {
             return "Click the attacking territory again to add another army to the attack. Or, choose which territory to attack. Or, cancel the attack.";                
+        }
+    }
+
+    setClickableForPhaseChooseDefendingTerritory() {
+        this.setClickableNone();
+
+        const attackingTerritory = this.app.territories[this.app.currentPlayer.attackingTerritoryIndex];
+        if (this.app.currentPlayer.attackForce < attackingTerritory.numPieces - 1) {
+            attackingTerritory.clickableByPlayerIndex = this.app.currentPlayer.index;
+        }
+
+        const possibleDefenders = this
+            .getNeighbors(attackingTerritory)
+            .filter(function(otherTerritory){
+                return otherTerritory.color !== attackingTerritory.color;
+            });
+
+        for (let i = 0; i < possibleDefenders.length; i++) {
+            const territory = possibleDefenders[i];
+            territory.clickableByPlayerIndex = this.app.currentPlayer.index;
         }
     }
 
