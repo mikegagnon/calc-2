@@ -41,6 +41,9 @@
         </div>
 
         <div class="dice console-component" v-bind:class="[{hidden: !showDice}]">
+          <table>
+            <tr>
+              <td valign="center" style="width: 100%">
           <div class="red-die-1 red-die hidden">
             <img src="{{ url_for('static', filename='img/red-die-1.png')}}">
             <img src="{{ url_for('static', filename='img/red-die-2.png')}}">
@@ -81,7 +84,12 @@
             <img src="{{ url_for('static', filename='img/white-die-5.png')}}">
             <img src="{{ url_for('static', filename='img/white-die-6.png')}}">
           </div>
+        </td>
+        <td valign="bottom">
           <div class="help-link"><a target="_blank" href="{{ url_for('static', filename='help/dice.html')}}">Help</a></div>
+        </td>
+      </tr>
+    </table>
         </div>
 
         <!-- INSTRUCTIONS ----------------------------------------------------->      
