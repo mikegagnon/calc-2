@@ -980,14 +980,7 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
-    // TODO: where else should we call this?
     removeHighlights() {
-        /*for (let i = 0; i < this.app.territories.length; i++) {
-            const territory = this.app.territories[i];
-            territory.highlighted = false;
-
-            ddd
-        }*/
         this.removeHightlights(); // TODO: fix spelling error properly
     }
 
