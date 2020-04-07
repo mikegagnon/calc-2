@@ -774,8 +774,14 @@ class CalcGame {
     territoryText(territory) {
         if (territory.numPieces === 0) {
             return "";
-        } else if (this.app && this.app.currentPlayer.attackForce > 0 && this.app.currentPlayer.attackingTerritoryIndex === territory.index) {
+        }
+        // TODO: check to make sure it's the right phase
+        else if (this.app && this.app.currentPlayer.attackForce > 0 && this.app.currentPlayer.attackingTerritoryIndex === territory.index) {
             return `${this.app.currentPlayer.attackForce}/${territory.numPieces}`;
+        } else if (this.app && this.app.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT && territory.index === this.app.currentPlayer.fortifyDonorTerritoryIndex) {
+            const a = this.app.currentPlayer.fortifyNumArmies;
+            const b = territory.numPieces;
+            return `${a}/${b}`;
         } else {
             return territory.numPieces;
         }
@@ -801,7 +807,7 @@ class CalcGame {
         } else if (this.app.currentPhase === PHASE_FORTIFY) {
             this.clickTerritoryForPhaseFortify(territory);
         } else if (this.app.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT) {
-            this.clickTerritoryForPhaseFortifySelectRecipient();
+            this.clickTerritoryForPhaseFortifySelectRecipient(territory);
         } else {
             throw "Bad phase in clickTerritory";
         }
@@ -964,8 +970,31 @@ class CalcGame {
         } 
     }
 
-    clickTerritoryForPhaseFortifySelectRecipient() {
-        console.log("click clickTerritoryForPhaseFortifySelectRecipient");
+    clickTerritoryForPhaseFortifySelectRecipient(territory) {
+        const donorIndex = this.app.currentPlayer.fortifyDonorTerritoryIndex;
+        this.explodeTerritory(territory);
+        if (territory.index === donorIndex) {
+            this.incrementFortifyNumArmies(territory);
+            this.setInstructions();
+        } else {
+            //selectFreeMoveRecipient(app, territory);
+            this.setClickableNone();
+            //setInstructions(app);
+            this.removeHighlights();
+            territory.numPieces += this.app.currentPlayer.fortifyNumArmies;
+            const donorTerritory = this.app.territories[donorIndex];
+            donorTerritory.numPieces -= this.app.currentPlayer.fortifyNumArmies;
+
+            // TODO
+            //clickPass(app);
+        }
+    }
+
+    incrementFortifyNumArmies(territory) {
+        this.app.currentPlayer.fortifyNumArmies++;
+        if (this.app.currentPlayer.fortifyNumArmies === territory.numPieces - 1) {
+            this.setClickableForPhaseFortifySelectRecipients();
+        }
     }
 
     getPlayerInstructionForPhaseFortifySelectRecipient() {
