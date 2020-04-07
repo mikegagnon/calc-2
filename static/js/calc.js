@@ -1050,11 +1050,20 @@ class CalcGame {
         }
     }
 
+    calculateProbability() {
+        return 32;
+    }
+
     setClickableForPhaseCalculateChooseDefendingTerritory() {
+        const player = this.app.currentPlayer;
+
+        if (player.simAttackPath.length > 0) {
+            this.app.probability = this.calculateProbability();
+        }
+
         this.setClickableNone();
         this.setSimClickableNone();
 
-        const player = this.app.currentPlayer;
 
         const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
         if (player.simAttackForce < simAttackingTerritory.numPieces - 1) {
@@ -1164,6 +1173,7 @@ class CalcGame {
             territory.clickableByPlayerIndex = -1;
             territory.numPieces = -1;
         }
+        this.app.currentPlayer.simAttackPath = [];
         this.removeHighlights();
         this.beginPhaseChooseAction();
         this.saveState();

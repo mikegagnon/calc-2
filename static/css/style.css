@@ -378,3 +378,8 @@ body {
     border: 5px solid red;
     border-radius: 5px;
 }
+
+.probability {
+    text-align: center;
+    font-size: 20pt;
+}
