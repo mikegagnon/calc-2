@@ -60,28 +60,32 @@
           </table>
         </div>
 
+        <!-- BUTTONS ---------------------------------------------------------->      
         <div class="buttons console-component" v-show="showButtons">
           <table>
             <tr>
               <td class="primary-td">
 
-                <div v-show="hasPretendSet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
+                <div v-show="hasPretendSet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
                   <span v-on:click="clickPretend">You cannot play a set of prize cards this turn.<br>Click this button to move on.</span>
                 </div>
 
-                <div v-show="hasOptionalSet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
+                <div v-show="hasOptionalSet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-pretend">
                   <span v-on:click="clickDoNotPlay">Do not play a set of three prize cards</span>
                 </div>
 
-                <div v-show="hasOptionalSet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-play">
+                <div v-show="hasOptionalSet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-play">
                   <span v-on:click="clickPlayCards">Play a set of three prize cards to receive [[nextPrize]] armies.</span>
                 </div>
 
-                <div v-show="hasMandatorySet && this.currentPhase === 'PHASE_PLAY_CARDS'" class="button-must-play">
+                <div v-show="hasMandatorySet && currentPhase === 'PHASE_PLAY_CARDS'" class="button-must-play">
                   <span v-on:click="clickMustPlayCards">
                     Play a set of three prize cards to receive [[nextPrize]] armies.
                     You must click this button since you have 5 or more cards.
                   </span>
+                </div>
+
+                <div v-show="">
                 </div>
 
               </td>
@@ -92,6 +96,7 @@
           </table>
         </div>
 
+        <!-- PRIZE CARDS ------------------------------------------------------>
         <div class="prize-cards console-component" v-show="playerHasCard">
           <table >
             <tr>
@@ -110,6 +115,7 @@
           </table>
         </div>
 
+        <!-- PRIZE SCHEDULE --------------------------------------------------->
         <div class="prize-schedule console-component">Prize schedule: &nbsp;&nbsp;&nbsp;
           <span v-for="prize in abridgedPrizeSchedule" class="prize" v-bind:class="[{currentPrize: prize.active}]">[[prize.value]]</span>
           
@@ -117,6 +123,7 @@
         </div>
 
 
+        <!-- UNDO / REDO ------------------------------------------------------>
         <div class="undo-buttons console-component">
           <button :disabled="!undoAvailable" v-on:click="clickUndo">Undo</button>
           <button :disabled="!redoAvailable" v-on:click="clickRedo">Redo</button>
