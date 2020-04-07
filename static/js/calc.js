@@ -1150,6 +1150,12 @@ class CalcGame {
 
     // TODO: more cleanup
     clickCancelSimAttack() {
+
+        for (let i = 0; i < this.app.simTerritories.length; i++) {
+            const territory = this.app.simTerritories[i];
+            territory.clickableByPlayerIndex = -1;
+            territory.numPieces = -1;
+        }
         this.removeHighlights();
         this.beginPhaseChooseAction();
     }
