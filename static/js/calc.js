@@ -5,7 +5,7 @@ const TESTING = true;
 
 const DEFAULT_CONFIG = {
     seed: 0,
-    colors: ["brown", "blue", "green", "orange", "purple", "black"],
+    colors: ["brown", "blue", "green", "orange", "purple", "grey"],
     continents: ["North America", "South America", "Africa", "Australia", "Europe", "Asia"],
     continentBonus: {
         "North America": 5,
@@ -902,6 +902,12 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
+    /* beginPhaseAnimateRoll **************************************************/
+
+    beginPhaseAnimateRoll() {
+
+    }
+
     /* beginPhaseChooseDefendingTerritory *************************************/
 
     beginPhaseChooseDefendingTerritory() {
@@ -945,17 +951,21 @@ class CalcGame {
 
         if (territory.index === this.app.currentPlayer.attackingTerritoryIndex) {
             this.incrementAttackForce(territory);
+            this.setInstructions();
+            this.explodeTerritory(territory);
+            this.saveState();
         } else {
             //app.showDice = true;
+            this.explodeTerritory(territory);
             this.selectDefendingTerritory(territory);
+            this.beginPhaseAnimateRoll();
+
             //dddconst rollResult = app.attackRollResult;
             //DICE.animate(rollResult, function(){ beginPhaseDisplayAttackResult(app); });
             //*/
         }
 
-        this.setInstructions();
-        this.explodeTerritory(territory);
-        this.saveState();
+
     }
 
     incrementAttackForce(territory) {
@@ -968,10 +978,9 @@ class CalcGame {
     selectDefendingTerritory(defendingTerritory) {
         this.setClickableNone();
         defendingTerritory.highlighted = true;
-        defendingTerritory.highlightColor = "highlight-grey";
+        defendingTerritory.highlightColor = "highlight-black";
         this.app.currentPlayer.defendingTerritoryIndex = defendingTerritory.index;
         this.app.currentPlayer.rollResult = this.getRandomAttackRoll(defendingTerritory);
-        this.beginPhaseAnimateRoll();
 
         /*app.phase = PLAYERS_MAIN_PHASE_ANIMATE_ATTACK;
         app.defendingTerritoryIndex = defendingTerritory.index;
@@ -980,7 +989,7 @@ class CalcGame {
     }
 
     getRandomAttackRoll(defendingTerritory) {
-        const numRed = Math.min(app.attackForce, 3);
+        const numRed = Math.min(this.app.currentPlayer.attackForce, 3);
         const numWhite = Math.min(defendingTerritory.numPieces, 2);
         return this.dice.randValues(numRed, numWhite);
     }
