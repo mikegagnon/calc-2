@@ -37,6 +37,7 @@ const PHASE_CHOOSE_ACTION = "PHASE_CHOOSE_ACTION";
 const PHASE_CHOOSE_ATTACKING_TERRITORY = "PHASE_CHOOSE_ATTACKING_TERRITORY";
 const PHASE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CHOOSE_DEFENDING_TERRITORY";
 const PHASE_ANIMATE_ROLL = "PHASE_ANIMATE_ROLL";
+const PHASE_CONCLUDE_ATTACK = "PHASE_CONCLUDE_ATTACK";
 
 /* DICE ***********************************************************************/
 
@@ -893,8 +894,90 @@ class CalcGame {
     /* beginPhaseDisplayRollResult ********************************************/
     
     beginPhaseDisplayRollResult() {
-        console.log("beginPhaseAnimateRoll");
+        //console.log("beginPhaseAnimateRoll");
+        this.app.currentPhase = PHASE_CONCLUDE_ATTACK;
+        const player = this.app.currentPlayer;
+        const numRedWins = player.rollResult.numRedWins;
+        const numWhiteWins = player.rollResult.numWhiteWins; // ddd
+        const attackingTerritory = this.app.territories[player.attackingTerritoryIndex];
+        const defendingTerritory = this.app.territories[player.defendingTerritoryIndex];
+        //const attackForce 
+
+        let offerAgain = true;
+        let attackVictory = false;
+
+        attackingTerritory.numPieces -= numWhiteWins;
+        if (player.attackForce >= attackingTerritory.numPieces) {
+            player.attackForce = attackingTerritory.numPieces - 1;
+            if (player.attackForce <= 0) {
+                player.attackForce = 0;
+                offerAgain = false;
+            }
+        }
+
+        defendingTerritory.numPieces -= numRedWins;
+        if (defendingTerritory.numPieces <= 0) {
+            defendingTerritory.numPieces = 0;
+            attackVictory = true;
+            offerAgain = false;
+        }
+
+        // // ddd
+        if (attackVictory) {
+
+            if (!player.receivedCardThisTurn) {
+                player.receivedCardThisTurn = true;
+                const cardType = Math.floor(this.random.random() * 3);
+                if (cardType === 0) {
+                    player.numHearts++;
+                } else if (cardType === 1) {
+                    player.numClubs++;
+                } else {
+                    player.numDiamonds++;
+                }
+            }
+
+
+            defendingTerritory.color = attackingTerritory.color;
+            defendingTerritory.numPieces = player.attackForce;
+            attackingTerritory.numPieces -= player.attackForce;
+            player.attackForce = 0;
+
+            this.explodeTerritory(defendingTerritory);
+
+            this.beginPhaseChooseAction();
+
+            //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_ATTACK_OR_PASS;
+            /*defendingTerritory.isExploding = defendingTerritory.color;
+            setTimeout(function(){ territory.isExploding = null}, 2000);
+            attackingTerritory.isExploding = attackingTerritory.color;
+            setTimeout(function(){ territory.isExploding = null}, 2000);*/
+            /*PICKLES.push(pickle(app));
+            postGameState(app);*/
+                
+        } else if (offerAgain) {
+            if (numRedWins > 0) {
+                this.explodeTerritory(defendingTerritory);
+            }
+            if (numWhiteWins > 0) {
+                this.explodeTerritory(attackingTerritory);
+            }
+            //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_REPEAT_OR_CANCEL;
+            console.log("offerAgain");
+        } else {
+            //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_ATTACK_OR_PASS;
+            console.log("do not offerAgain");
+            if (numRedWins > 0) {
+                this.explodeTerritory(defendingTerritory);
+            }
+            if (numWhiteWins > 0) {
+                this.explodeTerritory(attackingTerritory);
+            }
+            this.beginPhaseChooseAction();
+        }
     }
+
+
 
     /* beginPhaseAnimateRoll **************************************************/
 
@@ -1088,6 +1171,7 @@ class CalcGame {
         console.log("beginPhaseReinforce");
         this.app.currentPhase = PHASE_REINFORCE;
         this.app.currentPlayer.armiesAvailableForPlacementReinforce = this.getReinforceArmies().numReinforcements;
+        this.app.currentPlayer.receivedCardThisTurn = false;
         this.setClickableForPhaseReinforce();
         this.setInstructions();
         this.saveState();
