@@ -5,7 +5,7 @@ const TESTING = true;
 
 const DEFAULT_CONFIG = {
     seed: 0,
-    colors: ["red", "blue", "green", "orange", "purple", "black"],
+    colors: ["brown", "blue", "green", "orange", "purple", "black"],
     continents: ["North America", "South America", "Africa", "Australia", "Europe", "Asia"],
     continentBonus: {
         "North America": 5,
