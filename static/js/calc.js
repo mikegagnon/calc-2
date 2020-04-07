@@ -501,6 +501,9 @@ class CalcGame {
                 }
             },
             methods: {
+                clickAttack() {
+                    THIS.clickAttack();
+                },
                 clickPretend() {
                     THIS.clickPretend();
                 },
@@ -686,7 +689,11 @@ class CalcGame {
         return "Choose to either: (1) attack, or (2) calculate an attack, or (3) end your turn by fortifying a territory, or (4) pass";
     }
 
-    /* beginPhaseReinforce ddd ****************************************************/
+    clickAttack() {
+        console.log("Attack!")
+    }
+
+    /* beginPhaseReinforce ****************************************************/
     
     beginPhaseReinforce() {
         console.log("beginPhaseReinforce");
