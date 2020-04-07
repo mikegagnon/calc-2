@@ -33,6 +33,7 @@ const PHASE_SELECT_INIT_POSITIONS = "PHASE_SELECT_INIT_POSITIONS";
 const PHASE_DROP_THREE = "PHASE_DROP_THREE";
 const PHASE_PLAY_CARDS = "PHASE_PLAY_CARDS";
 const PHASE_REINFORCE = "PHASE_REINFORCE";
+const PHASE_CHOOSE_ACTION = "PHASE_CHOOSE_ACTION";
 
 /* RemoteCalcServer ***********************************************************/
 
@@ -608,10 +609,13 @@ class CalcGame {
         } else if (this.app.currentPhase === PHASE_PLAY_CARDS) {
             return this.getPlayerInstructionForPhasePlayCards(player);
         } else if (this.app.currentPhase === PHASE_REINFORCE) {
-            return this.getPlayerInstructionForPhaseReinforce();
+            return this.getPlayerInstructionForPhaseReinforce(player);
+        } else if (this.app.currentPhase === PHASE_CHOOSE_ACTION) {
+            return this.getPlayerInstructionForPhaseChooseAction(player);
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
+        
     }
 
     removeExplosion(explosionId) {
@@ -663,7 +667,22 @@ class CalcGame {
         }   
     }
 
+    /* beginPhaseChooseAction *************************************************/
+    
+    beginPhaseChooseAction() {
+        this.app.currentPhase = PHASE_CHOOSE_ACTION;
+        this.setClickableNone();
+        this.setInstructions();
+        this.saveState();
+
+    }
+
+    getPlayerInstructionForPhaseChooseAction(player) {
+        return "Choose to either: (1) attack, or (2) calculate an attack, or (3) end your turn by fortifying a territory, or (4) pass";
+    }
+
     /* beginPhaseReinforce ****************************************************/
+    
     beginPhaseReinforce() {
         console.log("beginPhaseReinforce");
         this.app.currentPhase = PHASE_REINFORCE;
@@ -779,15 +798,6 @@ class CalcGame {
     getPlayerInstructionForPhaseReinforce(player) {
         return this.getReinforceArmies().instruction;
     }
-
-    /*getAllArmiesRemainingReinforce() {
-        let armiesRemaining = 0;
-        for (let i = 0; i < this.app.players.length; i++) {
-            const player = this.app.players[i];
-            armiesRemaining += player.armiesAvailableForPlacementReinforce;
-        }
-        return armiesRemaining;
-    }*/
 
     /* beginPhasePlayCards ****************************************************/
 
