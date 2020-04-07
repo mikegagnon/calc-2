@@ -987,9 +987,7 @@ class CalcGame {
             territory.numPieces += this.app.currentPlayer.fortifyNumArmies;
             const donorTerritory = this.app.territories[donorIndex];
             donorTerritory.numPieces -= this.app.currentPlayer.fortifyNumArmies;
-
-            // TODO
-            //clickPass(app);
+            this.clickPass();
         }
     }
 
@@ -1350,6 +1348,16 @@ class CalcGame {
 
     clickFortify() {
         this.beginPhaseFortify();
+    }
+
+    clickPass() {
+        this.setClickableNone();
+        this.removeHighlights();
+        this.incrementCurrentPlayer();
+
+        const player = this.app.currentPlayer;
+        player.prizeBonus = 0;
+        this.beginPhasePlayCards();
     }
 
     /* beginPhaseReinforce ****************************************************/
