@@ -1104,6 +1104,7 @@ class CalcGame {
 
     clickSimTerritory(territory) {
         territory.numPieces++;
+        this.setClickableForPhaseCalculateChooseDefendingTerritory();
     }
 
     /* beginPhaseCalculate ****************************************************/
