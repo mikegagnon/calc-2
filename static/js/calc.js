@@ -722,7 +722,14 @@ class CalcGame {
                     return THIS.id + "-" + territory.index;
                 },
                 playerNameText: function(player) {
-                    return player.name;
+                    const c = this.numTotalCards(player);
+                    if (c === 0) {
+                        return player.name;
+                    } else if (c === 1) {
+                        return `${player.name} has 1 card`;
+                    } else {
+                        return `${player.name} has ${c} cards`;
+                    }
                 },
                 territoryClickable: function(territory) {
                     return territory.clickableByPlayerIndex === this.thisPlayerIndex;
