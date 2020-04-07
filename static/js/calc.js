@@ -920,7 +920,7 @@ class CalcGame {
     }
 
     clickRepeatAttack() {
-        this.console.log("repeat");
+        console.log("repeat");
     }
 
     /* beginPhaseDisplayRollResult ********************************************/
