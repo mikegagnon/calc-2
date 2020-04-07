@@ -661,7 +661,8 @@ class CalcGame {
                                  this.hasMandatorySet) ||
                             (this.hasChooseActionButtons ||
                              this.hasCancelAttackButton ||
-                             this.phaseRepeatOrCancel));
+                             this.phaseRepeatOrCancel ||
+                             this.phaseFortificySelectRecipient));
                 },
                 abridgedPrizeSchedule: function() {
                     return this.prizeSchedule.slice(0, 8);
@@ -679,12 +680,20 @@ class CalcGame {
                 phaseRepeatOrCancel: function() {
                     return this.thisPlayer.index === this.currentPlayer.index &&
                         this.currentPhase === PHASE_CHOOSE_REPEAT_OR_CANCEL;
-                }
+                },
+                phaseFortificySelectRecipient: function() {
+                    return this.thisPlayer.index === this.currentPlayer.index &&
+                        (this.currentPhase === PHASE_FORTIFY_SELECT_RECIPIENT ||
+                        this.currentPhase === PHASE_FORTIFY);
+                },
             },
             methods: {
                 clickAttack() {
                     //console.log("Attack")
                     THIS.clickAttack();
+                },
+                clickCancelFortification() {
+                    THIS.clickCancelFortification();
                 },
                 clickRepeatAttack() {
                     THIS.clickRepeatAttack();
@@ -919,6 +928,14 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
+    // TODO: where else should we call this?
+    removeHighlights() {
+        for (let i = 0; i < this.app.territories.length; i++) {
+            const territory = this.app.territories[i];
+            territory.highlighted = false;
+        }
+    }
+
     /* beginPhaseFortifySelectRecipient ***************************************/
 
     beginPhaseFortifySelectRecipient() {
@@ -960,11 +977,9 @@ class CalcGame {
         }
     }
 
-    removeHighlights() {
-        for (let i = 0; i < this.app.territories.length; i++) {
-            const territory = this.app.territories[i];
-            territory.highlighted = false;
-        }
+    clickCancelFortification() {
+        this.removeHightlights(); // TODO: spell correct
+        this.beginPhaseChooseAction();
     }
 
     /* beginPhaseFortify ******************************************************/
@@ -1269,7 +1284,7 @@ class CalcGame {
 
     clickCancelAttack() {
         this.app.currentPlayer.attackForce = -1;
-        this.removeHightlights();
+        this.removeHightlights(); // TODO: spell correct
         this.beginPhaseChooseAction();
 
         //console.log("cancel");
