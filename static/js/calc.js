@@ -36,6 +36,7 @@ const PHASE_REINFORCE = "PHASE_REINFORCE";
 const PHASE_CHOOSE_ACTION = "PHASE_CHOOSE_ACTION";
 const PHASE_CHOOSE_ATTACKING_TERRITORY = "PHASE_CHOOSE_ATTACKING_TERRITORY";
 const PHASE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CHOOSE_DEFENDING_TERRITORY";
+const PHASE_ANIMATE_ROLL = "PHASE_ANIMATE_ROLL";
 
 /* DICE ***********************************************************************/
 
@@ -828,6 +829,8 @@ class CalcGame {
             return this.getPlayerInstructionForPhaseChooseAttackingTerritory(player);
         } else if (this.app.currentPhase === PHASE_CHOOSE_DEFENDING_TERRITORY) {
             return this.getPlayerInstructionForPhaseChooseDefendingTerritory(player);
+        } else if (this.app.currentPhase === PHASE_ANIMATE_ROLL) {
+            return this.getPlayerInstructionForPhaseAnimateRoll(player)
         } else {
             throw "Bad phase in getPlayerInstruction";
         }
@@ -902,10 +905,28 @@ class CalcGame {
             .filter(function(t){ return THIS.areNeighbors(territory, t) });
     }
 
+    /* beginPhaseDisplayRollResult ********************************************/
+    
+    beginPhaseAnimateRoll() {
+        console.log("beginPhaseAnimateRoll");
+    }
+
     /* beginPhaseAnimateRoll **************************************************/
 
     beginPhaseAnimateRoll() {
+        this.setClickableNone();
+        //this.app.c
+        const rollResult = this.app.currentPlayer.rollResult;
+        const THIS = this;
+        this
+            .dice
+            .animate(rollResult, function() {
+                THIS.beginPhaseDisplayRollResult();
+            });
+    }
 
+    getPlayerInstructionForPhaseAnimateRoll() {
+        return "Waiting for dice to land...";
     }
 
     /* beginPhaseChooseDefendingTerritory *************************************/
