@@ -1003,6 +1003,10 @@ class CalcGame {
             this.setInstructions();
         } else {
             player.simAttackPath.push(territory.index);
+            const simTerritory = this.app.simTerritories[territory.index]
+            simTerritory.numPieces = 1;
+            simTerritory.color = player.color;
+
             this.setClickableForPhaseCalculateChooseDefendingTerritory();
             //selectFreeMoveRecipient(app, territory);
             /*this.setClickableNone();
