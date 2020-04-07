@@ -921,6 +921,14 @@ class CalcGame {
 
     clickRepeatAttack() {
         console.log("repeat");
+        const defenderTerritory = this.app.territories[this.app.currentPlayer.defendingTerritoryIndex];
+        this.selectDefendingTerritory(defenderTerritory); // ddd
+        this.app.currentPlayer.rollResult = this.getRandomAttackRoll(defenderTerritory);
+        this.app.currentPlayer.showDice = true;
+        const THIS = this; 
+        this.dice.animate(this.divId, this.app.currentPlayer.rollResult, function() {
+            THIS.beginPhaseDisplayRollResult();
+        });
     }
 
     /* beginPhaseDisplayRollResult ********************************************/
