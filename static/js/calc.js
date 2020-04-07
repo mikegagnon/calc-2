@@ -60,11 +60,10 @@ class Dice {
     }
 
     show(containerDivId) {
-        $(containerDivId + " .red-die-1").removeClass("hidden");
-        $(containerDivId + " .red-die-2").removeClass("hidden");
-        $(containerDivId + " .red-die-3").removeClass("hidden");
-        $(containerDivId + " .white-die-1").removeClass("hidden");
-        $(containerDivId + " .white-die-2").removeClass("hidden");
+        $(containerDivId + " .red-die").removeClass("hidden");
+        $(containerDivId + " .red-die img").addClass("hidden");
+        $(containerDivId + " .white-die").removeClass("hidden");
+        $(containerDivId + " .white-die img").addClass("hidden");
     }
 
     randValues(numRed, numWhite) {
