@@ -48,6 +48,20 @@ const PHASE_FORTIFY_SELECT_RECIPIENT = "PHASE_FORTIFY_SELECT_RECIPIENT"
 const PHASE_CALCULATE = "PHASE_CALCULATE";
 const PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY";
 
+/* Simulator ******************************************************************/
+
+class Simulator {
+    constructor(config) {
+        this.config = config;
+        console.log(this.config);
+    }
+
+    runCampaign() {
+        return true;
+    }
+}
+
+
 /* DICE ***********************************************************************/
 
 class Dice {
@@ -1051,14 +1065,36 @@ class CalcGame {
         }
     }
 
-    runCampaign() {
-        
-    }
-
     calculateProbability() {
+        /*if (!this.app) {
+            return 0;
+        }*/
+        //if (!this.app.)
+        const THIS = this;
+
+        const player = this.app.currentPlayer;
+        
+        const defenders = player
+            .simAttackPath
+            .map(function(territoryIndex) {
+                return THIS.app.territories[territoryIndex].numPieces;
+            });
+        
+        const leaveBehind = player
+            .simAttackPath
+            .map(function(territoryIndex) {
+                return THIS.app.simTerritories[territoryIndex].numPieces;
+            });
+        
+        const  config = {
+            simAttackForce: player.simAttackForce,
+            defenders: defenders,
+            leaveBehind: leaveBehind,
+        }
+        const simulator = new Simulator(config);
         let wins = 0;
         for (let i = 0; i < this.config.simIterations; i++) {
-            if (this.runCampaign()) {
+            if (simulator.runCampaign()) {
                 wins++;
             }
         }
@@ -1169,7 +1205,7 @@ class CalcGame {
         console.log("click clickTerritoryForPhaseCalculate");
         territory.highlighted = true;
         territory.highlightColor = "highlight-red";
-        this.app.currentPlayer.simAttackForce = 1; // ddd
+        this.app.currentPlayer.simAttackForce = 1;
         this.app.currentPlayer.simAttackingTerritoryIndex = territory.index;
         this.explodeTerritory(territory);
         this.beginPhaseCalculateChooseDefendingTerritory();
