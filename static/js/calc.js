@@ -159,6 +159,14 @@ class Simulator {
             this.log(`The attacker failed, with ${state.simAttackForce} forces left on the final territory`);
         }
 
+        if (attackerWins && this.campaignManager.redVictory !== true) {
+            throw this.iteration + " attackerWins && this.campaignManager.redVictory !== true";
+        }
+
+        if (!attackerWins && this.campaignManager.redVictory !== false) {
+            throw this.iteration + " !attackerWins && this.campaignManager.redVictory !== false)";
+        }
+
         return attackerWins;
     }
 
