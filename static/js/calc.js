@@ -19,7 +19,7 @@ const DEFAULT_CONFIG = {
         "Asia": 7
     },
     logSimulatorIteration: -1,
-    simIterations: 1000,
+    simIterations: 10000,
     requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 42,
@@ -62,18 +62,18 @@ class Simulator {
         this.iteration = iteration;
         const state = JSON.parse(JSON.stringify(this.config));
         state.attackingIndex = 0;
-        while (!(state.simAttackForce <= 0 || state.attackingIndex === state.defenders.length)) {
+        while (!(state.simAttackForce === 0 || state.attackingIndex === state.defenders.length)) {
                  //occupation[state.leaveBehind.length - 1] >= state.leaveBehind[state.leaveBehind.length - 1]) {
             this.advanceOneStep(state);
         }
 
-        if (state.simAttackForce > 0) {
+        if (state.attackingIndex === state.defenders.length) {
             this.log(`The attacker succeeded, with ${state.simAttackForce} forces left on the final territory`);
         } else {
             this.log(`The attacker failed, with ${state.simAttackForce} forces left on the final territory`);
         }
 
-        return state.simAttackForce > 0;
+        return state.attackingIndex === state.defenders.length;
     }
 
 /*      config = {
