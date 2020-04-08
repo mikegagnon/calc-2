@@ -138,7 +138,6 @@ class Simulator {
     constructor(dice, config) {
         this.dice = dice;
         this.config = config;
-        console.log(this.config);
     }
 
     runCampaign(iteration) {
@@ -1189,7 +1188,6 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseCalculateChooseDefendingTerritory(territory) {
-        console.log("clickTerritoryForPhaseCalculateChooseDefendingTerritory");
         const player = this.app.currentPlayer;
 
         //const simAttackingTerritory = this.app.territories[player.simAttackingTerritoryIndex];
@@ -1278,7 +1276,7 @@ class CalcGame {
 
         // If there are no sim attack forces available to be placed, then 
         // nothing can be clicked
-        console.log("this.getNumAvailableSimForces()", this.getNumAvailableSimForces());
+        //console.log("this.getNumAvailableSimForces()", this.getNumAvailableSimForces());
         if (this.getNumAvailableSimForces() === 0) {
             return;
         }
@@ -1360,7 +1358,6 @@ class CalcGame {
     }
 
     clickTerritoryForPhaseCalculate(territory) {
-        console.log("click clickTerritoryForPhaseCalculate");
         territory.highlighted = true;
         territory.highlightColor = "highlight-red";
         this.app.currentPlayer.simAttackForce = 1;
@@ -1507,7 +1504,6 @@ class CalcGame {
     }
 
     clickRepeatAttack() {
-        console.log("repeat");
         const defenderTerritory = this.app.territories[this.app.currentPlayer.defendingTerritoryIndex];
         this.selectDefendingTerritory(defenderTerritory);
         this.app.currentPlayer.rollResult = this.getRandomAttackRoll(defenderTerritory);
@@ -1590,11 +1586,9 @@ class CalcGame {
                 this.explodeTerritory(attackingTerritory);
             }
             //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_REPEAT_OR_CANCEL;
-            console.log("offerAgain");
             this.beginPhaseChooseRepeatOrCancel();
         } else {
             //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_ATTACK_OR_PASS;
-            console.log("do not offerAgain");
             if (numRedWins > 0) {
                 this.explodeTerritory(defendingTerritory);
             }
