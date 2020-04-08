@@ -18,7 +18,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    logSimulatorIteration: 1,
+    logSimulatorIteration: 237,
     simIterations: 10000,
     requestStateInterval: 1000,
     explosionDuration: 2500,
@@ -118,10 +118,18 @@ class CampaignManager {
                 return;
             }
             //this.offense
-        }
+        } else {
 
-        if (this.offense[this.attackingFromIndex] === 1) {
-            this.redVictory = false;
+            if (this.attackingFromIndex === -1) {
+                if (this.homeOffense === 0) {
+                    this.redVictory = false;
+                }
+            } else {
+                if (this.offense[this.attackingFromIndex] === this.leaveBehind[this.attackingFromIndex]) {
+                    this.redVictory = false;
+                }                
+            }
+
         }
 
         return this.redVictory;
