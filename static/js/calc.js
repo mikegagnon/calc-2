@@ -152,13 +152,14 @@ class Simulator {
             this.advanceOneStep(state);
         }
 
-        if (state.attackingIndex === state.defenders.length) {
+        const attackerWins = state.attackingIndex === state.defenders.length;
+        if (attackerWins) {
             this.log(`The attacker succeeded, with ${state.simAttackForce} forces left on the final territory`);
         } else {
             this.log(`The attacker failed, with ${state.simAttackForce} forces left on the final territory`);
         }
 
-        return state.attackingIndex === state.defenders.length;
+        return attackerWins;
     }
 
 /*      config = {
