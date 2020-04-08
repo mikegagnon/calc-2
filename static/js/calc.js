@@ -18,7 +18,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    logSimulatorIteration: -1,
+    logSimulatorIteration: 1,
     simIterations: 10000,
     requestStateInterval: 1000,
     explosionDuration: 2500,
@@ -103,14 +103,15 @@ class CampaignManager {
             
             // Advance the attacker's units
             if (this.attackingFromIndex === -1) {
-                this.offense[0] = this.simAttackForce;
-                this.simAttackForce = 0
+                this.offense[0] = this.homeOffense;
+                this.homeOffense = 0;
             } else {
                 const forceBefore = this.offense[this.attackingFromIndex];
                 const leftBehind = this.leaveBehind[this.attackingFromIndex];
                 this.offense[this.attackingFromIndex + 1] = forceBefore - leftBehind;
                 this.offense[this.attackingFromIndex] = leftBehind;
             }
+
             this.attackingFromIndex++;
             if (this.attackingFromIndex === this.defense.length - 1) {
                 this.redVictory = true;
@@ -186,7 +187,7 @@ class Simulator {
             throw "Bad advanceOneStep 3";
         }
 
-        this.log(state);
+        this.log(JSON.parse(JSON.stringify(state)));
 
         const numRed = Math.min(3, state.simAttackForce);
         const numWhite = Math.min(2, state.defenders[state.attackingIndex]);
