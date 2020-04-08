@@ -1,6 +1,6 @@
 // TODO: only current player can undo/redo
 // TODO: phaeReinforceArmiesAvailableForPlacement 
-// TODO: elimination
+// TODO: elimination (take prize cards)
 // TODO: resignation
 // TODO: detect victory
 
@@ -51,6 +51,89 @@ const PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CALCULATE_CHOOSE_DEFEN
 
 /* Simulator ******************************************************************/
 
+class CampaignManager {
+
+    constructor(iteration, simAttackForce, initialDefense, leaveBehind) {
+        this.iteration = iteration;
+        this.numTerritories = initialDefense.length;
+        this.attackingFromIndex = -1;
+        this.defense = JSON.parse(JSON.stringify(initialDefense));
+        this.offense = new Array(this.defense.length);
+        this.homeOffense = simAttackForce;
+        this.redVictory = undefined;
+        this.leaveBehind = leaveBehind;
+        if (this.leaveBehind.length != this.offense.length) {
+            throw "this.leaveBehind.length != this.offense.length";
+        }
+    }
+
+    newRoll(numRedRolled, numWhiteRolled, numRedWins, numWhiteWins) {
+        if (this.redVictory === true || this.redVictory === false) {
+            throw this.iteration + " cannot accept a newRoll because the game is over";
+        }
+
+        let numRedAllowed;
+        if (this.attackingFromIndex == -1) {
+            numRedAllowed = Math.min(3, this.homeOffense);
+        } else {
+            numRedAllowed = Math.min(3, this.offense[this.attackingFromIndex]);
+        }
+        if (numRedRolled != numRedAllowed) {
+            throw this.iteration + " numRedRolled != numRedAllowed";
+        }
+        const numWhiteAllowed = Math.min(2, this.defense[this.attackingFromIndex + 1]);
+        if (numWhiteRolled != numWhiteAllowed) {
+            throw this.iteration + " numWhiteRolled != numWhiteAllowed";
+        }
+        const totalWins = numRedWins + numWhiteWins;
+        const totalWinsAllowed = Math.min(numRedRolled, numWhiteRolled);
+        if (totalWins != totalWinsAllowed) {
+            throw this.iteration + " totalWins != totalWinsAllowed";
+        }
+        this.defense[this.attackingFromIndex + 1] -= numRedWins;
+        if (this.attackingFromIndex == -1) {
+            this.homeOffense -= numWhiteWins;
+        } else {
+            this.offense[this.attackingFromIndex] -= numWhiteWins;
+        }
+
+        // If the attacker wins
+        // The attacker was attacking from this.attackingFromIndex
+        if (this.defense[this.attackingFromIndex + 1] === 0) {
+            
+            // Advance the attacker's units
+            if (this.attackingFromIndex === -1) {
+                this.offense[0] = this.simAttackForce;
+                this.simAttackForce = 0
+            } else {
+                const forceBefore = this.offense[this.attackingFromIndex];
+                const leftBehind = this.leaveBehind[this.attackingFromIndex];
+                this.offense[this.attackingFromIndex + 1] = forceBefore - leftBehind;
+                this.offense[this.attackingFromIndex] = leftBehind;
+            }
+            this.attackingFromIndex++;
+            if (this.attackingFromIndex === this.defense.length - 1) {
+                this.redVictory = true;
+                return;
+            }
+            //this.offense
+        }
+
+        if (this.offense[this.attackingFromIndex] === 1) {
+            this.redVictory = false;
+        }
+
+        return this.redVictory;
+    }
+}
+
+/*
+        config = {
+            simAttackForce: player.simAttackForce,
+            defenders: defenders,
+            leaveBehind: leaveBehind,
+        }
+*/
 class Simulator {
     constructor(dice, config) {
         this.dice = dice;
@@ -59,6 +142,7 @@ class Simulator {
     }
 
     runCampaign(iteration) {
+        this.campaignManager = new CampaignManager(iteration, this.config.simAttackForce, this.config.defenders, this.config.leaveBehind);
         this.iteration = iteration;
         const state = JSON.parse(JSON.stringify(this.config));
         state.attackingIndex = 0;
@@ -89,6 +173,10 @@ class Simulator {
     }
 
     advanceOneStep(state) {
+        if (this.campaignManager.redVictory === true || this.campaignManager.redVictory === false) {
+            throw "Campaign manager cannot go another step";
+        }
+
         if (state.defenders[state.attackingIndex] === 0) {
             throw "Bad advanceOneStep 1";
         }
@@ -107,6 +195,9 @@ class Simulator {
 
         const numRedWins = rollResult.numRedWins;
         const numWhiteWins = rollResult.numWhiteWins;
+
+        const redVictory = this.campaignManager.newRoll(numRed, numWhite, numRedWins, numWhiteWins);
+
 
         this.log(`numRedWins=${numRedWins}, numWhiteWins=${numWhiteWins}`);
         this.log(`simAttackForce was ${state.simAttackForce}`);
@@ -1166,7 +1257,7 @@ class CalcGame {
             }
         }
 
-        return Math.floor(wins / this.config.simIterations * 100);
+        return Math.round(wins / this.config.simIterations * 100);
     }
 
     setClickableForPhaseCalculateChooseDefendingTerritory() {
