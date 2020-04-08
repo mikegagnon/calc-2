@@ -76,7 +76,7 @@ class CampaignManager {
         if (this.attackingFromIndex == -1) {
             numRedAllowed = Math.min(3, this.homeOffense);
         } else {
-            numRedAllowed = Math.min(3, this.offense[this.attackingFromIndex]);
+            numRedAllowed = Math.min(3, this.offense[this.attackingFromIndex] - this.leaveBehind[this.attackingFromIndex]);
         }
         if (numRedRolled != numRedAllowed) {
             throw this.iteration + " numRedRolled != numRedAllowed";
@@ -142,6 +142,7 @@ class Simulator {
     }
 
     runCampaign(iteration) {
+        this.log("runCampaign");
         this.campaignManager = new CampaignManager(iteration, this.config.simAttackForce, this.config.defenders, this.config.leaveBehind);
         this.iteration = iteration;
         const state = JSON.parse(JSON.stringify(this.config));
@@ -173,6 +174,8 @@ class Simulator {
     }
 
     advanceOneStep(state) {
+        this.log("advanceOneStep");
+
         if (this.campaignManager.redVictory === true || this.campaignManager.redVictory === false) {
             throw "Campaign manager cannot go another step";
         }
