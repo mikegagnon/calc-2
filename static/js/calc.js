@@ -18,6 +18,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
+    logSimulatorIteration: -1,
     simIterations: 1000,
     requestStateInterval: 1000,
     explosionDuration: 2500,
@@ -51,13 +52,75 @@ const PHASE_CALCULATE_CHOOSE_DEFENDING_TERRITORY = "PHASE_CALCULATE_CHOOSE_DEFEN
 /* Simulator ******************************************************************/
 
 class Simulator {
-    constructor(config) {
+    constructor(dice, config) {
+        this.dice = dice;
         this.config = config;
         console.log(this.config);
     }
 
-    runCampaign() {
-        return true;
+    runCampaign(iteration) {
+        this.iteration = iteration;
+        const state = JSON.parse(JSON.stringify(this.config));
+        state.attackingIndex = 0;
+        while (!(state.simAttackForce === 0 || state.attackingIndex === state.defenders.length)) {
+                 //occupation[state.leaveBehind.length - 1] >= state.leaveBehind[state.leaveBehind.length - 1]) {
+            this.advanceOneStep(state);
+        }
+
+        if (state.simAttackForce > 0) {
+            this.log(`The attacker succeeded, with ${state.simAttackForce} forces left on the final territory`);
+        } else {
+            this.log(`The attacker failed, with ${state.simAttackForce} forces left on the final territory`);
+        }
+
+        return state.simAttackForce > 0;
+    }
+
+/*      config = {
+            simAttackForce: player.simAttackForce,
+            defenders: defenders,
+            leaveBehind: leaveBehind,
+        }
+*/
+    log(message) {
+        if (this.iteration === DEFAULT_CONFIG.logSimulatorIteration) {
+            console.log("log", message);
+        }
+    }
+
+    advanceOneStep(state) {
+        if (state.defenders[state.attackingIndex] === 0) {
+            throw "Bad advanceOneStep";
+        }
+
+        this.log(state);
+
+        const numRed = Math.min(3, state.simAttackForce);
+        const numWhite = Math.min(2, state.defenders[state.attackingIndex]);
+        const rollResult = this.dice.randValues(numRed, numWhite);
+
+        const numRedWins = rollResult.numRedWins;
+        const numWhiteWins = rollResult.numWhiteWins;
+
+        this.log(`numRedWins=${numRedWins}, numWhiteWins=${numWhiteWins}`);
+        this.log(`simAttackForce was ${state.simAttackForce}`);
+        this.log(`the defender force was ${state.defenders[state.attackingIndex]}`);
+
+        state.simAttackForce -= numWhiteWins;
+        state.defenders[state.attackingIndex] -= numRedWins;
+
+        this.log("But now...");
+        this.log(`simAttackForce is ${state.simAttackForce}`);
+        this.log(`the defender force is ${state.defenders[state.attackingIndex]}`);
+
+        if (state.defenders[state.attackingIndex] === 0) {
+            this.log(`The attacker captured territory #${state.attackingIndex}`);
+            state.simAttackForce -= state.leaveBehind[state.attackingIndex];
+            this.log(`simAttackForce is now ${state.simAttackForce}`);
+            state.attackingIndex++;
+        } else {
+            this.log(`The attacker failed to capture territory #${state.attackingIndex}`);
+        }
     }
 }
 
@@ -1088,11 +1151,11 @@ class CalcGame {
             leaveBehind: leaveBehind,
         }
 
-        const simulator = new Simulator(config);
+        const simulator = new Simulator(this.dice, config);
 
         let wins = 0;
         for (let i = 0; i < this.config.simIterations; i++) {
-            if (simulator.runCampaign()) {
+            if (simulator.runCampaign(i)) {
                 wins++;
             }
         }
