@@ -62,7 +62,7 @@ class Simulator {
         this.iteration = iteration;
         const state = JSON.parse(JSON.stringify(this.config));
         state.attackingIndex = 0;
-        while (!(state.simAttackForce === 0 || state.attackingIndex === state.defenders.length)) {
+        while (!(state.simAttackForce <= 0 || state.attackingIndex === state.defenders.length)) {
                  //occupation[state.leaveBehind.length - 1] >= state.leaveBehind[state.leaveBehind.length - 1]) {
             this.advanceOneStep(state);
         }
@@ -90,7 +90,13 @@ class Simulator {
 
     advanceOneStep(state) {
         if (state.defenders[state.attackingIndex] === 0) {
-            throw "Bad advanceOneStep";
+            throw "Bad advanceOneStep 1";
+        }
+        if (state.simAttackForce < 1) {
+            throw "Bad advanceOneStep 2";
+        }
+        if (state.defenders[state.attackingIndex] < 1) {
+            throw "Bad advanceOneStep 3";
         }
 
         this.log(state);
