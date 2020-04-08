@@ -1066,10 +1066,6 @@ class CalcGame {
     }
 
     calculateProbability() {
-        /*if (!this.app) {
-            return 0;
-        }*/
-        //if (!this.app.)
         const THIS = this;
 
         const player = this.app.currentPlayer;
@@ -1091,7 +1087,9 @@ class CalcGame {
             defenders: defenders,
             leaveBehind: leaveBehind,
         }
+
         const simulator = new Simulator(config);
+
         let wins = 0;
         for (let i = 0; i < this.config.simIterations; i++) {
             if (simulator.runCampaign()) {
