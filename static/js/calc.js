@@ -120,16 +120,18 @@ class CampaignManager {
             //this.offense
         } else {
 
-            if (this.attackingFromIndex === -1) {
-                if (this.homeOffense === 0) {
-                    this.redVictory = false;
-                }
-            } else {
-                if (this.offense[this.attackingFromIndex] === this.leaveBehind[this.attackingFromIndex]) {
-                    this.redVictory = false;
-                }                
-            }
+            
 
+        }
+
+        if (this.attackingFromIndex === -1) {
+            if (this.homeOffense === 0) {
+                this.redVictory = false;
+            }
+        } else {
+            if (this.offense[this.attackingFromIndex] === this.leaveBehind[this.attackingFromIndex]) {
+                this.redVictory = false;
+            }                
         }
 
         return this.redVictory;
