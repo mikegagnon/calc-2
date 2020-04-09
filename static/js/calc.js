@@ -787,6 +787,7 @@ class CalcGame {
         }
         this.app.explosions = state.explosions;
 
+        // TODO: shouldn't do this for current player
         if (this.app.currentPhase === PHASE_ANIMATE_ROLL) {
             this.dice.animate(this.divId, this.app.currentPlayer.rollResult, function(){ });
         }
@@ -1583,6 +1584,7 @@ class CalcGame {
         const numWhiteWins = player.rollResult.numWhiteWins;
         const attackingTerritory = this.app.territories[player.attackingTerritoryIndex];
         const defendingTerritory = this.app.territories[player.defendingTerritoryIndex];
+        const defendingPlayer = this.app.players.filter(p => p.color === defendingTerritory.color)[0];
         //const attackForce 
 
         let offerAgain = true;
@@ -1626,7 +1628,8 @@ class CalcGame {
 
             this.explodeTerritory(defendingTerritory);
 
-            // TODO: test
+            this.checkForElimination(defendingPlayer);
+
             this.beginPhaseChooseAction();
 
             //app.phase = PLAYERS_MAIN_PHASE_CHOOSE_ATTACK_OR_PASS;
@@ -1658,6 +1661,20 @@ class CalcGame {
             // TODO: test
             this.beginPhaseChooseAction();
         }
+    }
+
+    checkForElimination(defendingPlayer) {
+
+        const numTerritories = this
+            .app
+            .territories
+            .filter(t => t.color === defendingPlayer.color)
+            .length;
+
+        if (numTerritories === 0) {
+            this.eliminatePlayer(defendingPlayer.index);
+        }
+
     }
 
 
