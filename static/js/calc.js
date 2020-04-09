@@ -18,7 +18,7 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    logSimulatorIteration: 237,
+    logSimulatorIteration: 0,
     simIterations: 10000,
     requestStateInterval: 1000,
     explosionDuration: 2500,
@@ -157,7 +157,7 @@ class Simulator {
         this.iteration = iteration;
         const state = JSON.parse(JSON.stringify(this.config));
         state.attackingIndex = 0;
-        while (!(state.simAttackForce === 0 || state.attackingIndex === state.defenders.length)) {
+        while (!(state.simAttackForce <= 0 || state.attackingIndex === state.defenders.length)) {
                  //occupation[state.leaveBehind.length - 1] >= state.leaveBehind[state.leaveBehind.length - 1]) {
             this.advanceOneStep(state);
         }
