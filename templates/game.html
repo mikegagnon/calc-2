@@ -229,7 +229,7 @@
 
 
         <!-- UNDO / REDO ------------------------------------------------------>
-        <div class="undo-buttons console-component">
+        <div v-show="undoRedoAvailable" class="undo-buttons console-component">
           <button :disabled="!undoAvailable" v-on:click="clickUndo">Undo</button>
           <button :disabled="!redoAvailable" v-on:click="clickRedo">Redo</button>
         </div>

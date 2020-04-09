@@ -17,8 +17,8 @@ const DEFAULT_CONFIG = {
         "Europe": 5,
         "Asia": 7
     },
-    logSimulatorIteration: 0,
-    simIterations: 10000,
+    logSimulatorIteration: -1,
+    simIterations: 2500,
     requestStateInterval: 1000,
     explosionDuration: 2500,
     autoDropForPhaseSelectInitPositionsCount: 42,
@@ -815,6 +815,9 @@ class CalcGame {
                 thisPlayerIndex: 0, //hack: should really be -1 or something like that
             },
             computed: {
+                undoRedoAvailable: function() {
+                    return this.currentPlayer.index === this.thisPlayerIndex;
+                },
                 currentPlayer: function() {
                     for (let i = 0; i < this.players.length; i++) {
                         const player = this.players[i];
