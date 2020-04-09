@@ -129,7 +129,7 @@ class CampaignManager {
                 this.redVictory = false;
             }
         } else {
-            if (this.offense[this.attackingFromIndex] === this.leaveBehind[this.attackingFromIndex]) {
+            if (this.offense[this.attackingFromIndex] <= this.leaveBehind[this.attackingFromIndex]) {
                 this.redVictory = false;
             }                
         }
