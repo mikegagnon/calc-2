@@ -1,5 +1,4 @@
 // TODO: only current player can undo/redo
-// TODO: phaeReinforceArmiesAvailableForPlacement 
 // TODO: elimination (take prize cards)
 // TODO: resignation
 // TODO: detect victory
