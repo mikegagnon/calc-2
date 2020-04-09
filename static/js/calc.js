@@ -650,6 +650,10 @@ class CalcGame {
         this.loadNewPlayer();
 
         if (this.config.isHost) {
+            this.app.thisPlayer.isHost = true;    
+        }
+
+        if (this.config.isHost) {
             this.beginPhaseSelectInitPositions();
         } else {
             this.issueRequest();
@@ -915,6 +919,9 @@ class CalcGame {
                 }
             },
             methods: {
+                eliminatePlayer(index) {
+                    THIS.eliminatePlayer(index);
+                },
                 clickAttack() {
                     //console.log("Attack")
                     THIS.clickAttack();
@@ -1011,6 +1018,7 @@ class CalcGame {
             },
             delimiters: ["[[","]]"],
         });
+
         return app;
     }
 

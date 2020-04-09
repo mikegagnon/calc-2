@@ -234,6 +234,13 @@
           <button :disabled="!redoAvailable" v-on:click="clickRedo">Redo</button>
         </div>
 
+        <div v-if="thisPlayer.isHost" style="margin-top: 50px">
+          <div v-for="player in players">
+            <button v-on:click="eliminatePlayer(player.index)">Eliminate [[player.name]]</button>
+          </div>
+          
+        </div>
+
       </div>
     </div>
 
@@ -265,23 +272,24 @@
       /*var GAME_CONFIG_2 = $.extend({}, GAME_CONFIG, DEFAULT_CONFIG);
       GAME_CONFIG_2.username = "Player 2";
       GAME_CONFIG_2.isHost = false;*/
-      const GAME_CONFIG_1 = {
+      var GAME_CONFIG_1 = {
           isHost: true,
           numPlayers: 2,
           username: "Alice",
       };
 
-      const GAME_CONFIG_2 = {
+      var GAME_CONFIG_2 = {
           isHost: false,
           numPlayers: 2,
           username: "Bob",
       };
-
+      var CALC_1_CONFIG = $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG)
+      var CALC_2_CONFIG = $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG)
       DICE1 = new Dice(0);
       DICE2 = new Dice(1);
       LOCAL_SERVER = new LocalCalcServer();
-      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, DICE1, $.extend({}, GAME_CONFIG_1, DEFAULT_CONFIG));
-      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, DICE2, $.extend({}, GAME_CONFIG_2, DEFAULT_CONFIG));
+      CALC1 = new CalcGame("#gameTemplate", "#calc1", LOCAL_SERVER, DICE1, CALC_1_CONFIG);
+      CALC2 = new CalcGame("#gameTemplate", "#calc2", LOCAL_SERVER, DICE2, CALC_2_CONFIG);
 
 
     } else {
