@@ -1674,7 +1674,7 @@ class CalcGame {
         if (numTerritories === 0) {
             this.eliminatePlayer(defendingPlayer.index);
             this.app.currentPlayer.numHearts += defendingPlayer.numHearts;
-            this.app.currentPlayer.numClubss += defendingPlayer.numClubs;
+            this.app.currentPlayer.numClubs += defendingPlayer.numClubs;
             this.app.currentPlayer.numDiamonds += defendingPlayer.numDiamonds;
 
             defendingPlayer.numHearts = 0;
