@@ -1017,6 +1017,8 @@ class CalcGame {
 
     eliminatePlayer(playerIndex) {
         this.app.players[playerIndex].eliminated = true;
+
+
         if (this.app.thisPlayerIndex === playerIndex) {
             this.clickPass();
         } else {
@@ -1122,8 +1124,13 @@ class CalcGame {
             }
         }
 
-        const player = this.app.currentPlayer;
-        player.instruction = this.getPlayerInstruction(player);
+        const playersRemaining = this.app.players.filter(p => !p.eliminated);
+        if (playersRemaining.length === 1) {
+            playersRemaining[0].instruction = "Wins the game!"
+        } else {
+            const player = this.app.currentPlayer;
+            player.instruction = this.getPlayerInstruction(player);
+        }
     }
 
     getPlayerInstruction(player) {
