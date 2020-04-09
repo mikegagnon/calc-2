@@ -710,6 +710,10 @@ class CalcGame {
         if (this.loadNewPlayer()) {
             this.saveState();
         }
+
+        if (this.app.thisPlayer.eliminated) {
+            this.clickPass();
+        }
     }
 
     issueRequest() {
@@ -1015,6 +1019,8 @@ class CalcGame {
         this.app.players[playerIndex].eliminated = true;
         if (this.app.thisPlayerIndex === playerIndex) {
             this.clickPass();
+        } else {
+            this.saveState();
         }
     }
 
