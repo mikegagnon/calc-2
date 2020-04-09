@@ -30,8 +30,8 @@ const DEFAULT_CONFIG = {
         //numTerritoriesPlayer0: 2,
     },
     startWithPrizeCards: {
-        //0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
-        //0: ["heart", "heart", "heart"],
+        0: ["club"], //, "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
+        1: ["heart"], // "heart", "heart"],
     }
 
 };
@@ -1673,6 +1673,13 @@ class CalcGame {
 
         if (numTerritories === 0) {
             this.eliminatePlayer(defendingPlayer.index);
+            this.app.currentPlayer.numHearts += defendingPlayer.numHearts;
+            this.app.currentPlayer.numClubss += defendingPlayer.numClubs;
+            this.app.currentPlayer.numDiamonds += defendingPlayer.numDiamonds;
+
+            defendingPlayer.numHearts = 0;
+            defendingPlayer.numClubs = 0;
+            defendingPlayer.numDiamonds = 0;
         }
 
     }
