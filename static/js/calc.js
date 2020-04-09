@@ -3,6 +3,8 @@
 // TODO: resignation
 // TODO: detect victory
 
+// CALC2.setNumTerritoriesPlayer0(2); CALC2.saveState();
+
 const TESTING = true;
 
 const DEFAULT_CONFIG = {
@@ -24,6 +26,9 @@ const DEFAULT_CONFIG = {
     autoDropForPhaseSelectInitPositionsCount: 42,
     doAutoDropThree: true,
     autoDropForPhaseDropThreeVacancies: 0,
+    testing: {
+        //numTerritoriesPlayer0: 2,
+    },
     startWithPrizeCards: {
         //0: ["heart", "heart", "heart", "diamond", "diamond", "diamond", "club", "club", "club", "club"],
         //0: ["heart", "heart", "heart"],
@@ -1006,6 +1011,13 @@ class CalcGame {
 
     /* Generic game logic *****************************************************/
 
+    eliminatePlayer(playerIndex) {
+        this.app.players[playerIndex].eliminated = true;
+        if (this.app.thisPlayerIndex === playerIndex) {
+            this.clickPass();
+        }
+    }
+
     territoryText(territory) {
         if (territory.numPieces === 0) {
             return "";
@@ -1082,17 +1094,26 @@ class CalcGame {
         const newPlayerIndex = (player.index + 1) % this.app.players.length;
         const nextPlayer = this.app.players[newPlayerIndex];
         nextPlayer.active = true;
-        nextPlayer.showDice = false;
-        // This is the hack
-        if (!this.online) {
-            this.app.thisPlayerIndex = newPlayerIndex;
+
+        if (nextPlayer.eliminated) {
+            this.incrementCurrentPlayer();
+        } else {
+            nextPlayer.showDice = false;
+            // This is the hack
+            if (!this.online) {
+                this.app.thisPlayerIndex = newPlayerIndex;
+            }
         }
     }
 
     setInstructions() {
         for (let i = 0; i < this.app.players.length; i++) {
             const player = this.app.players[i];
-            player.instruction = "";
+            if (player.eliminated) {
+                player.instruction = "Eliminated"
+            } else {
+                player.instruction = "";
+            }
         }
 
         const player = this.app.currentPlayer;
@@ -2125,6 +2146,23 @@ class CalcGame {
             this.autoDropForPhaseSelectInitPositions(autoDropCount);
         } else {
             this.saveState();
+        }
+    }
+
+    setNumTerritoriesPlayer0(numTerritories) {
+        const playerColor = this.app.players[0].color;
+        const otherPlayerColor = this.app.players[1].color;
+
+        const myTerritories = this
+            .app
+            .territories
+            .filter(function(t) {
+                return t.color === playerColor;
+            });
+
+        for (let i = numTerritories; i < myTerritories.length; i++) {
+            const t = myTerritories[i];
+            t.color = otherPlayerColor;
         }
     }
 
